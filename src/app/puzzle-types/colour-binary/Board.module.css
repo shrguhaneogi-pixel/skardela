@@ -1,0 +1,15 @@
+/* The base and the states of a square are in "src/shared/Board.module.css".
+   This file sets only the colours. The board uses both "square" classes. */
+.square {
+  --on-fill: var(--on-colour);
+}
+
+.square[data-colour="R"] {
+  --fill: var(--red);
+  --fill-edge: var(--red-edge);
+}
+
+.square[data-colour="B"] {
+  --fill: var(--blue);
+  --fill-edge: var(--blue-edge);
+}

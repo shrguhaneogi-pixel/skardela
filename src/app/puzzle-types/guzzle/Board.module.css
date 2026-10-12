@@ -1,0 +1,82 @@
+/* A gap is a square that is not on a word. It keeps the grid shape. */
+.gap {
+  aspect-ratio: 1;
+}
+
+/* The base and the states of a square are in "src/shared/Board.module.css".
+   This file sets only the colours. The board uses both "square" classes. */
+.square[data-mark="correct"],
+.square[data-fixed="true"] {
+  --fill: var(--green);
+  --fill-edge: var(--green-edge);
+  --on-fill: var(--on-colour);
+}
+
+.square[data-mark="present"] {
+  --fill: var(--yellow);
+  --fill-edge: var(--yellow-edge);
+  --on-fill: var(--on-yellow);
+}
+
+.square[data-mark="absent"] {
+  --fill: var(--red);
+  --fill-edge: var(--red-edge);
+  --on-fill: var(--on-colour);
+}
+
+.symbol {
+  position: absolute;
+  top: 0.1em;
+  right: 0.2em;
+  font-size: 0.55em;
+  line-height: 1;
+}
+
+/* Numbers of the same width, so the text does not move when the count changes. */
+.mistakes {
+  justify-self: center;
+  color: var(--text-h);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.modes,
+.keys {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.375rem;
+  width: min(100%, 32rem);
+  margin-inline: auto;
+}
+
+/* A letter key is a shared button with a square size. The board uses both classes. */
+.key {
+  position: relative;
+  min-width: 2.75rem;
+  padding: 0;
+}
+
+/* A small number at the bottom right of a key: how many squares still need the letter. */
+.count {
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.125rem;
+  color: var(--text-muted);
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+}
