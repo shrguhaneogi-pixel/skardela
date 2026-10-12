@@ -1,13 +1,32 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="7ce42533-1688-4a51-9438-41cb377759e8"
+    ></script>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>skardela</title>
+    <meta
+      name="description"
+      content="Skardela: free daily puzzles of new types. No account, no download."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Skardela</title>
+    <!-- This sets the saved theme before the page shows, so the page does not flash. It must use the same key and values as "src/shared/theme.ts". -->
+    <script>
+      try {
+        var theme = localStorage.getItem("skardela-theme");
+        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+      } catch (error) {}
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
+    <noscript>Skardela needs JavaScript. Turn on JavaScript to play.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

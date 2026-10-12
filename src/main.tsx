@@ -1,10 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router/dom";
+import "./index.css";
+import { router } from "./app/router.ts";
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.querySelector("#root");
+
+if (!rootElement) {
+  throw new Error('The page has no element with the ID "root".');
+}
+
+createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </StrictMode>,
-)
+);
