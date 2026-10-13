@@ -1,12 +1,17 @@
 .skipLink {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--surface);
-  border: 2px solid var(--line);
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.625rem 1rem;
+  background-color: var(--surface-elevated);
+  color: var(--text-h);
+  font-weight: 600;
+  border: 2px solid var(--accent);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   transform: translateY(-200%);
+  transition: transform var(--transition-fast);
 }
 
 .skipLink:focus {
@@ -18,20 +23,54 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-block: 1rem;
+  margin-top: clamp(0.75rem, 2vw, 1.25rem);
+  padding: 0.75rem clamp(1rem, 2.5vw, 1.5rem);
+  background-color: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
 }
 
 .siteName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
   color: var(--text-h);
-  font-size: 1.125rem;
+  font-size: 1.1875rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.siteName:hover {
+  opacity: 0.85;
+}
+
+.brandIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brandIcon svg {
+  border-radius: 4px;
 }
 
 .main {
   flex: 1;
-  padding-block: 1rem 2rem;
+  padding-block: clamp(1rem, 2.5vw, 1.75rem) clamp(2rem, 4vw, 3rem);
 }
 
 .main:focus {
@@ -40,6 +79,9 @@
 
 .footer {
   padding-block: 2rem 1.5rem;
+  margin-top: auto;
+  border-top: 1px solid var(--border-subtle);
   color: var(--text-muted);
   font-size: 0.875rem;
+  text-align: center;
 }

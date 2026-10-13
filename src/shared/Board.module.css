@@ -1,8 +1,8 @@
-/* These styles are the same for each puzzle board. Each puzzle type adds its own square styles. */
+/* Shared styles for all puzzle boards. Each puzzle type adds square styles. */
 
 .game {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .board {
@@ -12,50 +12,68 @@
   border: 0;
 }
 
-/* The board component sets "--size" to the number of squares in one row. */
+/* The board component sets "--size" to the square count of one row. */
 .grid {
   display: grid;
   grid-template-columns: repeat(var(--size), minmax(0, 1fr));
-  gap: clamp(0.25rem, 1.2vw, 0.4rem);
+  gap: clamp(0.25rem, 1.2vw, 0.45rem);
   width: min(100%, calc(var(--size) * 4.5rem), 32rem);
   margin-inline: auto;
   container-type: inline-size;
 }
 
-/* The base of each square. A puzzle type sets the colours of a square with three values:
-   "--fill" (the background), "--fill-edge" (the border) and "--on-fill" (the text and the symbol). */
+/* Base square component with tactile feedback and dual encoding symbols */
 .square {
   position: relative;
   display: grid;
   place-items: center;
   aspect-ratio: 1;
   min-width: 0;
-  border: 2px solid var(--fill-edge, var(--line));
+  border: 2px solid var(--fill-edge, var(--border));
   border-radius: var(--radius-md);
   background-color: var(--fill, var(--surface));
   color: var(--on-fill, var(--text-h));
-  font-size: clamp(0.9rem, calc(40cqi / var(--size)), 1.75rem);
-  font-weight: 600;
+  font-size: clamp(0.95rem, calc(42cqi / var(--size)), 1.85rem);
+  font-weight: 650;
+  box-shadow: var(--shadow-sm);
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
-/* A fixed square has a thin light line inside its edge, so the player can see that it does not change.
-   The line shows on each fill colour in the light theme and in the dark theme. */
+/* A fixed square has an inner light ring to show it cannot be changed. */
 .square[data-fixed="true"] {
   box-shadow:
     inset 0 0 0 2px var(--fill, var(--surface)),
-    inset 0 0 0 4px rgb(255 255 255 / 0.6);
+    inset 0 0 0 4px rgb(255 255 255 / 0.7),
+    var(--shadow-sm);
 }
 
-/* The selected square, the hint square and the keyboard focus use the same ring.
-   The ring is not a square colour, so it shows clearly on each square. */
+/* Focus and selection rings */
 .square:focus-visible,
-.square[data-selected="true"],
-.square[data-hint="true"] {
+.square[data-selected="true"] {
   outline: 3px solid var(--ring);
   outline-offset: 2px;
+  z-index: 2;
+}
+
+/* Hint target highlight with subtle pulse */
+.square[data-hint="true"] {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  z-index: 2;
+  animation: hint-glow 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes hint-glow {
+  from {
+    box-shadow: 0 0 0 0 var(--accent);
+  }
+  to {
+    box-shadow: 0 0 14px 2px var(--accent);
+  }
 }
 
 .square[aria-disabled="true"] {
@@ -64,59 +82,90 @@
 
 .square[aria-disabled="false"]:hover {
   border-color: var(--ring);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-/* The status text is in a box. It has a minimum height, so the page does not move when the text changes. */
+.square[aria-disabled="false"]:active {
+  transform: scale(0.96);
+}
+
+/* Status message output styled as a glassmorphic container */
 .status {
   justify-self: center;
   width: min(100%, 32rem);
-  min-height: 2.75rem;
-  padding: 0.5rem 1rem;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background-color: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-glass);
   text-align: center;
+  color: var(--text);
+  line-height: 1.45;
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
 }
 
-/* When the puzzle is solved, the box has the accent colour. */
+/* Celebratory solved state with emerald glow */
 .status[data-solved="true"] {
-  border-color: var(--accent-border);
-  background-color: var(--accent-bg);
+  border-color: var(--green);
+  background-color: light-dark(rgba(22, 163, 74, 0.12), rgba(34, 197, 94, 0.22));
   color: var(--text-h);
-  font-weight: 600;
+  font-weight: 650;
+  box-shadow: 0 0 20px -3px light-dark(rgba(22, 163, 74, 0.35), rgba(34, 197, 94, 0.45));
 }
 
-/* A secondary button has a soft fill and no border. */
+/* Secondary button with tactile depth */
 .button {
   justify-self: center;
   min-height: 2.75rem;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1.375rem;
   border: 0;
   border-radius: var(--radius-md);
   background-color: var(--surface-muted);
   color: var(--text-h);
   font-weight: 600;
+  box-shadow: var(--shadow-key);
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .button:hover:enabled {
   background-color: var(--surface-muted-hover);
+  transform: translateY(-1px);
+}
+
+.button:active:enabled {
+  transform: translateY(1px);
 }
 
 .button:disabled {
   cursor: default;
-  opacity: 0.6;
+  opacity: 0.5;
+  box-shadow: none;
 }
 
-/* A secondary button with a box, for example the Hint button. The board uses both "button" and "boxed". */
+/* Boxed secondary button with frosted glass style */
 .boxed {
-  border: 1px solid var(--line);
+  border: 1px solid var(--border);
   background-color: var(--surface);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .boxed:hover:enabled {
   border-color: var(--accent);
   background-color: var(--surface);
+  color: var(--accent-text);
 }

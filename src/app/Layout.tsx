@@ -3,21 +3,28 @@ import { text } from "../text/en";
 import styles from "./Layout.module.css";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
-// The footer year comes from the date, so the text does not need a change each year.
-// It is read one time when the app loads, because a render must not read the clock.
+// Read the current year one time when the app loads.
 const currentYear = new Date().getFullYear();
 
+// This component provides the top navigation bar and the page footer.
 export function Layout() {
   return (
     <>
       <a className={styles.skipLink} href="#main">
         {text.skipLink}
       </a>
-      {/* The site name is the link to the home page, so the header needs no "Home" link. */}
       <header className={styles.header}>
-        <nav aria-label={text.nav.label}>
+        <nav aria-label={text.nav.label} className={styles.nav}>
           <Link className={styles.siteName} to="/">
-            {text.siteName}
+            <span className={styles.brandIcon} aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="2" width="9" height="9" rx="2.5" fill="var(--accent)" />
+                <rect x="13" y="2" width="9" height="9" rx="2.5" fill="var(--blue)" />
+                <rect x="2" y="13" width="9" height="9" rx="2.5" fill="var(--green)" />
+                <rect x="13" y="13" width="9" height="9" rx="2.5" fill="var(--yellow)" />
+              </svg>
+            </span>
+            <span>{text.siteName}</span>
           </Link>
         </nav>
         <ThemeSwitcher />

@@ -1,15 +1,26 @@
-/* The base and the states of a square are in "src/shared/Board.module.css".
-   This file sets only the colours. The board uses both "square" classes. */
+/* Colours and tactile details for Colour Binary squares */
+
 .square {
   --on-fill: var(--on-colour);
+}
+
+.square[data-colour="."] {
+  background-color: var(--surface-muted);
+  border-color: var(--border);
 }
 
 .square[data-colour="R"] {
   --fill: var(--red);
   --fill-edge: var(--red-edge);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    var(--shadow-sm);
 }
 
 .square[data-colour="B"] {
   --fill: var(--blue);
   --fill-edge: var(--blue-edge);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    var(--shadow-sm);
 }

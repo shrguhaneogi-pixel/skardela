@@ -1,3 +1,51 @@
 .main {
-  padding-block: 2rem;
+  padding-block: clamp(2rem, 5vw, 4rem);
+}
+
+.card {
+  max-width: 32rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background-color: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  text-align: center;
+  display: grid;
+  gap: 1.25rem;
+  justify-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+}
+
+.body {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-md);
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.link:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
