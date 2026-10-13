@@ -1,0 +1,42 @@
+# This workflow runs tests and deploys Skardela to Netlify production on push to main.
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Netlify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Run formatting, linting, typechecking, tests, and production build checks.
+      - name: Run test gate and validation checks
+        run: npm run check
+
+      # Reminder: Set NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID in GitHub Repository Secrets (Settings -> Secrets and variables -> Actions).
+      - name: Deploy to Netlify production
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: npx --yes netlify-cli deploy --prod --dir=dist
