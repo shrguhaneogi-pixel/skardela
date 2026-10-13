@@ -83,11 +83,11 @@ Apple-inspired glassmorphism provides:
   - `--accent-bg`: Subdued translucent accent fill.
   - `--accent-border`: Subtle accent stroke.
 - **Puzzle Colors & WCAG 2.1 AA Compliance:**
-  - `--red`: `#dc2626` (light) / `#ef4444` (dark).
-  - `--blue`: `#2563eb` (light) / `#3b82f6` (dark).
-  - `--green`: `#16a34a` (light) / `#22c55e` (dark).
-  - `--yellow`: `#eab308` (light) / `#facc15` (dark).
-  - All text colors on filled squares exceed 4.5:1 contrast against their backgrounds.
+  - `--red`: `#d93829` (white text contrast: 4.62:1, exceeds 4.5:1 AA target).
+  - `--blue`: `#2563eb` (white text contrast: 5.17:1, exceeds 4.5:1 AA target).
+  - `--green`: `#15803d` (white text contrast: 5.02:1, exceeds 4.5:1 AA target).
+  - `--yellow`: `#eab308` with `--on-yellow: #111827` (text contrast: 9.25:1, exceeds 4.5:1 AA target).
+  - All text colors on filled squares strictly exceed the 4.5:1 WCAG 2.1 AA minimum contrast requirement.
 - **Elevation & Shadows:**
   - `--shadow-glass`: Frosted glass soft shadow with ambient diffusion.
   - `--shadow-key`: Tactile button shadow for interactive controls.

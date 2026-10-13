@@ -26,6 +26,7 @@ export const text = {
   home: {
     title: "Today's puzzles",
     intro: "New puzzles each day. They are free. You do not need an account or a download.",
+    edition: "Daily edition",
     puzzleTypesHeading: "Puzzle types",
     levelsHeading: (puzzleTypeName: string) => `Today's ${puzzleTypeName}`,
   },
@@ -43,6 +44,7 @@ export const text = {
   },
   "colour-binary": {
     name: "Colour Binary",
+    tag: "Logic puzzle",
     summary: "Make each square red or blue. Each line has half of each colour.",
     rules: [
       "Make each square red or blue.",
@@ -79,6 +81,8 @@ export const text = {
   },
   guzzle: {
     name: "Guzzle",
+    tag: "Word puzzle",
+    sampleCenter: "A",
     summary: "Find four words that cross at the center letter. Make the fewest mistakes.",
     rules: [
       "Four words cross at the center letter: across, down and two diagonals.",

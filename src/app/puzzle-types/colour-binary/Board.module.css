@@ -12,14 +12,16 @@
 .square[data-colour="R"] {
   --fill: var(--red);
   --fill-edge: var(--red-edge);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    var(--shadow-sm);
 }
 
 .square[data-colour="B"] {
   --fill: var(--blue);
   --fill-edge: var(--blue-edge);
+}
+
+/* Player squares get a top highlight. Fixed clues preserve their inner ring. */
+.square[data-colour="R"]:not([data-fixed="true"]),
+.square[data-colour="B"]:not([data-fixed="true"]) {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     var(--shadow-sm);
