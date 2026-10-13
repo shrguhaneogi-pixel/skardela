@@ -7,59 +7,91 @@
 }
 
 :root {
-  /* Each colour has a light value and a dark value: light-dark(light, dark).
-     The browser selects the value from "color-scheme". The theme switcher changes "color-scheme". */
-  --text: light-dark(#59524c, #a8a29e);
-  --text-muted: light-dark(#736a63, #9a918a);
-  --text-h: light-dark(#1f1b18, #fafaf9);
-  --bg: light-dark(#fdfbf7, #151413);
-  --surface: light-dark(#ffffff, #1c1a17);
-  --border: light-dark(#e6dfd5, #2a2724);
-  --line: light-dark(#8f8780, #7a716a);
-  /* A soft fill for secondary buttons and code. Hover makes it a little darker. */
-  --surface-muted: light-dark(#f1ebdf, #26231f);
-  --surface-muted-hover: light-dark(#e6dfd5, #322e29);
-  /* The light accent is dark enough for white text (5.2:1). */
+  /* Each colour token uses light-dark(light, dark).
+     The browser reads the value from "color-scheme".
+     The theme switcher sets "data-theme" on the root element. */
+
+  /* Surface and background tokens */
+  --bg: light-dark(#f8f9fa, #0d0f14);
+  --bg-radial-1: light-dark(rgba(240, 243, 250, 0.9), rgba(28, 33, 48, 0.45));
+  --surface: light-dark(rgba(255, 255, 255, 0.85), rgba(20, 24, 33, 0.85));
+  --surface-elevated: light-dark(#ffffff, #161b26);
+  --surface-muted: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.07));
+  --surface-muted-hover: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12));
+  --surface-card: light-dark(rgba(255, 255, 255, 0.75), rgba(22, 27, 38, 0.75));
+
+  /* Border and line tokens */
+  --border: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.1));
+  --border-subtle: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+  --line: light-dark(rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.22));
+  --glass-highlight: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.14));
+
+  /* Text tokens with WCAG 2.1 AA contrast */
+  --text: light-dark(#374151, #d1d5db);
+  --text-muted: light-dark(#5f6775, #9ca3af);
+  --text-h: light-dark(#0f172a, #f8fafc);
+
+  /* Primary accent tokens */
   --accent: light-dark(#c2410c, #fb923c);
   --accent-hover: light-dark(#9a3412, #fdba74);
   --accent-text: light-dark(#c2410c, #fb923c);
-  --on-accent: light-dark(#ffffff, #151413);
+  --on-accent: light-dark(#ffffff, #0d0f14);
   --accent-bg: light-dark(rgba(194, 65, 12, 0.08), rgba(251, 146, 60, 0.15));
-  --accent-border: light-dark(rgba(194, 65, 12, 0.4), rgba(251, 146, 60, 0.5));
-  --shadow-sm: 0 1px 2px light-dark(rgba(45, 30, 15, 0.05), rgba(0, 0, 0, 0.3));
-  --shadow-md:
-    0 4px 6px -1px light-dark(rgba(45, 30, 15, 0.07), rgba(0, 0, 0, 0.4)),
-    0 2px 4px -2px light-dark(rgba(45, 30, 15, 0.05), rgba(0, 0, 0, 0.3));
-  --shadow-lg:
-    0 10px 15px -3px light-dark(rgba(45, 30, 15, 0.08), rgba(0, 0, 0, 0.5)),
-    0 4px 6px -4px light-dark(rgba(45, 30, 15, 0.04), rgba(0, 0, 0, 0.3));
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --accent-border: light-dark(rgba(194, 65, 12, 0.35), rgba(251, 146, 60, 0.45));
 
-  --red: #c8322c;
-  --blue: #2f6fdc;
+  /* Elevation and shadow tokens */
+  --shadow-sm: 0 1px 2px light-dark(rgba(15, 23, 42, 0.04), rgba(0, 0, 0, 0.25));
+  --shadow-md:
+    0 4px 12px -2px light-dark(rgba(15, 23, 42, 0.06), rgba(0, 0, 0, 0.35)),
+    0 2px 4px -1px light-dark(rgba(15, 23, 42, 0.04), rgba(0, 0, 0, 0.2));
+  --shadow-lg:
+    0 12px 24px -4px light-dark(rgba(15, 23, 42, 0.08), rgba(0, 0, 0, 0.45)),
+    0 4px 8px -2px light-dark(rgba(15, 23, 42, 0.04), rgba(0, 0, 0, 0.25));
+  --shadow-glass:
+    0 8px 24px -4px light-dark(rgba(15, 23, 42, 0.06), rgba(0, 0, 0, 0.4)),
+    inset 0 1px 0 var(--glass-highlight);
+  --shadow-key:
+    0 2px 0 light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.35)),
+    0 2px 4px light-dark(rgba(15, 23, 42, 0.05), rgba(0, 0, 0, 0.2));
+
+  /* Border radius tokens */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Puzzle square tokens */
+  --red: #d93829;
+  --blue: #2563eb;
   --on-colour: #ffffff;
-  /* The guzzle squares use green and yellow. Yellow needs dark text for contrast. */
-  --green: #2e7d32;
-  --yellow: #f2c037;
-  --on-yellow: #1f1b18;
-  /* A darker edge for each square colour. It keeps the square clear on a light page. */
+  --green: #16a34a;
+  --yellow: #eab308;
+  --on-yellow: #111827;
+
+  /* Edge borders for puzzle squares */
   --red-edge: color-mix(in srgb, var(--red) 75%, #000000);
   --blue-edge: color-mix(in srgb, var(--blue) 75%, #000000);
   --green-edge: color-mix(in srgb, var(--green) 75%, #000000);
   --yellow-edge: color-mix(in srgb, var(--yellow) 70%, #000000);
-  /* The ring for a selected square, a hint and the keyboard focus on a board.
-     It has high contrast on the page and is not one of the square colours, so it shows on each square. */
+
+  /* High-contrast ring for selection, focus, and hints */
   --ring: var(--text-h);
 
-  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Typography stacks */
+  --sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   color-scheme: light dark;
 }
 
-/* The theme switcher sets "data-theme" on <html>. Without it, the app uses the system theme. */
+/* The theme switcher sets "data-theme" on <html>.
+   Without "data-theme", the browser uses the system theme. */
 :root[data-theme="light"] {
   color-scheme: light;
 }
@@ -80,9 +112,13 @@ body {
   font-family: var(--sans);
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   line-height: 1.55;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--text);
   background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, var(--bg-radial-1), transparent),
+    radial-gradient(ellipse 60% 40% at 85% 100%, var(--accent-bg), transparent);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -132,20 +168,21 @@ h2,
 h3,
 h4 {
   color: var(--text-h);
-  font-weight: 600;
+  font-weight: 650;
   line-height: 1.2;
   text-wrap: balance;
+  letter-spacing: -0.025em;
 }
 
 h1 {
   font-size: clamp(2rem, 4vw + 1rem, 3.25rem);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   margin-block: clamp(1.25rem, 3vw, 2rem);
 }
 
 h2 {
   font-size: clamp(1.25rem, 2vw + 0.75rem, 1.5rem);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
 }
 
