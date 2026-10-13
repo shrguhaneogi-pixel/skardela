@@ -9,7 +9,7 @@ import type { PuzzleMap, PuzzleType } from "../puzzle-types/registry";
 import { NotFoundPage } from "./NotFoundPage";
 import styles from "./PuzzlePage.module.css";
 
-// This shows the board of the puzzle type. The type of "puzzle" always fits the board.
+// This shows the board of the puzzle type.
 function PuzzleBoard<Type extends PuzzleType>({
   type,
   puzzle,
@@ -21,6 +21,7 @@ function PuzzleBoard<Type extends PuzzleType>({
   return <Board puzzle={puzzle} />;
 }
 
+// This page shows the active puzzle board and the rule instructions.
 export function PuzzlePage() {
   const loaded = useLoaderData<typeof puzzleLoader>();
   if (!loaded) return <NotFoundPage />;
@@ -41,12 +42,17 @@ export function PuzzlePage() {
         </ul>
       </header>
 
-      {/* The board comes first, so a small screen shows the board without scrolling.
-          On a wide screen, the CSS puts the rules on the left. */}
       <div className={styles.layout}>
         <div className={styles.play}>
-          <ErrorBoundary key={puzzle.id} fallback={<p role="alert">{page.boardError}</p>}>
-            <Suspense fallback={<p>{page.loadingBoard}</p>}>
+          <ErrorBoundary
+            key={puzzle.id}
+            fallback={
+              <p role="alert" className={styles.error}>
+                {page.boardError}
+              </p>
+            }
+          >
+            <Suspense fallback={<p className={styles.loading}>{page.loadingBoard}</p>}>
               <PuzzleBoard type={loaded.type} puzzle={loaded.puzzle} />
             </Suspense>
           </ErrorBoundary>
