@@ -10,8 +10,8 @@ This document tracks the implementation, verification, and commit history for al
 | 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED   | Pending     |
 | 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | Pending     |
 | 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | Pending     |
-| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | IN PROGRESS | Pending     |
-| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | PLANNED     | Pending     |
+| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | Pending     |
+| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | IN PROGRESS | Pending     |
 | 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | PLANNED     | Pending     |
 | 8     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | PLANNED     | Pending     |
 | 9     | IMPROVEMENT 03 | Instant Resume State Engine                | PLANNED     | Pending     |
@@ -70,4 +70,12 @@ This document tracks the implementation, verification, and commit history for al
   - `src/app/daily.test.ts` (unit tests covering UTC dates, leap-year day calculations, negative-modulo pool rotation, and challenge identity integrity)
 - **Summary:** Built deterministic canonical identifiers for official daily challenges along with lightweight checksum verification codes. Puzzles remain spoiler-free and verifiable without external cryptographic servers.
 - **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/app/daily.test.ts`. 7 unit tests passed. 0 lint warnings/errors.
+
+### Entry 14: Daily Content Integrity Check
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `tools/daily-integrity.test.ts` (suite validating 365 days of continuous puzzle rotation, pool exhaustion prevention, leap year boundaries, and midnight UTC stability)
+- **Summary:** Added multi-year automated daily content integrity verification in the CI validation pipeline, ensuring no missing puzzle IDs, no difficulty gaps, and deterministic historical rotation.
+- **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run validate`. 9 tests passed. 0 lint warnings/errors.
 
