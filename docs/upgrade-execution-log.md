@@ -11,8 +11,8 @@ This document tracks the implementation, verification, and commit history for al
 | 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | Pending     |
 | 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | Pending     |
 | 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | Pending     |
-| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | IN PROGRESS | Pending     |
-| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | PLANNED     | Pending     |
+| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED   | Pending     |
+| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | IN PROGRESS | Pending     |
 | 8     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | PLANNED     | Pending     |
 | 9     | IMPROVEMENT 03 | Instant Resume State Engine                | PLANNED     | Pending     |
 | 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | PLANNED     | Pending     |
@@ -78,4 +78,13 @@ This document tracks the implementation, verification, and commit history for al
   - `tools/daily-integrity.test.ts` (suite validating 365 days of continuous puzzle rotation, pool exhaustion prevention, leap year boundaries, and midnight UTC stability)
 - **Summary:** Added multi-year automated daily content integrity verification in the CI validation pipeline, ensuring no missing puzzle IDs, no difficulty gaps, and deterministic historical rotation.
 - **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run validate`. 9 tests passed. 0 lint warnings/errors.
+
+### Entry 11: Solver-Verified Puzzle Workshop
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/puzzle-validator.ts` (universal puzzle quality validator verifying schema, rule adherence, answer consistency, and single-solution solver uniqueness)
+  - `src/shared/puzzle-validator.test.ts` (unit tests covering valid examples, ambiguous multiple-solution detection, mismatched answers, and invalid characters)
+- **Summary:** Built a deterministic solver-backed validator for both Colour Binary and Guzzle puzzle types, providing actionable error diagnostics and preventing malformed or ambiguous puzzles from reaching players.
+- **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/puzzle-validator.test.ts`. 6 unit tests passed. 0 lint warnings/errors.
 
