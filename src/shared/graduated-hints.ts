@@ -5,6 +5,12 @@ import { text } from "../text/en";
 // ASD-STE100 Simplified Technical English comments.
 // This module provides graduated hints with three levels: nudge, explanation, and solution.
 
+export {
+  explainColourBinaryLogic,
+  explainGuzzleLogic,
+  type LogicExplanation,
+} from "./logic-explainer";
+
 export type HintTier = "nudge" | "explanation" | "solution";
 
 export type GraduatedHint = {

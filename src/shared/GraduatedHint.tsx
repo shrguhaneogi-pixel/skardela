@@ -10,6 +10,8 @@ import {
 // ASD-STE100 Simplified Technical English comments.
 // This component shows graduated hints with tier progression controls.
 
+export { LogicExplanationModal } from "./LogicExplanation";
+
 const TIERS: readonly HintTier[] = ["nudge", "explanation", "solution"];
 
 function TierList({ activeTier }: { activeTier: HintTier }) {

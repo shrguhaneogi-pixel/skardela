@@ -84,6 +84,22 @@
   background-color: color-mix(in srgb, var(--accent-bg) 20%, transparent);
 }
 
+/* Logic premise cues: evidence cells highlighted with amber ring */
+.square[data-logic-premise="true"] {
+  outline: 2px dashed var(--yellow);
+  outline-offset: 2px;
+  z-index: 2;
+  box-shadow: 0 0 10px -2px color-mix(in srgb, var(--yellow) 40%, transparent);
+}
+
+/* Logic deduction target cue: pulse ring */
+.square[data-logic-target="true"] {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  z-index: 3;
+  animation: hint-glow 1.4s ease-in-out infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .square[data-hint="true"] {
     animation: none;
@@ -152,6 +168,13 @@
   font-size: 0.875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+.actionsRow {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* Secondary button with tactile depth */

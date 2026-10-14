@@ -15,8 +15,8 @@ This document tracks the implementation, verification, and commit history for al
 | 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED | 24f1ff8     |
 | 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED | 448aaa2     |
 | 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | COMMITTED | 4971448     |
-| 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | COMMITTED | Pending     |
-| 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | PLANNED   | Pending     |
+| 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | COMMITTED | 4a2e763     |
+| 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | COMMITTED | Pending     |
 | 12    | IMPROVEMENT 13 | Context-Aware Help System                  | PLANNED   | Pending     |
 | 13    | IMPROVEMENT 05 | Meaningful Completion Review               | PLANNED   | Pending     |
 | 14    | IMPROVEMENT 09 | Spoiler-Free Puzzle Postcards              | PLANNED   | Pending     |
@@ -138,4 +138,24 @@ This document tracks the implementation, verification, and commit history for al
   - `src/shared/Board.module.css` (tactile styling for logic highlight cues and mistakes badge)
 - **Summary:** Delivered universal graduated hints across all puzzle types. Players can escalate hints gradually through three distinct tiers: Nudge (where to look), Explanation (which constraint applies), and Next Step (the concrete move).
 - **Verification:** Ran `npm run fix && npm run check`. All 18 test suites (82 unit tests) and 2 validation suites (9 validation tests) passed. 0 linter warnings or errors.
+
+### Entry 06: Show Me the Logic Explanation Engine
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/logic-explainer.ts` (structured logic deduction models, premise cell extraction, and rule step generation)
+  - `src/shared/logic-explainer.test.ts` (unit tests verifying deduction rules, steps, premises, and complete board handling)
+  - `src/shared/LogicExplanation.tsx` (accessible glass modal showing premises, rules, and numbered proof steps)
+  - `src/shared/LogicExplanation.module.css` (tactile glass styling, premise badges, and responsive modal layout)
+  - `src/shared/Board.module.css` (visual cues for logic target pulse and amber dashed premise highlights)
+  - `src/shared/GraduatedHint.tsx` (re-exporting logic modal component)
+  - `src/shared/graduated-hints.ts` (re-exporting logic explainer generators and types)
+  - `src/app/puzzle-types/colour-binary/Grid.tsx` (data-logic-target and data-logic-premise cue bindings)
+  - `src/app/puzzle-types/colour-binary/Board.tsx` (logic explanation modal trigger and cue management)
+  - `src/app/puzzle-types/colour-binary/Board.test.tsx` (unit tests for opening and closing logic explanation)
+  - `src/app/puzzle-types/guzzle/Grid.tsx` (logic target and premise cue support)
+  - `src/app/puzzle-types/guzzle/Board.tsx` (integrated Show Me the Logic modal and actions)
+  - `src/text/en.ts` (localized text strings for logic explanation headings, rules, and steps)
+- **Summary:** Implemented the "Show Me the Logic" deduction explanation engine. Explains the exact premises and logical deductions that force a move, visually illuminating the premise evidence cells and target cells on the board.
+- **Verification:** Ran `npm run fix && npm run check`. All 19 test suites (87 unit tests) and 2 validation suites (9 validation tests) passed. 0 linter warnings or errors.
 

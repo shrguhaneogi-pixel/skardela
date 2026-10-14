@@ -1,6 +1,7 @@
 import shared from "../../../shared/Board.module.css";
 import type { GraduatedHint } from "../../../shared/graduated-hints";
 import { gridStyle } from "../../../shared/grid";
+import type { LogicExplanation } from "../../../shared/logic-explainer";
 import { text } from "../../../text/en";
 import styles from "./Board.module.css";
 import type { Square } from "./puzzle";
@@ -17,6 +18,8 @@ type SquareProps = {
   isFixed: boolean;
   isHint: boolean;
   isHighlighted: boolean;
+  isLogicTarget: boolean;
+  isLogicPremise: boolean;
   isSolved: boolean;
   onTap: () => void;
 };
@@ -29,6 +32,8 @@ function SquareButton({
   isFixed,
   isHint,
   isHighlighted,
+  isLogicTarget,
+  isLogicPremise,
   isSolved,
   onTap,
 }: SquareProps) {
@@ -46,6 +51,8 @@ function SquareButton({
       data-fixed={isFixed}
       data-hint={isHint}
       data-highlight={isHighlighted}
+      data-logic-target={isLogicTarget}
+      data-logic-premise={isLogicPremise}
       aria-label={label}
       aria-disabled={isFixed || isSolved}
       onClick={() => {
@@ -62,12 +69,21 @@ type GridProps = {
   squares: Square[];
   start: Square[];
   hint: GraduatedHint | undefined | null;
+  logicExplanation?: LogicExplanation | null;
   isSolved: boolean;
   onTapSquare: (square: Square, index: number) => void;
 };
 
 // The grid shows all square buttons in rows and columns.
-export function BoardGrid({ size, squares, start, hint, isSolved, onTapSquare }: GridProps) {
+export function BoardGrid({
+  size,
+  squares,
+  start,
+  hint,
+  logicExplanation,
+  isSolved,
+  onTapSquare,
+}: GridProps) {
   return (
     <fieldset className={shared.board}>
       <legend className="visually-hidden">{words.boardLabel}</legend>
@@ -82,6 +98,8 @@ export function BoardGrid({ size, squares, start, hint, isSolved, onTapSquare }:
             isFixed={start[index] !== "."}
             isHint={hint?.index === index}
             isHighlighted={Boolean(hint?.highlightIndices.includes(index) && hint.index !== index)}
+            isLogicTarget={logicExplanation?.targetIndex === index}
+            isLogicPremise={Boolean(logicExplanation?.premises.some((p) => p.index === index))}
             isSolved={isSolved}
             onTap={() => onTapSquare(square, index)}
           />

@@ -18,12 +18,12 @@ describe("graduated-hints engine", () => {
 
   it("builds a graduated hint for colour binary starting at nudge", () => {
     const squares = toCbSquares(cbExample.start);
-    const hint = createColourBinaryHint(squares, 6, "nudge");
+    const hint = createColourBinaryHint(squares, cbExample.start.length, "nudge");
     expect(hint).toBeDefined();
 
     expect(hint?.tier).toBe("nudge");
     expect(hint?.index).toBe(1);
-    expect(hint?.highlightIndices.length).toBe(6);
+    expect(hint?.highlightIndices.length).toBe(cbExample.start.length);
     expect(getHintTierText(hint!, "nudge")).toContain("Row 1, column 2: Column 2");
     expect(getHintTierText(hint!, "explanation")).toContain("already has half");
     expect(getHintTierText(hint!, "solution")).toContain("Thus this square is blue.");
@@ -31,7 +31,7 @@ describe("graduated-hints engine", () => {
 
   it("returns undefined for solved colour binary puzzle", () => {
     const solved = toCbSquares(cbExample.answer);
-    const hint = createColourBinaryHint(solved, 6);
+    const hint = createColourBinaryHint(solved, cbExample.answer.length);
     expect(hint).toBeUndefined();
   });
 

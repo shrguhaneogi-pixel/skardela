@@ -74,6 +74,18 @@ describe("colour-binary board hints and status", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Thus this square is blue.");
   });
 
+  it("opens logic explanation modal with deduction steps and highlights cues", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: text.logicExplanation.button }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toHaveTextContent(text.logicExplanation.title);
+    expect(square(1, 2)).toHaveAttribute("data-logic-target", "true");
+
+    await user.click(screen.getByRole("button", { name: text.logicExplanation.close }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("shows that the puzzle is solved", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);

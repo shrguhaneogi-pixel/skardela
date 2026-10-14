@@ -3,11 +3,14 @@ import shared from "../../../shared/Board.module.css";
 import {
   advanceTier,
   createColourBinaryHint,
+  explainColourBinaryLogic,
   getHintTierText,
   type GraduatedHint as GraduatedHintType,
   type HintTier,
+  type LogicExplanation,
 } from "../../../shared/graduated-hints";
 import { GraduatedHint } from "../../../shared/GraduatedHint";
+import { LogicExplanationModal } from "../../../shared/LogicExplanation";
 import { getLogger } from "../../../shared/logger";
 import {
   loadPuzzleProgress,
@@ -16,8 +19,7 @@ import {
 } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
 import { BoardGrid } from "./Grid";
-import { toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
-import { nextSquare, obeysRules } from "./rules-check";
+import { nextSquare, obeysRules, toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
 
 const words = text["colour-binary"];
 
@@ -41,21 +43,56 @@ type BoardViewProps = {
   squares: Square[];
   start: Square[];
   hint: GraduatedHintType | undefined | null;
+  logicExplanation: LogicExplanation | null;
   isSolved: boolean;
   onTapSquare: (square: Square, index: number) => void;
   onHintRequest: () => void;
+  onShowLogic: () => void;
+  onCloseLogic: () => void;
   onTierChange: (tier: HintTier) => void;
   onDismissHint: () => void;
 };
+
+type ActionProps = {
+  isSolved: boolean;
+  onHintRequest: () => void;
+  onShowLogic: () => void;
+};
+
+function BoardActions({ isSolved, onHintRequest, onShowLogic }: ActionProps) {
+  return (
+    <div className={shared.actionsRow}>
+      <button
+        type="button"
+        className={`${shared.button} ${shared.boxed}`}
+        disabled={isSolved}
+        onClick={onHintRequest}
+      >
+        {words.hintButton}
+      </button>
+      <button
+        type="button"
+        className={`${shared.button} ${shared.boxed}`}
+        disabled={isSolved}
+        onClick={onShowLogic}
+      >
+        {text.logicExplanation.button}
+      </button>
+    </div>
+  );
+}
 
 function BoardView({
   size,
   squares,
   start,
   hint,
+  logicExplanation,
   isSolved,
   onTapSquare,
   onHintRequest,
+  onShowLogic,
+  onCloseLogic,
   onTierChange,
   onDismissHint,
 }: BoardViewProps) {
@@ -66,6 +103,7 @@ function BoardView({
         squares={squares}
         start={start}
         hint={hint}
+        logicExplanation={logicExplanation}
         isSolved={isSolved}
         onTapSquare={onTapSquare}
       />
@@ -73,14 +111,10 @@ function BoardView({
         {statusText(isSolved, hint)}
       </output>
       {hint && <GraduatedHint hint={hint} onTierChange={onTierChange} onDismiss={onDismissHint} />}
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        disabled={isSolved}
-        onClick={onHintRequest}
-      >
-        {words.hintButton}
-      </button>
+      <BoardActions isSolved={isSolved} onHintRequest={onHintRequest} onShowLogic={onShowLogic} />
+      {logicExplanation && (
+        <LogicExplanationModal explanation={logicExplanation} onClose={onCloseLogic} />
+      )}
     </div>
   );
 }
@@ -143,7 +177,7 @@ function useSolvedSync(
   }, [isSolved, puzzle.difficulty, puzzle.id, puzzle.type, hintCountRef]);
 }
 
-function useHintState(
+function useBoardLogic(
   squares: Square[],
   size: number,
   meta: LogMeta,
@@ -151,6 +185,7 @@ function useHintState(
   hintCountRef: { current: number },
 ) {
   const [hint, setHint] = useState<GraduatedHintType | undefined | null>(null);
+  const [logicExplanation, setLogicExplanation] = useState<LogicExplanation | null>(null);
 
   function requestHint() {
     if (hint) {
@@ -159,20 +194,24 @@ function useHintState(
     }
     hintCountRef.current += 1;
     const nextHint = createColourBinaryHint(squares, size, "nudge");
-    log.info("Hint requested", {
-      ...meta,
-      foundHint: nextHint !== undefined,
-      hintIndex: nextHint?.index,
-    });
+    log.info("Hint requested", { ...meta, foundHint: nextHint !== undefined });
     setHint(nextHint);
   }
 
-  function changeTier(tier: HintTier) {
-    if (!hint) return;
-    setHint({ ...hint, tier });
+  function showLogic() {
+    const explanation = explainColourBinaryLogic(squares, size);
+    log.info("Logic explanation requested", { ...meta, found: explanation !== undefined });
+    setLogicExplanation(explanation ?? null);
   }
 
-  return { hint, setHint, requestHint, changeTier };
+  return {
+    hint,
+    setHint,
+    logicExplanation,
+    setLogicExplanation,
+    requestHint,
+    showLogic,
+  };
 }
 
 // The board keeps the start layout and the current player state in one place.
@@ -190,13 +229,8 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
   };
   useLifecycleLog(log, meta, size, isSolved);
   useSolvedSync(puzzle, isSolved, hintCountRef);
-  const { hint, setHint, requestHint, changeTier } = useHintState(
-    squares,
-    size,
-    meta,
-    log,
-    hintCountRef,
-  );
+  const { hint, setHint, logicExplanation, setLogicExplanation, requestHint, showLogic } =
+    useBoardLogic(squares, size, meta, log, hintCountRef);
 
   function onTapSquare(square: Square, index: number) {
     const next = nextSquare[square];
@@ -204,6 +238,7 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
     const nextSquares = squares.with(index, next);
     setSquares(nextSquares);
     setHint(null);
+    setLogicExplanation(null);
     saveColourBinaryStep(puzzle, nextSquares, hintCountRef.current);
   }
 
@@ -213,10 +248,13 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
       squares={squares}
       start={start}
       hint={hint}
+      logicExplanation={logicExplanation}
       isSolved={isSolved}
       onTapSquare={onTapSquare}
       onHintRequest={requestHint}
-      onTierChange={changeTier}
+      onShowLogic={showLogic}
+      onCloseLogic={() => setLogicExplanation(null)}
+      onTierChange={(tier) => (hint ? setHint({ ...hint, tier }) : undefined)}
       onDismissHint={() => setHint(null)}
     />
   );

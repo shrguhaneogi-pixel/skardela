@@ -167,6 +167,27 @@ export const text = {
     dismiss: "Hide hint",
     noHintAvailable: "No hints available",
   },
+  logicExplanation: {
+    button: "Show me the logic",
+    title: "Logic explanation",
+    close: "Close explanation",
+    premisesHeading: "Given clues",
+    stepsHeading: "Deduction steps",
+    conclusionHeading: "Conclusion",
+    colourBinary: {
+      halfRule: "Equal colour balance",
+      threeRule: "No three in a row",
+      halfSummary: (line: string, count: number, colour: string) =>
+        `${line} requires exactly ${count} ${colour} squares.`,
+      threeSummary: (line: string, colour: string) =>
+        `Three adjacent ${colour} squares are not allowed in ${line}.`,
+    },
+    guzzle: {
+      intersectionRule: "Word intersection",
+      intersectionSummary: (row: number, column: number) =>
+        `Square at row ${row}, column ${column} belongs to intersecting words.`,
+    },
+  },
   notFound: {
     title: "Page Not Found",
     body: "The page you are looking for does not exist.",

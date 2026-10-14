@@ -2,6 +2,7 @@ import type { Difficulty } from "../../../shared/difficulty";
 import type { PuzzleBase } from "../../../shared/puzzle";
 
 export type Square = "R" | "B" | ".";
+export { nextSquare, obeysRules } from "./rules-check";
 
 export type ColourBinaryPuzzle = PuzzleBase & {
   readonly type: "colour-binary";

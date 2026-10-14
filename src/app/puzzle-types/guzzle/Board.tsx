@@ -3,9 +3,12 @@ import shared from "../../../shared/Board.module.css";
 import {
   advanceTier,
   createGuzzleHint,
+  explainGuzzleLogic,
   type GraduatedHint as GraduatedHintType,
+  type HintTier,
+  type LogicExplanation,
 } from "../../../shared/graduated-hints";
-import { GraduatedHint } from "../../../shared/GraduatedHint";
+import { GraduatedHint, LogicExplanationModal } from "../../../shared/GraduatedHint";
 import { getLogger } from "../../../shared/logger";
 import { text } from "../../../text/en";
 import { Controls } from "./Controls";
@@ -53,8 +56,9 @@ function useLifecycleLog(
   }, [isSolved, log, meta, mistakes]);
 }
 
-function useGuzzleHint(answer: readonly string[], game: Game, size: number) {
+function useGuzzleBoardLogic(answer: readonly string[], game: Game, size: number) {
   const [hint, setHint] = useState<GraduatedHintType | null>(null);
+  const [logicExplanation, setLogicExplanation] = useState<LogicExplanation | null>(null);
 
   function handleHintRequest() {
     if (hint) {
@@ -65,7 +69,102 @@ function useGuzzleHint(answer: readonly string[], game: Game, size: number) {
     setHint(nextHint ?? null);
   }
 
-  return { hint, setHint, handleHintRequest };
+  function handleShowLogic() {
+    const explanation = explainGuzzleLogic(answer, game.guesses, size, game.selected);
+    setLogicExplanation(explanation ?? null);
+  }
+
+  return {
+    hint,
+    setHint,
+    logicExplanation,
+    setLogicExplanation,
+    handleHintRequest,
+    handleShowLogic,
+  };
+}
+
+type ActionProps = {
+  hasMode: boolean;
+  isSolved: boolean;
+  onRequestHint: () => void;
+  onShowLogic: () => void;
+};
+
+function BoardActions({ hasMode, isSolved, onRequestHint, onShowLogic }: ActionProps) {
+  if (!hasMode) return null;
+  return (
+    <div className={shared.actionsRow}>
+      <button
+        type="button"
+        className={`${shared.button} ${shared.boxed}`}
+        disabled={isSolved}
+        onClick={onRequestHint}
+      >
+        {words.hintButton}
+      </button>
+      <button
+        type="button"
+        className={`${shared.button} ${shared.boxed}`}
+        disabled={isSolved}
+        onClick={onShowLogic}
+      >
+        {text.logicExplanation.button}
+      </button>
+    </div>
+  );
+}
+
+type ViewProps = {
+  answer: readonly string[];
+  size: number;
+  game: Game;
+  hint: GraduatedHintType | null;
+  logicExplanation: LogicExplanation | null;
+  onHintRequest: () => void;
+  onShowLogic: () => void;
+  onTierChange: (tier: HintTier) => void;
+  onDismissHint: () => void;
+  onCloseLogic: () => void;
+};
+
+function GuzzleBoardView(props: ViewProps) {
+  const { answer, size, game, hint, logicExplanation } = props;
+  return (
+    <div className={shared.game}>
+      <fieldset className={shared.board}>
+        <legend className="visually-hidden">{words.boardLabel}</legend>
+        <Grid
+          answer={answer}
+          size={size}
+          game={game}
+          hint={hint}
+          logicExplanation={logicExplanation}
+        />
+      </fieldset>
+      <output className={shared.mistakes}>{words.mistakes(game.mistakes)}</output>
+      <output className={shared.status} data-solved={game.isSolved}>
+        {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
+      </output>
+      {hint && (
+        <GraduatedHint
+          hint={hint}
+          onTierChange={props.onTierChange}
+          onDismiss={props.onDismissHint}
+        />
+      )}
+      <BoardActions
+        hasMode={game.mode !== null}
+        isSolved={game.isSolved}
+        onRequestHint={props.onHintRequest}
+        onShowLogic={props.onShowLogic}
+      />
+      {logicExplanation && (
+        <LogicExplanationModal explanation={logicExplanation} onClose={props.onCloseLogic} />
+      )}
+      <Controls answer={answer} game={game} />
+    </div>
+  );
 }
 
 // ASD-STE100 Simplified Technical English comments.
@@ -80,42 +179,28 @@ export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
     difficulty: puzzle.difficulty,
   };
   const game = useGame(answer, size, createHooks(log, meta), puzzle.id);
-  const { hint, setHint, handleHintRequest } = useGuzzleHint(answer, game, size);
+  const {
+    hint,
+    setHint,
+    logicExplanation,
+    setLogicExplanation,
+    handleHintRequest,
+    handleShowLogic,
+  } = useGuzzleBoardLogic(answer, game, size);
   useLifecycleLog(log, meta, size, game.isSolved, game.mistakes);
 
   return (
-    <div className={shared.game}>
-      <fieldset className={shared.board}>
-        <legend className="visually-hidden">{words.boardLabel}</legend>
-        <Grid answer={answer} size={size} game={game} hint={hint} />
-      </fieldset>
-
-      <output className={shared.mistakes}>{words.mistakes(game.mistakes)}</output>
-
-      <output className={shared.status} data-solved={game.isSolved}>
-        {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
-      </output>
-
-      {hint && (
-        <GraduatedHint
-          hint={hint}
-          onTierChange={(tier) => setHint({ ...hint, tier })}
-          onDismiss={() => setHint(null)}
-        />
-      )}
-
-      {game.mode !== null && (
-        <button
-          type="button"
-          className={`${shared.button} ${shared.boxed}`}
-          disabled={game.isSolved}
-          onClick={handleHintRequest}
-        >
-          {words.hintButton}
-        </button>
-      )}
-
-      <Controls answer={answer} game={game} />
-    </div>
+    <GuzzleBoardView
+      answer={answer}
+      size={size}
+      game={game}
+      hint={hint}
+      logicExplanation={logicExplanation}
+      onHintRequest={handleHintRequest}
+      onShowLogic={handleShowLogic}
+      onTierChange={(tier) => (hint ? setHint({ ...hint, tier }) : undefined)}
+      onDismissHint={() => setHint(null)}
+      onCloseLogic={() => setLogicExplanation(null)}
+    />
   );
 }
