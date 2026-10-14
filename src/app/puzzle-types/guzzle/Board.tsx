@@ -1,13 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import shared from "../../../shared/Board.module.css";
+import {
+  advanceTier,
+  createGuzzleHint,
+  type GraduatedHint as GraduatedHintType,
+} from "../../../shared/graduated-hints";
+import { GraduatedHint } from "../../../shared/GraduatedHint";
 import { getLogger } from "../../../shared/logger";
 import { text } from "../../../text/en";
-import styles from "./Board.module.css";
 import { Controls } from "./Controls";
 import { Grid } from "./Grid";
 import { toSquares, type GuzzlePuzzle } from "./puzzle";
-import { statusText } from "./status";
-import { useGame } from "./useGame";
+import { statusText, useGame, type Game } from "./useGame";
 
 const words = text.guzzle;
 type Meta = {
@@ -49,8 +53,23 @@ function useLifecycleLog(
   }, [isSolved, log, meta, mistakes]);
 }
 
-// The board shows the grid, the mistake count, the status text and the letter keys.
-// The puzzle is solved when all squares on the words are green.
+function useGuzzleHint(answer: readonly string[], game: Game, size: number) {
+  const [hint, setHint] = useState<GraduatedHintType | null>(null);
+
+  function handleHintRequest() {
+    if (hint) {
+      setHint({ ...hint, tier: advanceTier(hint.tier) });
+      return;
+    }
+    const nextHint = createGuzzleHint(answer, game.guesses, size, game.selected, "nudge");
+    setHint(nextHint ?? null);
+  }
+
+  return { hint, setHint, handleHintRequest };
+}
+
+// ASD-STE100 Simplified Technical English comments.
+// The board shows the grid, mistake count, status text, graduated hints, and controls.
 export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
   const answer = toSquares(puzzle.answer);
   const size = puzzle.answer.length;
@@ -61,20 +80,40 @@ export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
     difficulty: puzzle.difficulty,
   };
   const game = useGame(answer, size, createHooks(log, meta), puzzle.id);
+  const { hint, setHint, handleHintRequest } = useGuzzleHint(answer, game, size);
   useLifecycleLog(log, meta, size, game.isSolved, game.mistakes);
 
   return (
     <div className={shared.game}>
       <fieldset className={shared.board}>
         <legend className="visually-hidden">{words.boardLabel}</legend>
-        <Grid answer={answer} size={size} game={game} />
+        <Grid answer={answer} size={size} game={game} hint={hint} />
       </fieldset>
 
-      <output className={styles.mistakes}>{words.mistakes(game.mistakes)}</output>
+      <output className={shared.mistakes}>{words.mistakes(game.mistakes)}</output>
 
       <output className={shared.status} data-solved={game.isSolved}>
         {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
       </output>
+
+      {hint && (
+        <GraduatedHint
+          hint={hint}
+          onTierChange={(tier) => setHint({ ...hint, tier })}
+          onDismiss={() => setHint(null)}
+        />
+      )}
+
+      {game.mode !== null && (
+        <button
+          type="button"
+          className={`${shared.button} ${shared.boxed}`}
+          disabled={game.isSolved}
+          onClick={handleHintRequest}
+        >
+          {words.hintButton}
+        </button>
+      )}
 
       <Controls answer={answer} game={game} />
     </div>

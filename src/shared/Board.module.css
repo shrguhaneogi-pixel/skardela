@@ -76,6 +76,14 @@
   }
 }
 
+/* Connected line or constraint highlight for logic explanation cues */
+.square[data-highlight="true"] {
+  outline: 2px dashed var(--accent);
+  outline-offset: 1px;
+  z-index: 1;
+  background-color: color-mix(in srgb, var(--accent-bg) 20%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .square[data-hint="true"] {
     animation: none;
@@ -127,6 +135,23 @@
   color: var(--text-h);
   font-weight: 650;
   box-shadow: 0 0 20px -3px light-dark(rgba(21, 128, 61, 0.35), rgba(34, 197, 94, 0.45));
+}
+
+/* Mistakes badge with tabular numbers */
+.mistakes {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 1rem;
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-h);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Secondary button with tactile depth */

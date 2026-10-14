@@ -108,6 +108,7 @@ export const text = {
       "Make all squares green with the fewest mistakes.",
     ] satisfies Rule[],
     boardLabel: "Guzzle board",
+    hintButton: "Hint",
     modeLabel: "How do you want to play?",
     modes: { bank: "With bank", noBank: "Without bank" },
     bankLabel: "Letter bank",
@@ -153,6 +154,18 @@ export const text = {
       solved: (mode: string, mistakes: number) =>
         `You solved the puzzle. ${mode}, ${mistakeCount(mistakes)}.`,
     },
+  },
+  hints: {
+    title: "Logic hint",
+    tierLabels: {
+      nudge: "1. Nudge",
+      explanation: "2. Explain",
+      solution: "3. Step",
+    },
+    advanceToExplanation: "Explain more",
+    advanceToSolution: "Show next step",
+    dismiss: "Hide hint",
+    noHintAvailable: "No hints available",
   },
   notFound: {
     title: "Page Not Found",

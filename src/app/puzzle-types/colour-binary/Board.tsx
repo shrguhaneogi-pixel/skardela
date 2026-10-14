@@ -1,44 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { gridStyle } from "../../../shared/grid";
-import { getLogger } from "../../../shared/logger";
-import styles from "./Board.module.css";
 import shared from "../../../shared/Board.module.css";
-import { findHint, type Hint } from "./hint";
-import { toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
-import { nextSquare, obeysRules } from "./rules-check";
+import {
+  advanceTier,
+  createColourBinaryHint,
+  getHintTierText,
+  type GraduatedHint as GraduatedHintType,
+  type HintTier,
+} from "../../../shared/graduated-hints";
+import { GraduatedHint } from "../../../shared/GraduatedHint";
+import { getLogger } from "../../../shared/logger";
 import {
   loadPuzzleProgress,
   markPuzzleProgressSolved,
   savePuzzleProgress,
 } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
+import { BoardGrid } from "./Grid";
+import { toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
+import { nextSquare, obeysRules } from "./rules-check";
 
 const words = text["colour-binary"];
-
-// The status text tells the user if the board is solved, ready to play, or waiting for a hint.
-function statusText(isSolved: boolean, hint: Hint | undefined | null, size: number): string {
-  if (isSolved) return words.status.solved;
-  if (hint === null) return words.status.start;
-  if (hint === undefined) return words.noHint;
-  const otherColour = hint.colour === "R" ? "B" : "R";
-  return words.hint({
-    ...hint,
-    row: Math.floor(hint.index / size) + 1,
-    column: (hint.index % size) + 1,
-    colour: words.colours[hint.colour],
-    otherColour: words.colours[otherColour],
-  });
-}
-
-type SquareProps = {
-  square: Square;
-  index: number;
-  size: number;
-  isFixed: boolean;
-  isHint: boolean;
-  isSolved: boolean;
-  onTap: () => void;
-};
 
 type LogMeta = {
   puzzleId: string;
@@ -46,40 +27,25 @@ type LogMeta = {
   difficulty: ColourBinaryPuzzle["difficulty"];
 };
 
-// Each square is a button so the user can tap a cell and cycle its colour.
-function SquareButton({ square, index, size, isFixed, isHint, isSolved, onTap }: SquareProps) {
-  const label = words.square({
-    row: Math.floor(index / size) + 1,
-    column: (index % size) + 1,
-    colour: words.colours[square],
-    isFixed,
-  });
-  return (
-    <button
-      type="button"
-      className={`${shared.square} ${styles.square}`}
-      data-colour={square}
-      data-fixed={isFixed}
-      data-hint={isHint}
-      aria-label={label}
-      aria-disabled={isFixed || isSolved}
-      onClick={() => {
-        if (!isFixed && !isSolved) onTap();
-      }}
-    >
-      <span aria-hidden="true">{words.symbols[square]}</span>
-    </button>
-  );
+// ASD-STE100 Simplified Technical English comments.
+// The status text tells the user if the board is solved, ready to play, or shows a hint.
+function statusText(isSolved: boolean, hint: GraduatedHintType | undefined | null): string {
+  if (isSolved) return words.status.solved;
+  if (hint === null) return words.status.start;
+  if (hint === undefined) return words.noHint;
+  return getHintTierText(hint, hint.tier);
 }
 
 type BoardViewProps = {
   size: number;
   squares: Square[];
   start: Square[];
-  hint: Hint | undefined | null;
+  hint: GraduatedHintType | undefined | null;
   isSolved: boolean;
   onTapSquare: (square: Square, index: number) => void;
   onHintRequest: () => void;
+  onTierChange: (tier: HintTier) => void;
+  onDismissHint: () => void;
 };
 
 function BoardView({
@@ -90,32 +56,23 @@ function BoardView({
   isSolved,
   onTapSquare,
   onHintRequest,
+  onTierChange,
+  onDismissHint,
 }: BoardViewProps) {
   return (
     <div className={shared.game}>
-      <fieldset className={shared.board}>
-        <legend className="visually-hidden">{words.boardLabel}</legend>
-        <div className={shared.grid} style={gridStyle(size)}>
-          {squares.map((square, index) => (
-            <SquareButton
-              // oxlint-disable-next-line react/no-array-index-key -- the index is the identity of a square. The squares never move.
-              key={index}
-              square={square}
-              index={index}
-              size={size}
-              isFixed={start[index] !== "."}
-              isHint={hint?.index === index}
-              isSolved={isSolved}
-              onTap={() => onTapSquare(square, index)}
-            />
-          ))}
-        </div>
-      </fieldset>
-
+      <BoardGrid
+        size={size}
+        squares={squares}
+        start={start}
+        hint={hint}
+        isSolved={isSolved}
+        onTapSquare={onTapSquare}
+      />
       <output className={shared.status} data-solved={isSolved}>
-        {statusText(isSolved, hint, size)}
+        {statusText(isSolved, hint)}
       </output>
-
+      {hint && <GraduatedHint hint={hint} onTierChange={onTierChange} onDismiss={onDismissHint} />}
       <button
         type="button"
         className={`${shared.button} ${shared.boxed}`}
@@ -186,12 +143,42 @@ function useSolvedSync(
   }, [isSolved, puzzle.difficulty, puzzle.id, puzzle.type, hintCountRef]);
 }
 
+function useHintState(
+  squares: Square[],
+  size: number,
+  meta: LogMeta,
+  log: ReturnType<typeof getLogger>,
+  hintCountRef: { current: number },
+) {
+  const [hint, setHint] = useState<GraduatedHintType | undefined | null>(null);
+
+  function requestHint() {
+    if (hint) {
+      setHint({ ...hint, tier: advanceTier(hint.tier) });
+      return;
+    }
+    hintCountRef.current += 1;
+    const nextHint = createColourBinaryHint(squares, size, "nudge");
+    log.info("Hint requested", {
+      ...meta,
+      foundHint: nextHint !== undefined,
+      hintIndex: nextHint?.index,
+    });
+    setHint(nextHint);
+  }
+
+  function changeTier(tier: HintTier) {
+    if (!hint) return;
+    setHint({ ...hint, tier });
+  }
+
+  return { hint, setHint, requestHint, changeTier };
+}
+
 // The board keeps the start layout and the current player state in one place.
-// The puzzle is solved when the board matches the rule set.
 export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
   const start = toSquares(puzzle.start);
   const [squares, setSquares] = useState<Square[]>(() => loadInitialSquares(puzzle.id, start));
-  const [hint, setHint] = useState<Hint | undefined | null>(null);
   const hintCountRef = useRef(0);
   const isSolved = obeysRules(squares);
   const size = puzzle.start.length;
@@ -203,6 +190,13 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
   };
   useLifecycleLog(log, meta, size, isSolved);
   useSolvedSync(puzzle, isSolved, hintCountRef);
+  const { hint, setHint, requestHint, changeTier } = useHintState(
+    squares,
+    size,
+    meta,
+    log,
+    hintCountRef,
+  );
 
   function onTapSquare(square: Square, index: number) {
     const next = nextSquare[square];
@@ -213,18 +207,6 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
     saveColourBinaryStep(puzzle, nextSquares, hintCountRef.current);
   }
 
-  function onHintRequest() {
-    hintCountRef.current += 1;
-    const nextHint = findHint(squares);
-    log.info("Hint requested", {
-      ...meta,
-      foundHint: nextHint !== undefined,
-      hintIndex: nextHint?.index,
-      hintColour: nextHint?.colour,
-    });
-    setHint(nextHint);
-  }
-
   return (
     <BoardView
       size={size}
@@ -233,7 +215,9 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
       hint={hint}
       isSolved={isSolved}
       onTapSquare={onTapSquare}
-      onHintRequest={onHintRequest}
+      onHintRequest={requestHint}
+      onTierChange={changeTier}
+      onDismissHint={() => setHint(null)}
     />
   );
 }

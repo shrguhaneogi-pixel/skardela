@@ -29,7 +29,7 @@ async function fillAnswer(user: ReturnType<typeof userEvent.setup>) {
   }
 }
 
-describe("colour-binary board", () => {
+describe("colour-binary board interaction", () => {
   it("changes an empty square to red, to blue, and back to empty", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
@@ -47,13 +47,31 @@ describe("colour-binary board", () => {
     await user.click(square(1, 3));
     expect(square(1, 3)).toHaveAccessibleName("Row 1, column 3, blue, fixed");
   });
+});
 
+describe("colour-binary board hints and status", () => {
   it("shows a hint", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
     await user.click(screen.getByRole("button", { name: words.hintButton }));
     expect(screen.getByRole("status")).toHaveTextContent(/^Row 1, column 2: Column 2/u);
     expect(square(1, 2)).toHaveAttribute("data-hint", "true");
+  });
+
+  it("escalates graduated hint from nudge to explanation to solution", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    const hintButton = screen.getByRole("button", { name: words.hintButton });
+    await user.click(hintButton);
+    expect(screen.getByRole("status")).toHaveTextContent("has a clue to check.");
+
+    // Advance to explanation
+    await user.click(screen.getByRole("button", { name: /explain more/iu }));
+    expect(screen.getByRole("status")).toHaveTextContent("already has half");
+
+    // Advance to solution
+    await user.click(screen.getByRole("button", { name: /show next step/iu }));
+    expect(screen.getByRole("status")).toHaveTextContent("Thus this square is blue.");
   });
 
   it("shows that the puzzle is solved", async () => {

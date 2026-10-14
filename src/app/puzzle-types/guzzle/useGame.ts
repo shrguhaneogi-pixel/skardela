@@ -14,6 +14,7 @@ export type Mode = keyof typeof text.guzzle.modes;
 export type LastMove = { guess: Guess; index: number } | null;
 
 export type Game = ReturnType<typeof useGame>;
+export { statusText } from "./status";
 
 type Hooks = {
   onModeChosen?: (mode: Mode) => void;

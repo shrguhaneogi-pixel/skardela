@@ -4,34 +4,34 @@ This document tracks the implementation, verification, and commit history for al
 
 ## Execution Graph & Order
 
-| Order | ID             | Title                                      | Status      | Commit Hash |
-| :---- | :------------- | :----------------------------------------- | :---------- | :---------- |
-| 1     | IMPROVEMENT 00 | Visual Design Foundation ("Tactile Glass") | COMMITTED   | 878a059     |
-| 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED   | 9d7ca05     |
-| 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | c56ac0c     |
-| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | 408e5f5     |
-| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | 5472a6a     |
-| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED   | 594b4d9     |
-| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED   | 24f1ff8     |
-| 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED   | 448aaa2     |
-| 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | COMMITTED   | 4971448     |
-| 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | PLANNED     | Pending     |
-| 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | PLANNED     | Pending     |
-| 12    | IMPROVEMENT 13 | Context-Aware Help System                  | PLANNED     | Pending     |
-| 13    | IMPROVEMENT 05 | Meaningful Completion Review               | PLANNED     | Pending     |
-| 14    | IMPROVEMENT 09 | Spoiler-Free Puzzle Postcards              | PLANNED     | Pending     |
-| 15    | IMPROVEMENT 04 | Historical Puzzle Archive                  | PLANNED     | Pending     |
-| 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | PLANNED     | Pending     |
-| 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | PLANNED     | Pending     |
-| 18    | IMPROVEMENT 15 | Personal Practice Queue                    | PLANNED     | Pending     |
-| 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | PLANNED     | Pending     |
-| 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | PLANNED     | Pending     |
-| 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | PLANNED     | Pending     |
-| 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | PLANNED     | Pending     |
-| 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED     | Pending     |
-| 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | PLANNED     | Pending     |
-| 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | PLANNED     | Pending     |
-| 26    | IMPROVEMENT 25 | Open Puzzle Exchange                       | PLANNED     | Pending     |
+| Order | ID             | Title                                      | Status    | Commit Hash |
+| :---- | :------------- | :----------------------------------------- | :-------- | :---------- |
+| 1     | IMPROVEMENT 00 | Visual Design Foundation ("Tactile Glass") | COMMITTED | 878a059     |
+| 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED | 9d7ca05     |
+| 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED | c56ac0c     |
+| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED | 408e5f5     |
+| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED | 5472a6a     |
+| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED | 594b4d9     |
+| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED | 24f1ff8     |
+| 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED | 448aaa2     |
+| 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | COMMITTED | 4971448     |
+| 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | COMMITTED | Pending     |
+| 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | PLANNED   | Pending     |
+| 12    | IMPROVEMENT 13 | Context-Aware Help System                  | PLANNED   | Pending     |
+| 13    | IMPROVEMENT 05 | Meaningful Completion Review               | PLANNED   | Pending     |
+| 14    | IMPROVEMENT 09 | Spoiler-Free Puzzle Postcards              | PLANNED   | Pending     |
+| 15    | IMPROVEMENT 04 | Historical Puzzle Archive                  | PLANNED   | Pending     |
+| 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | PLANNED   | Pending     |
+| 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | PLANNED   | Pending     |
+| 18    | IMPROVEMENT 15 | Personal Practice Queue                    | PLANNED   | Pending     |
+| 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | PLANNED   | Pending     |
+| 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | PLANNED   | Pending     |
+| 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | PLANNED   | Pending     |
+| 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | PLANNED   | Pending     |
+| 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED   | Pending     |
+| 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | PLANNED   | Pending     |
+| 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | PLANNED   | Pending     |
+| 26    | IMPROVEMENT 25 | Open Puzzle Exchange                       | PLANNED   | Pending     |
 
 ---
 
@@ -120,3 +120,22 @@ This document tracks the implementation, verification, and commit history for al
   - `src/text/en.ts` (added text strings for edition date, quick play, and puzzle status)
 - **Summary:** Added the unified Daily Puzzle Desk. Shows UTC edition dates, instant resume / solved indicator pills, and an action banner to resume active games or start the daily challenge quickly.
 - **Verification:** Ran `npm run fix && npm run check`. All 17 test suites (77 unit tests) and 2 validation suites (9 validation tests) passed. 0 linter warnings or errors.
+
+### Entry 02: Universal Graduated Hints
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/graduated-hints.ts` (universal multi-tier hint engine: nudge, explanation, and next step)
+  - `src/shared/graduated-hints.test.ts` (unit tests covering tier escalation, deduction text, and board calculations)
+  - `src/shared/GraduatedHint.tsx` (tactile glass step progression and dismissal controls)
+  - `src/shared/GraduatedHint.module.css` (glass styling, step pills, and responsive layout)
+  - `src/app/puzzle-types/colour-binary/Board.tsx` (tier progression, multi-step hints, and status reporting)
+  - `src/app/puzzle-types/colour-binary/Grid.tsx` (extracted accessible grid and cell cue rendering)
+  - `src/app/puzzle-types/colour-binary/Board.test.tsx` (unit tests for hint request and tier escalation)
+  - `src/app/puzzle-types/guzzle/Board.tsx` (integrated graduated hints and mistake tracking)
+  - `src/app/puzzle-types/guzzle/Grid.tsx` (hint and highlight attributes on letter cells)
+  - `src/text/en.ts` (localized text strings for hint levels, actions, and messages)
+  - `src/shared/Board.module.css` (tactile styling for logic highlight cues and mistakes badge)
+- **Summary:** Delivered universal graduated hints across all puzzle types. Players can escalate hints gradually through three distinct tiers: Nudge (where to look), Explanation (which constraint applies), and Next Step (the concrete move).
+- **Verification:** Ran `npm run fix && npm run check`. All 18 test suites (82 unit tests) and 2 validation suites (9 validation tests) passed. 0 linter warnings or errors.
+

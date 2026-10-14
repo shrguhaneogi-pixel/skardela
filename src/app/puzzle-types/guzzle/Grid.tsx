@@ -34,6 +34,8 @@ type SquareProps = {
   guess: Guess | undefined;
   isFixed?: boolean;
   isSelected?: boolean;
+  isHint?: boolean;
+  isHighlighted?: boolean;
   isLocked: boolean;
   onSelect?: () => void;
   onLetter?: (letter: string) => void;
@@ -47,6 +49,8 @@ function SquareButton({
   guess,
   isFixed = false,
   isSelected = false,
+  isHint = false,
+  isHighlighted = false,
   isLocked,
   onSelect,
   onLetter,
@@ -61,6 +65,8 @@ function SquareButton({
       data-mark={guess?.mark ?? "none"}
       data-fixed={isFixed}
       data-selected={isSelected}
+      data-hint={isHint}
+      data-highlight={isHighlighted}
       aria-label={label}
       aria-pressed={isFixed ? undefined : isSelected}
       aria-disabled={isLocked}
@@ -84,11 +90,16 @@ function SquareButton({
   );
 }
 
-type GameProps = { answer: readonly string[]; size: number; game: Game };
+type GameProps = {
+  answer: readonly string[];
+  size: number;
+  game: Game;
+  hint?: { index: number; highlightIndices: readonly number[] } | null;
+};
 
 // One square of the grid: the fixed center letter, a square on a word or a gap.
 // A gap is a square that is not on a word. It keeps the shape of the grid.
-function GridSquare({ answer, size, game, index }: GameProps & { index: number }) {
+function GridSquare({ answer, size, game, hint, index }: GameProps & { index: number }) {
   const isCenter = index === (size * size - 1) / 2;
   if (!isCenter && !isPlayable(index, size)) {
     return <span className={styles.gap} aria-hidden="true" />;
@@ -109,6 +120,8 @@ function GridSquare({ answer, size, game, index }: GameProps & { index: number }
       guess={guess}
       isFixed={isCenter}
       isSelected={game.selected === index}
+      isHint={hint?.index === index}
+      isHighlighted={Boolean(hint?.highlightIndices.includes(index) && hint.index !== index)}
       isLocked={isCenter || game.mode === null || game.isSolved || guess?.mark === "correct"}
       onSelect={() => {
         game.setSelected(index);
@@ -119,12 +132,12 @@ function GridSquare({ answer, size, game, index }: GameProps & { index: number }
 }
 
 // The grid shows all squares in rows and columns.
-export function Grid({ answer, size, game }: GameProps) {
+export function Grid({ answer, size, game, hint }: GameProps) {
   return (
     <div className={shared.grid} style={gridStyle(size)}>
       {answer.map((_, index) => (
         // oxlint-disable-next-line react/no-array-index-key -- the index is the identity of a square. The squares never move.
-        <GridSquare key={index} answer={answer} size={size} game={game} index={index} />
+        <GridSquare key={index} answer={answer} size={size} game={game} hint={hint} index={index} />
       ))}
     </div>
   );
