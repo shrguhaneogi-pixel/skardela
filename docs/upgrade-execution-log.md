@@ -8,8 +8,8 @@ This document tracks the implementation, verification, and commit history for al
 | :---- | :------------- | :----------------------------------------- | :---------- | :---------- |
 | 1     | IMPROVEMENT 00 | Visual Design Foundation ("Tactile Glass") | COMMITTED   | Pending     |
 | 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED   | Pending     |
-| 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | IN PROGRESS | Pending     |
-| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | PLANNED     | Pending     |
+| 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | Pending     |
+| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | IN PROGRESS | Pending     |
 | 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | PLANNED     | Pending     |
 | 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | PLANNED     | Pending     |
 | 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | PLANNED     | Pending     |
@@ -52,4 +52,13 @@ This document tracks the implementation, verification, and commit history for al
   - `src/shared/storage.test.ts` (comprehensive unit tests for storage resilience, malformed JSON, quota handling, and namespace clearing)
 - **Summary:** Developed a zero-dependency, crash-resilient local storage adapter that safely recovers from quota limits, corrupted envelopes, and version changes without dropping into broken states.
 - **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/storage.test.ts`. 7 unit tests passed. 0 lint warnings/errors.
+
+### Entry 20: Privacy-Preserving Diagnostics
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/diagnostics.ts` (in-memory ring buffer, sensitive key redaction, client report creation, clipboard copy fallback)
+  - `src/shared/diagnostics.test.ts` (unit tests verifying ring buffer bounds, redaction of solution/answer keys, clipboard handling)
+- **Summary:** Implemented client-side diagnostic logging that strictly protects user privacy by eliminating external telemetry, enforcing in-memory ring-buffer bounds, and stripping all puzzle answer and credential keys from reports.
+- **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/diagnostics.test.ts`. 5 unit tests passed. 0 lint warnings/errors.
 
