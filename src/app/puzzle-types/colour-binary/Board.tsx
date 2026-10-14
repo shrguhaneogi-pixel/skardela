@@ -6,6 +6,11 @@ import shared from "../../../shared/Board.module.css";
 import { findHint, type Hint } from "./hint";
 import { toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
 import { nextSquare, obeysRules } from "./rules-check";
+import {
+  loadPuzzleProgress,
+  markPuzzleProgressSolved,
+  savePuzzleProgress,
+} from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
 
 const words = text["colour-binary"];
@@ -141,12 +146,53 @@ function useLifecycleLog(
   }, [isSolved, log, meta, size]);
 }
 
+function loadInitialSquares(puzzleId: string, start: Square[]): Square[] {
+  const saved = loadPuzzleProgress(puzzleId);
+  if (
+    saved?.colourBinaryState?.squares &&
+    saved.colourBinaryState.squares.length === start.length
+  ) {
+    return saved.colourBinaryState.squares as Square[];
+  }
+  return start;
+}
+
+function saveColourBinaryStep(puzzle: ColourBinaryPuzzle, squares: Square[], hintCount: number) {
+  savePuzzleProgress({
+    puzzleId: puzzle.id,
+    puzzleType: puzzle.type,
+    difficulty: puzzle.difficulty,
+    savedAt: Date.now(),
+    isSolved: obeysRules(squares),
+    timeSpentSeconds: 0,
+    hintCount,
+    mistakes: 0,
+    colourBinaryState: { squares },
+  });
+}
+
+function useSolvedSync(
+  puzzle: ColourBinaryPuzzle,
+  isSolved: boolean,
+  hintCountRef: { current: number },
+) {
+  useEffect(() => {
+    if (!isSolved) return;
+    markPuzzleProgressSolved(puzzle.id, puzzle.type, puzzle.difficulty, {
+      timeSpentSeconds: 0,
+      hintCount: hintCountRef.current,
+      mistakes: 0,
+    });
+  }, [isSolved, puzzle.difficulty, puzzle.id, puzzle.type, hintCountRef]);
+}
+
 // The board keeps the start layout and the current player state in one place.
 // The puzzle is solved when the board matches the rule set.
 export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
   const start = toSquares(puzzle.start);
-  const [squares, setSquares] = useState(start);
+  const [squares, setSquares] = useState<Square[]>(() => loadInitialSquares(puzzle.id, start));
   const [hint, setHint] = useState<Hint | undefined | null>(null);
+  const hintCountRef = useRef(0);
   const isSolved = obeysRules(squares);
   const size = puzzle.start.length;
   const log = getLogger("game.colour-binary");
@@ -156,15 +202,19 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
     difficulty: puzzle.difficulty,
   };
   useLifecycleLog(log, meta, size, isSolved);
+  useSolvedSync(puzzle, isSolved, hintCountRef);
 
   function onTapSquare(square: Square, index: number) {
     const next = nextSquare[square];
     log.debug("Square changed", { ...meta, index, from: square, to: next });
-    setSquares(squares.with(index, next));
+    const nextSquares = squares.with(index, next);
+    setSquares(nextSquares);
     setHint(null);
+    saveColourBinaryStep(puzzle, nextSquares, hintCountRef.current);
   }
 
   function onHintRequest() {
+    hintCountRef.current += 1;
     const nextHint = findHint(squares);
     log.info("Hint requested", {
       ...meta,

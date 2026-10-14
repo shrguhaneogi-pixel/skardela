@@ -60,7 +60,7 @@ export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
     puzzleType: puzzle.type,
     difficulty: puzzle.difficulty,
   };
-  const game = useGame(answer, size, createHooks(log, meta));
+  const game = useGame(answer, size, createHooks(log, meta), puzzle.id);
   useLifecycleLog(log, meta, size, game.isSolved, game.mistakes);
 
   return (

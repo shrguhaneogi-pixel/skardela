@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/guzzle-0000.json";
@@ -8,6 +8,10 @@ import type { GuzzlePuzzle } from "./puzzle";
 
 const words = text.guzzle;
 const puzzle = example as GuzzlePuzzle;
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 // This helper finds a square by its row and column, so the test does not depend on the label end.
 function square(row: number, column: number): HTMLElement {

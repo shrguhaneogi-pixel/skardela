@@ -45,24 +45,27 @@ function readRaw(key: string): string | null {
     try {
       const val = window.localStorage.getItem(key);
       if (val !== null) return val;
+      return memoryStore.get(key) ?? null;
     } catch {
-      // Fall through to memoryStore.
+      return memoryStore.get(key) ?? null;
     }
   }
   return memoryStore.get(key) ?? null;
 }
 
 function writeRaw(key: string, value: string): boolean {
-  memoryStore.set(key, value);
   if (storageAvailable) {
     try {
       window.localStorage.setItem(key, value);
+      memoryStore.delete(key);
       return true;
     } catch {
-      // Storage quota reached or storage disabled. Memory fallback remains.
+      // Quota exceeded or storage blocked. Keep in memory store.
+      memoryStore.set(key, value);
       return false;
     }
   }
+  memoryStore.set(key, value);
   return true;
 }
 

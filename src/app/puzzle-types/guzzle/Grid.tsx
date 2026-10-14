@@ -99,7 +99,7 @@ function GridSquare({ answer, size, game, index }: GameProps & { index: number }
     row: Math.floor(index / size) + 1,
     column: (index % size) + 1,
     letter,
-    mark: guess === undefined ? "" : words.marks[guess.mark],
+    mark: !guess ? "" : words.marks[guess.mark],
     isFixed: isCenter,
   });
   return (

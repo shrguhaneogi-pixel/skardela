@@ -13,8 +13,8 @@ This document tracks the implementation, verification, and commit history for al
 | 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | Pending     |
 | 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED   | Pending     |
 | 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED   | Pending     |
-| 8     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | IN PROGRESS | Pending     |
-| 9     | IMPROVEMENT 03 | Instant Resume State Engine                | PLANNED     | Pending     |
+| 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED   | Pending     |
+| 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | IN PROGRESS | Pending     |
 | 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | PLANNED     | Pending     |
 | 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | PLANNED     | Pending     |
 | 12    | IMPROVEMENT 13 | Context-Aware Help System                  | PLANNED     | Pending     |
@@ -96,4 +96,18 @@ This document tracks the implementation, verification, and commit history for al
   - `src/shared/difficulty-calibration.test.ts` (unit tests verifying 0-100 scoring consistency and classification across 4x4, 8x8, and Guzzle puzzles)
 - **Summary:** Implemented reproducible heuristic difficulty estimators for Colour Binary and Guzzle based on concrete structural complexity and deduction density rather than naive brute-force step counts.
 - **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/difficulty-calibration.test.ts`. 3 unit tests passed. 0 lint warnings/errors.
+
+### Entry 03: Instant Resume State Engine
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/puzzle-progress.ts` (typed progress schema, storage adapter integration, status calculation, and completion metrics)
+  - `src/shared/puzzle-progress.test.ts` (unit tests covering save, retrieve, mark solved, and clear progress)
+  - `src/app/puzzle-types/colour-binary/Board.tsx` (restoring board state on reload, persisting taps and deductions)
+  - `src/app/puzzle-types/guzzle/useGame.ts` (restoring chosen mode, letter placements, mistakes, and progress)
+  - `src/app/puzzle-types/guzzle/Board.tsx` (passing puzzle id to useGame)
+  - `src/app/puzzle-types/guzzle/Grid.tsx` (safe mark handling)
+  - `src/shared/storage.ts` (improved memory fallback isolation)
+- **Summary:** Delivered crash-resilient local saving and auto-resume for both Colour Binary and Guzzle puzzles. Solved status, move history, mistakes, and board states survive tab closures and reloads seamlessly.
+- **Verification:** Ran full check and test suite. All 17 test files and 77 unit tests passed. 0 lint warnings/errors.
 
