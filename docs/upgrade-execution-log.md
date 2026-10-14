@@ -9,8 +9,8 @@ This document tracks the implementation, verification, and commit history for al
 | 1     | IMPROVEMENT 00 | Visual Design Foundation ("Tactile Glass") | COMMITTED   | Pending     |
 | 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED   | Pending     |
 | 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | Pending     |
-| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | IN PROGRESS | Pending     |
-| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | PLANNED     | Pending     |
+| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | Pending     |
+| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | IN PROGRESS | Pending     |
 | 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | PLANNED     | Pending     |
 | 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | PLANNED     | Pending     |
 | 8     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | PLANNED     | Pending     |
@@ -61,4 +61,13 @@ This document tracks the implementation, verification, and commit history for al
   - `src/shared/diagnostics.test.ts` (unit tests verifying ring buffer bounds, redaction of solution/answer keys, clipboard handling)
 - **Summary:** Implemented client-side diagnostic logging that strictly protects user privacy by eliminating external telemetry, enforcing in-memory ring-buffer bounds, and stripping all puzzle answer and credential keys from reports.
 - **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/diagnostics.test.ts`. 5 unit tests passed. 0 lint warnings/errors.
+
+### Entry 07: Verifiable Daily Challenge Identity
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/app/daily.ts` (added UTC date resolution, ISO formatting/parsing, canonical challenge identity generation, and 32-bit FNV-1a checksum verification)
+  - `src/app/daily.test.ts` (unit tests covering UTC dates, leap-year day calculations, negative-modulo pool rotation, and challenge identity integrity)
+- **Summary:** Built deterministic canonical identifiers for official daily challenges along with lightweight checksum verification codes. Puzzles remain spoiler-free and verifiable without external cryptographic servers.
+- **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/app/daily.test.ts`. 7 unit tests passed. 0 lint warnings/errors.
 
