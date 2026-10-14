@@ -6,15 +6,15 @@ This document tracks the implementation, verification, and commit history for al
 
 | Order | ID             | Title                                      | Status      | Commit Hash |
 | :---- | :------------- | :----------------------------------------- | :---------- | :---------- |
-| 1     | IMPROVEMENT 00 | Visual Design Foundation ("Tactile Glass") | COMMITTED   | Pending     |
-| 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED   | Pending     |
-| 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | Pending     |
-| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | Pending     |
-| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | Pending     |
-| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED   | Pending     |
-| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED   | Pending     |
-| 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED   | Pending     |
-| 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | IN PROGRESS | Pending     |
+| 1     | IMPROVEMENT 00 | Visual Design Foundation ("Tactile Glass") | COMMITTED   | 878a059     |
+| 2     | IMPROVEMENT 17 | Resilient Local Data Persistence Adapter   | COMMITTED   | 9d7ca05     |
+| 3     | IMPROVEMENT 20 | Privacy-Preserving Diagnostics             | COMMITTED   | c56ac0c     |
+| 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | 408e5f5     |
+| 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | 5472a6a     |
+| 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED   | 594b4d9     |
+| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED   | 24f1ff8     |
+| 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED   | 448aaa2     |
+| 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | COMMITTED   | 4971448     |
 | 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | PLANNED     | Pending     |
 | 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | PLANNED     | Pending     |
 | 12    | IMPROVEMENT 13 | Context-Aware Help System                  | PLANNED     | Pending     |
