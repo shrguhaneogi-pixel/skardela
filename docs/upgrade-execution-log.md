@@ -18,11 +18,11 @@ This document tracks the implementation, verification, and commit history for al
 | 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | COMMITTED | 4a2e763     |
 | 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | COMMITTED | 60b0cfd     |
 | 12    | IMPROVEMENT 13 | Context-Aware Help System                  | COMMITTED | 7bac762     |
-| 13    | IMPROVEMENT 05 | Meaningful Completion Review               | COMMITTED | pending     |
-| 14    | IMPROVEMENT 09 | Spoiler-Free Puzzle Postcards              | COMMITTED | pending     |
-| 15    | IMPROVEMENT 04 | Historical Puzzle Archive                  | COMMITTED | pending     |
-| 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | COMMITTED | pending     |
-| 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | PLANNED   | Pending     |
+| 13    | IMPROVEMENT 05 | Meaningful Completion Review               | COMMITTED | e8653c5     |
+| 14    | IMPROVEMENT 09 | Spoiler-Free Puzzle Postcards              | COMMITTED | de02af4     |
+| 15    | IMPROVEMENT 04 | Historical Puzzle Archive                  | COMMITTED | 768bda6     |
+| 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | COMMITTED | 7b7b4ef     |
+| 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | COMMITTED | 8695a0a     |
 | 18    | IMPROVEMENT 15 | Personal Practice Queue                    | PLANNED   | Pending     |
 | 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | PLANNED   | Pending     |
 | 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | PLANNED   | Pending     |
@@ -259,4 +259,3 @@ This document tracks the implementation, verification, and commit history for al
   - `src/app/puzzle-types/guzzle/Board.test.tsx` (tests for arrow navigation)
 - **Summary:** Implemented accessible puzzle mode across both puzzle types. Supports directional arrow navigation between squares, direct keystroke input for Colour Binary and Guzzle, detailed accessible names announcing conflicts, hint targets, and logic cues, and high-contrast and reduced-motion media query adaptations.
 - **Verification:** Ran `npm run fix && npm run check`. All 24 test suites (122 tests) and 2 validation suites (9 tests) passed. 0 linter warnings or errors.
-
