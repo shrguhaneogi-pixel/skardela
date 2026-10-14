@@ -1,9 +1,9 @@
 import { Suspense, type ComponentType } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useSearchParams } from "react-router";
 import { ErrorBoundary } from "../../shared/ErrorBoundary";
 import { RuleList } from "../../shared/RuleList";
 import { text } from "../../text/en";
-import { type puzzleLoader } from "../puzzles";
+import { isTodayUtc, type puzzleLoader } from "../puzzles";
 import { boards } from "../puzzle-types/boards";
 import type { PuzzleMap, PuzzleType } from "../puzzle-types/registry";
 import { NotFoundPage } from "./NotFoundPage";
@@ -21,9 +21,39 @@ function PuzzleBoard<Type extends PuzzleType>({
   return <Board puzzle={puzzle} />;
 }
 
+type HeaderProps = {
+  typeName: string;
+  difficulty: keyof typeof text.levels;
+  puzzleId: string;
+  author: string;
+  dateParam: string | null;
+  isArchive: boolean;
+};
+
+function PuzzleDetailsHeader(props: HeaderProps) {
+  const page = text.puzzlePage;
+  return (
+    <header className={styles.header}>
+      <h1 className={styles.title}>{props.typeName}</h1>
+      <ul className={styles.details} aria-label={page.detailsLabel}>
+        <li className={styles.level}>{text.levels[props.difficulty]}</li>
+        {props.isArchive && props.dateParam && (
+          <li className={styles.archiveBadge}>{text.archive.archiveBadge(props.dateParam)}</li>
+        )}
+        <li>{page.puzzleNumber(props.puzzleId.slice(props.puzzleId.lastIndexOf("-") + 1))}</li>
+        <li>{page.author(props.author)}</li>
+      </ul>
+    </header>
+  );
+}
+
 // This page shows the active puzzle board and the rule instructions.
 export function PuzzlePage() {
   const loaded = useLoaderData<typeof puzzleLoader>();
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const isArchive = !isTodayUtc(dateParam);
+
   if (!loaded) return <NotFoundPage />;
 
   const { puzzle } = loaded;
@@ -33,15 +63,14 @@ export function PuzzlePage() {
   return (
     <div className={styles.page}>
       <title>{page.title(typeText.name, puzzle.id, text.siteName)}</title>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{typeText.name}</h1>
-        <ul className={styles.details} aria-label={page.detailsLabel}>
-          <li className={styles.level}>{text.levels[puzzle.difficulty]}</li>
-          <li>{page.puzzleNumber(puzzle.id.slice(puzzle.id.lastIndexOf("-") + 1))}</li>
-          <li>{page.author(puzzle.author)}</li>
-        </ul>
-      </header>
-
+      <PuzzleDetailsHeader
+        typeName={typeText.name}
+        difficulty={puzzle.difficulty}
+        puzzleId={puzzle.id}
+        author={puzzle.author}
+        dateParam={dateParam}
+        isArchive={isArchive}
+      />
       <div className={styles.layout}>
         <div className={styles.play}>
           <ErrorBoundary

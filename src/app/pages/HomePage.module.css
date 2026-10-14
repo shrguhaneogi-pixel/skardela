@@ -246,3 +246,32 @@
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+
+.archiveLinkRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.archiveLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-h);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.archiveLink:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  box-shadow: var(--shadow-md);
+}

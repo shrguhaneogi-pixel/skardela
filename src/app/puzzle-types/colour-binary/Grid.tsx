@@ -22,29 +22,95 @@ type SquareProps = {
   isLogicTarget: boolean;
   isLogicPremise: boolean;
   isSolved: boolean;
-  onTap: () => void;
+  onTap: (specificColour?: Square) => void;
 };
 
-// Each square is a button so the user can tap a cell and cycle its colour.
-function SquareButton({
-  square,
-  index,
-  size,
-  isFixed,
-  isHint,
-  isHighlighted,
-  isConflict,
-  isLogicTarget,
-  isLogicPremise,
-  isSolved,
-  onTap,
-}: SquareProps) {
-  const label = words.square({
+function getArrowTargetIndex(key: string, index: number, size: number): number | null {
+  if (key === "ArrowRight" && index % size < size - 1) return index + 1;
+  if (key === "ArrowLeft" && index % size > 0) return index - 1;
+  if (key === "ArrowDown" && index + size < size * size) return index + size;
+  if (key === "ArrowUp" && index - size >= 0) return index - size;
+  return null;
+}
+
+function getColourBinaryLabel(
+  index: number,
+  size: number,
+  square: Square,
+  isFixed: boolean,
+  isConflict: boolean,
+  isHint: boolean,
+  isLogicTarget: boolean,
+  isLogicPremise: boolean,
+): string {
+  let label = words.square({
     row: Math.floor(index / size) + 1,
     column: (index % size) + 1,
     colour: words.colours[square],
     isFixed,
   });
+  if (isConflict) label += " (Conflict)";
+  if (isHint) label += " (Hint target)";
+  if (isLogicTarget) label += " (Logic target)";
+  if (isLogicPremise) label += " (Logic premise)";
+  return label;
+}
+
+function handleSquareKeyDown(
+  e: React.KeyboardEvent<HTMLButtonElement>,
+  index: number,
+  size: number,
+  isFixed: boolean,
+  isSolved: boolean,
+  onTap: (colour?: Square) => void,
+) {
+  const target = getArrowTargetIndex(e.key, index, size);
+  if (target !== null) {
+    e.preventDefault();
+    const parent = e.currentTarget.parentElement;
+    const targetBtn = parent?.children[target] as HTMLButtonElement | undefined;
+    targetBtn?.focus();
+    return;
+  }
+  if (isFixed || isSolved) return;
+  if (e.key === "r" || e.key === "R") {
+    e.preventDefault();
+    onTap("R");
+  } else if (e.key === "b" || e.key === "B") {
+    e.preventDefault();
+    onTap("B");
+  } else if (e.key === "Backspace" || e.key === "Delete") {
+    e.preventDefault();
+    onTap(".");
+  }
+}
+
+// Each square is a button so the user can tap a cell and cycle its colour.
+function SquareButton(props: SquareProps) {
+  const {
+    square,
+    index,
+    size,
+    isFixed,
+    isHint,
+    isHighlighted,
+    isConflict,
+    isLogicTarget,
+    isLogicPremise,
+    isSolved,
+    onTap,
+  } = props;
+  const label = getColourBinaryLabel(
+    index,
+    size,
+    square,
+    isFixed,
+    isConflict,
+    isHint,
+    isLogicTarget,
+    isLogicPremise,
+  );
+
   return (
     <button
       type="button"
@@ -61,6 +127,7 @@ function SquareButton({
       onClick={() => {
         if (!isFixed && !isSolved) onTap();
       }}
+      onKeyDown={(e) => handleSquareKeyDown(e, index, size, isFixed, isSolved, onTap)}
     >
       <span aria-hidden="true">{words.symbols[square]}</span>
     </button>
@@ -74,7 +141,7 @@ type GridProps = {
   hint: GraduatedHint | undefined | null;
   logicExplanation?: LogicExplanation | null;
   isSolved: boolean;
-  onTapSquare: (square: Square, index: number) => void;
+  onTapSquare: (square: Square, index: number, specificNext?: Square) => void;
 };
 
 // The grid shows all square buttons in rows and columns.
@@ -105,7 +172,7 @@ export function BoardGrid({
             isLogicTarget={logicExplanation?.targetIndex === index}
             isLogicPremise={Boolean(logicExplanation?.premises.some((p) => p.index === index))}
             isSolved={isSolved}
-            onTap={() => onTapSquare(square, index)}
+            onTap={(colour) => onTapSquare(square, index, colour)}
           />
         ))}
       </div>

@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/colour-binary-0000.json";
@@ -8,6 +8,10 @@ import type { ColourBinaryPuzzle } from "./puzzle";
 
 const words = text["colour-binary"];
 const puzzle = example as ColourBinaryPuzzle;
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 // This helper finds a square by its row and column, so the test does not depend on the label end.
 function square(row: number, column: number): HTMLElement {
@@ -49,7 +53,7 @@ describe("colour-binary board interaction", () => {
   });
 });
 
-describe("colour-binary board hints and status", () => {
+describe("colour-binary board hints", () => {
   it("shows a hint", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
@@ -85,12 +89,48 @@ describe("colour-binary board hints and status", () => {
     await user.click(screen.getByRole("button", { name: text.logicExplanation.close }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
+});
 
-  it("shows that the puzzle is solved", async () => {
+describe("colour-binary board completion", () => {
+  it("shows that the puzzle is solved and opens completion review", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
     await fillAnswer(user);
     expect(screen.getByRole("status")).toHaveTextContent(words.status.solved);
     expect(screen.getByRole("button", { name: words.hintButton })).toBeDisabled();
+    expect(screen.getByRole("dialog")).toHaveTextContent(text.completion.title);
+    expect(screen.getByRole("dialog")).toHaveTextContent(text.completion.cleanSolve);
+
+    // Dismiss completion review
+    await user.click(screen.getByRole("button", { name: text.completion.reviewBoard }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    // Reopen completion review from action button
+    await user.click(screen.getByRole("button", { name: text.completion.openSummary }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+});
+
+describe("colour-binary keyboard accessibility", () => {
+  it("allows setting red, blue, and empty with keyboard keys", () => {
+    render(<Board puzzle={puzzle} />);
+    const sq = square(1, 1);
+    fireEvent.keyDown(sq, { key: "r" });
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, red");
+    fireEvent.keyDown(sq, { key: "b" });
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, blue");
+    fireEvent.keyDown(sq, { key: "Backspace" });
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
+  });
+
+  it("navigates grid squares using arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    const sq11 = square(1, 1);
+    sq11.focus();
+    await user.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(square(1, 2));
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement).toBe(square(2, 2));
   });
 });

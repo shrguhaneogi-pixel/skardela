@@ -18,4 +18,30 @@ export const symbols = {
     light: "☀️",
     dark: "🌙",
   },
+  completion: {
+    clean: "✨",
+    time: "⏱️",
+    hint: "💡",
+    mistake: "❌",
+  },
+  postcard: {
+    colourBinary: {
+      R: "🟥",
+      B: "🟦",
+      empty: "⬜",
+    },
+    guzzle: {
+      correct: "🟩",
+      present: "🟨",
+      absent: "⬛",
+      empty: "⬜",
+    },
+  },
+  atlas: {
+    solved: "🎯",
+    clean: "✨",
+    streak: "🔥",
+    time: "⏱️",
+    skill: "🧩",
+  },
 } as const;

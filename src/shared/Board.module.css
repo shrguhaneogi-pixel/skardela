@@ -231,3 +231,27 @@
   background-color: var(--surface);
   color: var(--accent-text);
 }
+
+@media (forced-colors: active) {
+  .square:focus-visible,
+  .square[data-selected="true"] {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .square[data-hint="true"],
+  .square[data-logic-target="true"] {
+    outline: 3px solid Highlight;
+  }
+
+  .square[data-conflict="true"] {
+    outline: 3px dashed LinkText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .square[data-hint="true"],
+  .square[data-logic-target="true"] {
+    animation: none;
+  }
+}

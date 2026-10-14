@@ -1,5 +1,13 @@
 import type { Difficulty } from "./difficulty";
-import { getStoredItem, removeStoredItem, setStoredItem } from "./storage";
+import {
+  clearStoredNamespace,
+  getStoredItem,
+  listStoredKeys,
+  removeStoredItem,
+  setStoredItem,
+} from "./storage";
+
+export { calculateCompletionStats, formatDuration, type CompletionStats } from "./completion";
 
 export type PuzzleProgressStatus = "not_started" | "in_progress" | "solved";
 
@@ -100,4 +108,21 @@ export function markPuzzleProgressSolved(
 // Remove saved progress for one puzzle.
 export function clearPuzzleProgress(puzzleId: string): void {
   removeStoredItem(`${STORAGE_PREFIX}${puzzleId}`);
+}
+
+// Retrieve all stored puzzle progress records.
+export function getAllProgressRecords(): PuzzleProgressRecord[] {
+  const keys = listStoredKeys(STORAGE_PREFIX);
+  const records: PuzzleProgressRecord[] = [];
+  for (const key of keys) {
+    const id = key.slice(STORAGE_PREFIX.length);
+    const record = loadPuzzleProgress(id);
+    if (record) records.push(record);
+  }
+  return records;
+}
+
+// Clear all stored puzzle progress records.
+export function clearAllPuzzleProgress(): void {
+  clearStoredNamespace(STORAGE_PREFIX);
 }

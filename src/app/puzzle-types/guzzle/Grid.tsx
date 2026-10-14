@@ -20,6 +20,31 @@ function useFocusWhenSelected(isSelected: boolean) {
   return ref;
 }
 
+function findNextPlayable(
+  currentIndex: number,
+  deltaRow: number,
+  deltaCol: number,
+  size: number,
+): number | null {
+  let r = Math.floor(currentIndex / size) + deltaRow;
+  let c = (currentIndex % size) + deltaCol;
+  while (r >= 0 && r < size && c >= 0 && c < size) {
+    const idx = r * size + c;
+    if (isPlayable(idx, size)) return idx;
+    r += deltaRow;
+    c += deltaCol;
+  }
+  return null;
+}
+
+function getGuzzleArrowTarget(key: string, index: number, size: number): number | null {
+  if (key === "ArrowRight") return findNextPlayable(index, 0, 1, size);
+  if (key === "ArrowLeft") return findNextPlayable(index, 0, -1, size);
+  if (key === "ArrowDown") return findNextPlayable(index, 1, 0, size);
+  if (key === "ArrowUp") return findNextPlayable(index, -1, 0, size);
+  return null;
+}
+
 type SquareProps = {
   label: string;
   letter: string;
@@ -33,7 +58,23 @@ type SquareProps = {
   isLocked: boolean;
   onSelect?: () => void;
   onLetter?: (letter: string) => void;
+  onNavigate?: (key: string) => boolean;
 };
+
+function handleGuzzleKeyDown(
+  event: React.KeyboardEvent<HTMLButtonElement>,
+  isLocked: boolean,
+  onNavigate?: (key: string) => boolean,
+  onLetter?: (letter: string) => void,
+) {
+  if (onNavigate?.(event.key)) {
+    event.preventDefault();
+    return;
+  }
+  if (!isLocked && event.key.length === 1 && /^[a-zA-Z]$/u.test(event.key)) {
+    onLetter?.(event.key.toUpperCase());
+  }
+}
 
 // Each square on a word is a button. The player selects a square and then types a letter.
 function SquareButton({
@@ -49,6 +90,7 @@ function SquareButton({
   isLocked,
   onSelect,
   onLetter,
+  onNavigate,
 }: SquareProps) {
   const ref = useFocusWhenSelected(isSelected);
 
@@ -70,11 +112,7 @@ function SquareButton({
       onClick={() => {
         if (!isLocked) onSelect?.();
       }}
-      onKeyDown={(event) => {
-        if (!isLocked && event.key.length === 1 && /^[a-zA-Z]$/u.test(event.key)) {
-          onLetter?.(event.key.toUpperCase());
-        }
-      }}
+      onKeyDown={(event) => handleGuzzleKeyDown(event, isLocked, onNavigate, onLetter)}
     >
       <span aria-hidden="true">{letter}</span>
       {guess?.mark && !isFixed && (
@@ -114,13 +152,17 @@ function GridSquare({
   }
   const guess = isCenter ? undefined : game.guesses[index];
   const letter = isCenter ? (answer[index] ?? "") : (guess?.letter ?? "");
-  const label = words.square({
+  let label = words.square({
     row: Math.floor(index / size) + 1,
     column: (index % size) + 1,
     letter,
     mark: guess ? words.marks[guess.mark] : "",
     isFixed: isCenter,
   });
+  if (hint?.index === index) label += " (Hint target)";
+  if (logicExplanation?.targetIndex === index) label += " (Logic target)";
+  if (logicExplanation?.premises.some((p) => p.index === index)) label += " (Logic premise)";
+
   return (
     <SquareButton
       label={label}
@@ -133,10 +175,16 @@ function GridSquare({
       isLogicTarget={logicExplanation?.targetIndex === index}
       isLogicPremise={Boolean(logicExplanation?.premises.some((p) => p.index === index))}
       isLocked={isCenter || game.mode === null || game.isSolved || guess?.mark === "correct"}
-      onSelect={() => {
-        game.setSelected(index);
-      }}
+      onSelect={() => game.setSelected(index)}
       onLetter={game.putLetter}
+      onNavigate={(key) => {
+        const target = getGuzzleArrowTarget(key, index, size);
+        if (target !== null) {
+          game.setSelected(target);
+          return true;
+        }
+        return false;
+      }}
     />
   );
 }

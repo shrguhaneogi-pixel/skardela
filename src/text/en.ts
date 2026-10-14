@@ -32,8 +32,42 @@ export const text = {
     levelsHeading: (puzzleTypeName: string) => `Today's ${puzzleTypeName}`,
     quickPlay: "Continue playing",
     quickStart: "Start daily challenge",
+    archiveLink: "Browse archive",
     solved: "Solved",
     resume: "Resume",
+  },
+  archive: {
+    title: "Puzzle Archive",
+    intro: "Solve puzzles from previous daily editions.",
+    datePickerLabel: "Pick date",
+    recentHeading: "Recent editions",
+    selectedDateHeading: (date: string) => `Puzzles for ${date}`,
+    archiveBadge: (date: string) => `Archive • ${date}`,
+    todayBadge: "Today's edition",
+    jumpToToday: "Go to today",
+    navLink: "Archive",
+  },
+  atlas: {
+    title: "Personal Logic Atlas",
+    intro:
+      "A local summary of your puzzle practice and reasoning skills. All data stays on your device.",
+    disclaimer:
+      "This atlas records your completed deductions in Skardela. It does not measure general intelligence.",
+    totalSolved: "Total Solved",
+    cleanSolves: "Perfect Solves",
+    currentStreak: "Daily Streak",
+    streakDays: (days: number) => `${days} ${days === 1 ? "day" : "days"}`,
+    totalTime: "Total Time",
+    skillsHeading: "Reasoning Skills",
+    breakdownHeading: "Puzzle Types",
+    settingsHeading: "Privacy & Controls",
+    enableLabel: "Enable Personal Logic Atlas",
+    enableHelp: "When disabled, stats are not collected or displayed.",
+    clearHistoryBtn: "Clear Atlas History",
+    clearConfirm: "Are you sure you want to clear your local puzzle history?",
+    historyCleared: "Atlas history cleared.",
+    navLink: "Atlas",
+    disabledMessage: "Personal Logic Atlas is disabled.",
   },
   puzzlePage: {
     title: (puzzleTypeName: string, id: string, siteName: string) =>
@@ -200,6 +234,29 @@ export const text = {
       `Letter ${letter} was already marked absent in ${line}.`,
     guzzlePresentSuggestion: (letter: string, line: string) =>
       `Letter ${letter} is present in ${line}. Try an open square in this line.`,
+  },
+  completion: {
+    title: "Puzzle solved!",
+    subtitle: "Good work. Here is your summary:",
+    timeSpent: "Time",
+    hintsUsed: "Hints used",
+    mistakes: "Mistakes",
+    cleanSolve: "Perfect solve!",
+    cleanSolveDesc: "Solved with no hints and no errors.",
+    playAgain: "Play again",
+    reviewBoard: "Review board",
+    openSummary: "View solve summary",
+    sharePostcard: "Share postcard",
+    copied: "Copied to clipboard!",
+    shareFailed: "Could not share or copy postcard.",
+  },
+  postcard: {
+    header: (game: string, id: string, detail?: string) =>
+      detail ? `Skardela — ${game} #${id} (${detail})` : `Skardela — ${game} #${id}`,
+    stats: (time: string, hints: number, mistakes: number) =>
+      `⏱️ ${time} | 💡 ${hints} hints | ❌ ${mistakes} mistakes`,
+    cleanStats: (time: string) => `⏱️ ${time} | ✨ Perfect solve!`,
+    url: "https://skardela.app",
   },
   notFound: {
     title: "Page Not Found",

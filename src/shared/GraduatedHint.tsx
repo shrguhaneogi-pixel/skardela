@@ -11,6 +11,7 @@ import {
 // This component shows graduated hints with tier progression controls.
 
 export { LogicExplanationModal } from "./LogicExplanation";
+export { CompletionReview, type CompletionReviewProps } from "./CompletionReview";
 
 const TIERS: readonly HintTier[] = ["nudge", "explanation", "solution"];
 

@@ -15,6 +15,7 @@ export type LastMove = { guess: Guess; index: number } | null;
 
 export type Game = ReturnType<typeof useGame>;
 export { statusText } from "./status";
+export { toSquares, type GuzzlePuzzle } from "./puzzle";
 
 type Hooks = {
   onModeChosen?: (mode: Mode) => void;
@@ -81,14 +82,72 @@ function processLetterPlacement(
   return { guess, next, nextMistakes };
 }
 
-// This hook keeps the game state: the mode, the guesses, the selected square and the mistakes.
-export function useGame(
-  answer: readonly string[],
-  size: number,
-  hooks: Hooks = {},
-  puzzleId?: string,
+function handleLetterPlacement(
+  params: {
+    answer: readonly string[];
+    guesses: (Guess | undefined)[];
+    selected: number;
+    letter: string;
+    mistakes: number;
+    size: number;
+    mode: Mode;
+    puzzleId?: string;
+  },
+  setters: {
+    setGuesses: (g: (Guess | undefined)[]) => void;
+    setLastMove: (m: LastMove) => void;
+    setSelected: (s: number | null) => void;
+    setMistakes: (m: number) => void;
+  },
+  onPlaced?: Hooks["onLetterPlaced"],
 ) {
-  const initial = loadGuzzleSavedState(puzzleId, answer.length);
+  const res = processLetterPlacement(
+    params.answer,
+    params.guesses,
+    params.selected,
+    params.letter,
+    params.mistakes,
+  );
+  if (!res) return;
+  onPlaced?.({
+    index: params.selected,
+    letter: params.letter,
+    result: res.guess.mark,
+    mistakes: res.nextMistakes,
+  });
+  setters.setGuesses(res.next);
+  setters.setLastMove({ guess: res.guess, index: params.selected });
+  if (res.guess.mark === "correct") {
+    setters.setSelected(nextOpenSquare(res.next, params.selected, params.size));
+  } else {
+    setters.setMistakes(res.nextMistakes);
+  }
+  syncGuzzleProgress(params.puzzleId, params.answer, res.next, params.mode, res.nextMistakes);
+}
+
+function resetGuzzleState(
+  answerLength: number,
+  mode: Mode | null,
+  size: number,
+  puzzleId: string | undefined,
+  answer: readonly string[],
+  setters: {
+    setGuesses: (g: (Guess | undefined)[]) => void;
+    setMistakes: (m: number) => void;
+    setLastMove: (m: LastMove) => void;
+    setSelected: (s: number | null) => void;
+  },
+) {
+  const empty = Array.from<Guess | undefined>({ length: answerLength });
+  setters.setGuesses(empty);
+  setters.setMistakes(0);
+  setters.setLastMove(null);
+  setters.setSelected(mode ? nextOpenSquare(empty, -1, size) : null);
+  syncGuzzleProgress(puzzleId, answer, empty, mode, 0);
+}
+
+function useGuzzleState(puzzleId: string | undefined, answerLength: number, size: number) {
+  const initial = loadGuzzleSavedState(puzzleId, answerLength);
   const [mode, setMode] = useState<Mode | null>(initial.mode);
   const [guesses, setGuesses] = useState<(Guess | undefined)[]>(initial.guesses);
   const [selected, setSelected] = useState<number | null>(() =>
@@ -96,37 +155,89 @@ export function useGame(
   );
   const [mistakes, setMistakes] = useState(initial.mistakes);
   const [lastMove, setLastMove] = useState<LastMove>(null);
-  const isSolved = allGreen(answer, guesses);
+  return {
+    mode,
+    setMode,
+    guesses,
+    setGuesses,
+    selected,
+    setSelected,
+    mistakes,
+    setMistakes,
+    lastMove,
+    setLastMove,
+  };
+}
 
-  function putLetter(letter: string) {
-    if (mode === null || selected === null || isSolved) return;
-    const res = processLetterPlacement(answer, guesses, selected, letter, mistakes);
-    if (!res) return;
-    const { guess, next, nextMistakes } = res;
-    hooks.onLetterPlaced?.({ index: selected, letter, result: guess.mark, mistakes: nextMistakes });
-    setGuesses(next);
-    setLastMove({ guess, index: selected });
-    if (guess.mark === "correct") setSelected(nextOpenSquare(next, selected, size));
-    else setMistakes(nextMistakes);
-    syncGuzzleProgress(puzzleId, answer, next, mode, nextMistakes);
-  }
+function usePutLetterHandler(
+  s: ReturnType<typeof useGuzzleState>,
+  answer: readonly string[],
+  size: number,
+  isSolved: boolean,
+  hooks: Hooks,
+  puzzleId?: string,
+) {
+  return (letter: string) => {
+    if (s.mode === null || s.selected === null || isSolved) return;
+    const setters = {
+      setGuesses: s.setGuesses,
+      setLastMove: s.setLastMove,
+      setSelected: s.setSelected,
+      setMistakes: s.setMistakes,
+    };
+    handleLetterPlacement(
+      {
+        answer,
+        guesses: s.guesses,
+        selected: s.selected,
+        letter,
+        mistakes: s.mistakes,
+        size,
+        mode: s.mode,
+        puzzleId,
+      },
+      setters,
+      hooks.onLetterPlaced,
+    );
+  };
+}
+
+// This hook keeps the game state: the mode, the guesses, the selected square and the mistakes.
+export function useGame(
+  answer: readonly string[],
+  size: number,
+  hooks: Hooks = {},
+  puzzleId?: string,
+) {
+  const s = useGuzzleState(puzzleId, answer.length, size);
+  const isSolved = allGreen(answer, s.guesses);
+  const putLetter = usePutLetterHandler(s, answer, size, isSolved, hooks, puzzleId);
 
   function chooseMode(newMode: Mode) {
     hooks.onModeChosen?.(newMode);
-    setMode(newMode);
-    setSelected(nextOpenSquare(guesses, -1, size));
-    syncGuzzleProgress(puzzleId, answer, guesses, newMode, mistakes);
+    s.setMode(newMode);
+    s.setSelected(nextOpenSquare(s.guesses, -1, size));
+    syncGuzzleProgress(puzzleId, answer, s.guesses, newMode, s.mistakes);
   }
 
+  const restart = () =>
+    resetGuzzleState(answer.length, s.mode, size, puzzleId, answer, {
+      setGuesses: s.setGuesses,
+      setMistakes: s.setMistakes,
+      setLastMove: s.setLastMove,
+      setSelected: s.setSelected,
+    });
+
   return {
-    mode,
-    guesses,
-    selected,
-    mistakes,
-    lastMove,
+    mode: s.mode,
+    guesses: s.guesses,
+    selected: s.selected,
+    mistakes: s.mistakes,
+    lastMove: s.lastMove,
     isSolved,
     putLetter,
     chooseMode,
-    setSelected,
+    setSelected: s.setSelected,
+    restart,
   };
 }

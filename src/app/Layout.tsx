@@ -26,6 +26,12 @@ export function Layout() {
             </span>
             <span>{text.siteName}</span>
           </Link>
+          <Link className={styles.navLink} to="/archive">
+            {text.archive.navLink}
+          </Link>
+          <Link className={styles.navLink} to="/atlas">
+            {text.atlas.navLink}
+          </Link>
         </nav>
         <ThemeSwitcher />
       </header>

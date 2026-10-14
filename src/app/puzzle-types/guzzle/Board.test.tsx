@@ -109,4 +109,15 @@ describe("guzzle board keyboard", () => {
     expect(square(1, 2)).toHaveFocus();
     expect(square(1, 2)).toHaveAttribute("aria-pressed", "true");
   });
+
+  it("navigates grid squares using arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    await user.click(square(1, 1));
+    await user.keyboard("{ArrowRight}");
+    expect(square(1, 2)).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(square(3, 2)).toHaveFocus();
+  });
 });

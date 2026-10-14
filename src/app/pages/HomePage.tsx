@@ -129,6 +129,11 @@ export function HomePage() {
             <PuzzleCard key={card.type} {...card} />
           ))}
         </ul>
+        <div className={styles.archiveLinkRow}>
+          <Link to="/archive" className={styles.archiveLink}>
+            {text.home.archiveLink} →
+          </Link>
+        </div>
       </section>
     </>
   );
