@@ -12,8 +12,8 @@ This document tracks the implementation, verification, and commit history for al
 | 4     | IMPROVEMENT 07 | Verifiable Daily Challenge Identity        | COMMITTED   | Pending     |
 | 5     | IMPROVEMENT 14 | Daily Content Integrity Check              | COMMITTED   | Pending     |
 | 6     | IMPROVEMENT 11 | Solver-Verified Puzzle Workshop            | COMMITTED   | Pending     |
-| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | IN PROGRESS | Pending     |
-| 8     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | PLANNED     | Pending     |
+| 7     | IMPROVEMENT 12 | Difficulty Calibration Engine              | COMMITTED   | Pending     |
+| 8     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | IN PROGRESS | Pending     |
 | 9     | IMPROVEMENT 03 | Instant Resume State Engine                | PLANNED     | Pending     |
 | 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | PLANNED     | Pending     |
 | 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | PLANNED     | Pending     |
@@ -87,4 +87,13 @@ This document tracks the implementation, verification, and commit history for al
   - `src/shared/puzzle-validator.test.ts` (unit tests covering valid examples, ambiguous multiple-solution detection, mismatched answers, and invalid characters)
 - **Summary:** Built a deterministic solver-backed validator for both Colour Binary and Guzzle puzzle types, providing actionable error diagnostics and preventing malformed or ambiguous puzzles from reaching players.
 - **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/puzzle-validator.test.ts`. 6 unit tests passed. 0 lint warnings/errors.
+
+### Entry 12: Difficulty Calibration Engine
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/difficulty-calibration.ts` (evidence-based heuristic difficulty calibration engine evaluating grid size, clue density, direct deductions, and letter diversity)
+  - `src/shared/difficulty-calibration.test.ts` (unit tests verifying 0-100 scoring consistency and classification across 4x4, 8x8, and Guzzle puzzles)
+- **Summary:** Implemented reproducible heuristic difficulty estimators for Colour Binary and Guzzle based on concrete structural complexity and deduction density rather than naive brute-force step counts.
+- **Verification:** Ran `npm run format:fix && npm run lint:check && npm run typecheck && npm run test -- src/shared/difficulty-calibration.test.ts`. 3 unit tests passed. 0 lint warnings/errors.
 
