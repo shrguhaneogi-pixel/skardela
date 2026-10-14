@@ -186,3 +186,26 @@ export function clearStoredNamespace(prefix = "skardela:"): void {
     }
   }
 }
+
+// List all keys matching a prefix from storage and memory store.
+export function listStoredKeys(prefix = "skardela:"): string[] {
+  const keys = new Set<string>();
+  if (storageAvailable) {
+    try {
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const k = window.localStorage.key(i);
+        if (k && k.startsWith(prefix)) {
+          keys.add(k);
+        }
+      }
+    } catch {
+      // Ignore errors when listing.
+    }
+  }
+  for (const k of memoryStore.keys()) {
+    if (k.startsWith(prefix)) {
+      keys.add(k);
+    }
+  }
+  return Array.from(keys);
+}
