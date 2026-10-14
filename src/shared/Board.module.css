@@ -100,6 +100,14 @@
   animation: hint-glow 1.4s ease-in-out infinite alternate;
 }
 
+/* Conflict cue: red dashed border indicating a rule mistake */
+.square[data-conflict="true"] {
+  outline: 2px dashed var(--red);
+  outline-offset: 2px;
+  z-index: 3;
+  box-shadow: 0 0 10px -2px color-mix(in srgb, var(--red) 40%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .square[data-hint="true"] {
     animation: none;

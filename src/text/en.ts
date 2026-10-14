@@ -188,6 +188,19 @@ export const text = {
         `Square at row ${row}, column ${column} belongs to intersecting words.`,
     },
   },
+  contextHelp: {
+    conflictBadge: "Conflict detected",
+    exceedsHalf: (line: string, count: number, max: number, colour: string) =>
+      `${line} has ${count} ${colour} squares. Maximum allowed is ${max}.`,
+    threeInARow: (line: string, colour: string) =>
+      `${line} contains three consecutive ${colour} squares.`,
+    identicalLines: (lineType: string, num1: number, num2: number) =>
+      `${lineType} ${num1} and ${lineType} ${num2} are identical. Lines must be unique.`,
+    guzzleAbsentRepeated: (letter: string, line: string) =>
+      `Letter ${letter} was already marked absent in ${line}.`,
+    guzzlePresentSuggestion: (letter: string, line: string) =>
+      `Letter ${letter} is present in ${line}. Try an open square in this line.`,
+  },
   notFound: {
     title: "Page Not Found",
     body: "The page you are looking for does not exist.",

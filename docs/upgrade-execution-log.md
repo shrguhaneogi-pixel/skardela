@@ -16,7 +16,7 @@ This document tracks the implementation, verification, and commit history for al
 | 8     | IMPROVEMENT 03 | Instant Resume State Engine                | COMMITTED | 448aaa2     |
 | 9     | IMPROVEMENT 01 | The Daily Puzzle Desk                      | COMMITTED | 4971448     |
 | 10    | IMPROVEMENT 02 | Universal Graduated Hints                  | COMMITTED | 4a2e763     |
-| 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | COMMITTED | Pending     |
+| 11    | IMPROVEMENT 06 | Show Me the Logic Explanation Engine       | COMMITTED | 60b0cfd     |
 | 12    | IMPROVEMENT 13 | Context-Aware Help System                  | PLANNED   | Pending     |
 | 13    | IMPROVEMENT 05 | Meaningful Completion Review               | PLANNED   | Pending     |
 | 14    | IMPROVEMENT 09 | Spoiler-Free Puzzle Postcards              | PLANNED   | Pending     |
@@ -159,3 +159,16 @@ This document tracks the implementation, verification, and commit history for al
 - **Summary:** Implemented the "Show Me the Logic" deduction explanation engine. Explains the exact premises and logical deductions that force a move, visually illuminating the premise evidence cells and target cells on the board.
 - **Verification:** Ran `npm run fix && npm run check`. All 19 test suites (87 unit tests) and 2 validation suites (9 validation tests) passed. 0 linter warnings or errors.
 
+### Entry 13: Context-Aware Help System
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/context-aware-help.ts` (rule mistake and conflict detection engine, AdviceTracker)
+  - `src/shared/context-aware-help.test.ts` (unit tests verifying half-capacity and three-in-a-row conflict detection, advice non-repetition)
+  - `src/shared/graduated-hints.ts` (preempting forward deduction hints when user board has active conflicts)
+  - `src/shared/graduated-hints.test.ts` (testing conflict preemption in graduated hints)
+  - `src/app/puzzle-types/colour-binary/Grid.tsx` (binding data-conflict attribute to highlight offending squares)
+  - `src/shared/Board.module.css` (red dashed border styling and ring glow for conflict cells)
+  - `src/text/en.ts` (localized text strings for conflict badges, errors, and advice)
+- **Summary:** Implemented context-aware assistance that detects conflicting board inputs (such as exceeding color capacity or creating three identical colors consecutively). Conflicting squares are highlighted in red dashed borders and clear remedial advice preempts forward hints.
+- **Verification:** Ran `npm run fix && npm run check`. All 20 unit test suites (92 tests) and 2 validation suites (9 tests) passed. 0 linter warnings or errors.

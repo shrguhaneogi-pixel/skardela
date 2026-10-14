@@ -18,6 +18,7 @@ type SquareProps = {
   isFixed: boolean;
   isHint: boolean;
   isHighlighted: boolean;
+  isConflict: boolean;
   isLogicTarget: boolean;
   isLogicPremise: boolean;
   isSolved: boolean;
@@ -32,6 +33,7 @@ function SquareButton({
   isFixed,
   isHint,
   isHighlighted,
+  isConflict,
   isLogicTarget,
   isLogicPremise,
   isSolved,
@@ -51,6 +53,7 @@ function SquareButton({
       data-fixed={isFixed}
       data-hint={isHint}
       data-highlight={isHighlighted}
+      data-conflict={isConflict}
       data-logic-target={isLogicTarget}
       data-logic-premise={isLogicPremise}
       aria-label={label}
@@ -98,6 +101,7 @@ export function BoardGrid({
             isFixed={start[index] !== "."}
             isHint={hint?.index === index}
             isHighlighted={Boolean(hint?.highlightIndices.includes(index) && hint.index !== index)}
+            isConflict={Boolean(hint?.isConflict && hint.highlightIndices.includes(index))}
             isLogicTarget={logicExplanation?.targetIndex === index}
             isLogicPremise={Boolean(logicExplanation?.premises.some((p) => p.index === index))}
             isSolved={isSolved}

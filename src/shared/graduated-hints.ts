@@ -2,6 +2,8 @@ import { findHint } from "../app/puzzle-types/colour-binary/hint";
 import type { Square } from "../app/puzzle-types/colour-binary/puzzle";
 import { text } from "../text/en";
 
+import { findBoardConflicts } from "./context-aware-help";
+
 // ASD-STE100 Simplified Technical English comments.
 // This module provides graduated hints with three levels: nudge, explanation, and solution.
 
@@ -10,6 +12,12 @@ export {
   explainGuzzleLogic,
   type LogicExplanation,
 } from "./logic-explainer";
+export {
+  AdviceTracker,
+  findBoardConflicts,
+  type BoardConflict,
+  type ConflictType,
+} from "./context-aware-help";
 
 export type HintTier = "nudge" | "explanation" | "solution";
 
@@ -21,6 +29,7 @@ export type GraduatedHint = {
   explanation: string;
   solution: string;
   ruleType: string;
+  isConflict?: boolean;
 };
 
 // Advance the active tier to the next level of detail.
@@ -64,6 +73,21 @@ export function createColourBinaryHint(
   size: number,
   tier: HintTier = "nudge",
 ): GraduatedHint | undefined {
+  const conflict = findBoardConflicts(squares, size);
+  if (conflict) {
+    const target = conflict.indices[0] ?? 0;
+    return {
+      tier,
+      index: target,
+      highlightIndices: conflict.indices,
+      nudge: `${text.contextHelp.conflictBadge}: ${conflict.message}`,
+      explanation: `${conflict.message} ${conflict.remedy}`,
+      solution: conflict.remedy,
+      ruleType: conflict.type,
+      isConflict: true,
+    };
+  }
+
   const base = findHint(squares);
   if (!base) return undefined;
 

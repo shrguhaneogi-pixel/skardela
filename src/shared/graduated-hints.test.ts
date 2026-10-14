@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import cbExample from "../app/puzzle-types/colour-binary/examples/colour-binary-0000.json";
-import { toSquares as toCbSquares } from "../app/puzzle-types/colour-binary/puzzle";
+import { toSquares as toCbSquares, type Square } from "../app/puzzle-types/colour-binary/puzzle";
 import gzExample from "../app/puzzle-types/guzzle/examples/guzzle-0000.json";
 import {
   advanceTier,
@@ -33,6 +33,16 @@ describe("graduated-hints engine", () => {
     const solved = toCbSquares(cbExample.answer);
     const hint = createColourBinaryHint(solved, cbExample.answer.length);
     expect(hint).toBeUndefined();
+  });
+
+  it("prioritizes board conflicts over deduction hints in colour binary", () => {
+    // 3 red squares in a row
+    const broken: Square[] = ["R", "R", "R", ".", ".", "."];
+    const hint = createColourBinaryHint(broken, 6);
+    expect(hint).toBeDefined();
+    expect(hint?.isConflict).toBe(true);
+    expect(hint?.ruleType).toBe("three-in-a-row");
+    expect(hint?.highlightIndices).toEqual([0, 1, 2]);
   });
 
   it("builds a graduated hint for guzzle starting at nudge", () => {
