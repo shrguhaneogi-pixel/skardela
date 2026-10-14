@@ -27,8 +27,13 @@ export const text = {
     title: "Today's puzzles",
     intro: "New puzzles each day. They are free. You do not need an account or a download.",
     edition: "Daily edition",
+    editionWithDate: (date: string) => `Daily edition • ${date} UTC`,
     puzzleTypesHeading: "Puzzle types",
     levelsHeading: (puzzleTypeName: string) => `Today's ${puzzleTypeName}`,
+    quickPlay: "Continue playing",
+    quickStart: "Start daily challenge",
+    solved: "Solved",
+    resume: "Resume",
   },
   puzzlePage: {
     title: (puzzleTypeName: string, id: string, siteName: string) =>

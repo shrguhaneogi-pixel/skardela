@@ -111,3 +111,12 @@ This document tracks the implementation, verification, and commit history for al
 - **Summary:** Delivered crash-resilient local saving and auto-resume for both Colour Binary and Guzzle puzzles. Solved status, move history, mistakes, and board states survive tab closures and reloads seamlessly.
 - **Verification:** Ran full check and test suite. All 17 test files and 77 unit tests passed. 0 lint warnings/errors.
 
+### Entry 01: The Daily Puzzle Desk
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/app/pages/HomePage.tsx` (UTC date badge, status badges for solved/in-progress puzzles, and quick play banner)
+  - `src/app/pages/HomePage.module.css` (tactile glass styling for quick play banner and status pills)
+  - `src/text/en.ts` (added text strings for edition date, quick play, and puzzle status)
+- **Summary:** Added the unified Daily Puzzle Desk. Shows UTC edition dates, instant resume / solved indicator pills, and an action banner to resume active games or start the daily challenge quickly.
+- **Verification:** Ran `npm run fix && npm run check`. All 17 test suites (77 unit tests) and 2 validation suites (9 validation tests) passed. 0 linter warnings or errors.
