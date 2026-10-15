@@ -63,9 +63,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
+  font-family: var(--font-display);
   color: var(--text-h);
   font-size: 1.1875rem;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: -0.02em;
   text-decoration: none;
   transition: opacity var(--transition-fast);
