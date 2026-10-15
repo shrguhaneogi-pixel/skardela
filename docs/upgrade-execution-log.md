@@ -24,9 +24,9 @@ This document tracks the implementation, verification, and commit history for al
 | 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | COMMITTED | 7b7b4ef     |
 | 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | COMMITTED | 8695a0a     |
 | 18    | IMPROVEMENT 15 | Personal Practice Queue                    | COMMITTED | e87bc30     |
-| 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | COMMITTED | pending     |
+| 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | COMMITTED | f6c7251     |
 | 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | COMMITTED | db14ffa     |
-| 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | PLANNED   | Pending     |
+| 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | COMMITTED | 6c6fc01     |
 | 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | PLANNED   | Pending     |
 | 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED   | Pending     |
 | 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | PLANNED   | Pending     |
@@ -283,3 +283,27 @@ This document tracks the implementation, verification, and commit history for al
   - `docs/accessibility-testing.md` (comprehensive protocol for manual screen-reader testing on NVDA, VoiceOver, TalkBack, and zoom verification)
 - **Summary:** Established automated accessibility regression coverage locking in skip links, landmark regions, relative luminance contrast thresholds (>= 4.5:1), and stylesheet media queries. Documented essential manual physical testing guidelines for screen readers and high-contrast environments.
 - **Verification:** Ran `npm run fix && npm run check`. All 26 unit test suites (130 unit tests) and 3 validation suites (12 tests) passed. 0 linter warnings or errors.
+
+### Entry 19: Installable Offline-First PWA (IMPROVEMENT 16)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `public/manifest.webmanifest` (standard PWA manifest with standalone display, icons, and theme color)
+  - `public/sw.js` (service worker with network-first runtime caching, offline app shell fallback, and cache versioning)
+  - `src/shared/pwa.ts` (service worker registration and standalone display-mode detection)
+  - `src/shared/pwa.test.ts` (unit tests for standalone mode detection and registration edge cases)
+  - `tools/pwa-manifest.test.ts` (validation test verifying webmanifest validity, icon paths, and required metadata)
+  - `src/main.tsx` (service worker registration invocation on production environment)
+  - `index.html` (linked manifest.webmanifest and theme-color meta tag)
+- **Summary:** Implemented installable offline-first Progressive Web App capabilities. Provides responsive manifest for homescreen installation, a caching service worker for asset caching and SPA navigation fallback during network dropouts, and zero external dependencies.
+- **Verification:** Ran `npm run fix && npm run check`. All 27 unit test suites (134 tests) and 4 validation suites (14 tests) passed. 0 linter warnings or errors.
+
+### Entry 21: Performance Budgets & Render Discipline (IMPROVEMENT 19)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/performance.ts` (bounded performance measurement buffer and render metric recorder)
+  - `src/shared/performance.test.ts` (unit tests for metric recording, bounds, clamping, and reset)
+  - `tools/bundle-budget.test.ts` (automated bundle budget validation checking main bundle <= 550 kB, CSS <= 80 kB, and puzzle chunks <= 40 kB)
+- **Summary:** Established bundle size budgets and render discipline metrics. Verified route-level code splitting, lazy puzzle loading, compiler-driven memoization, and introduced automated validation tests enforcing file size constraints across all production output artifacts.
+- **Verification:** Ran `npm run fix && npm run check`. All 28 unit test suites (138 tests) and 5 validation suites (17 tests) passed. 0 linter warnings or errors.

@@ -2,11 +2,7 @@ import { type RouteObject } from "react-router";
 import { Layout } from "./Layout";
 import { RouteError } from "./RouteError";
 import { text } from "../text/en";
-import { ArchivePage } from "./pages/ArchivePage";
-import { AtlasPage } from "./pages/AtlasPage";
-import { HomePage } from "./pages/HomePage";
-import { NotFoundPage } from "./pages/NotFoundPage";
-import { PuzzlePage } from "./pages/PuzzlePage";
+import { ArchivePage, AtlasPage, HomePage, NotFoundPage, PuzzlePage, StudioPage } from "./pages";
 import { archiveLoader, homeLoader, puzzleLoader } from "./puzzles";
 
 // The route tree keeps the app shell and each page in one place.
@@ -38,6 +34,10 @@ export const routes: RouteObject[] = [
       {
         path: "atlas",
         element: <AtlasPage />,
+      },
+      {
+        path: "studio",
+        element: <StudioPage />,
       },
       {
         path: "puzzles/:puzzleId",

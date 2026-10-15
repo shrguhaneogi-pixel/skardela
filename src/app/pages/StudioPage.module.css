@@ -1,0 +1,222 @@
+.hero {
+  padding-block: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.hero h1 {
+  margin-block: 0 0.5rem;
+  font-weight: 700;
+}
+
+.intro {
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1rem + 0.3vw, 1.15rem);
+  line-height: 1.5;
+  max-width: 58ch;
+}
+
+.disclaimer {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--surface-muted);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  max-width: 62ch;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabBtn:hover {
+  color: var(--text);
+  background-color: var(--surface-hover);
+}
+
+.activeTab {
+  color: var(--accent);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.metaControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.input,
+.select {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 12rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.gridContainer {
+  display: inline-grid;
+  gap: 0.35rem;
+  padding: 1rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-inline: auto;
+}
+
+.cell {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface-muted);
+  color: var(--text);
+  transition: background-color 0.1s ease;
+}
+
+.cell:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cellR {
+  background-color: var(--red);
+  color: var(--colour-binary-r-text, #ffffff);
+}
+
+.cellB {
+  background-color: var(--blue);
+  color: var(--colour-binary-b-text, #ffffff);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btnPrimary {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.btnSecondary {
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.btnPrimary:hover,
+.btnSecondary:hover {
+  opacity: 0.9;
+}
+
+.validationBox {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+}
+
+.successBox {
+  border-color: var(--green);
+  background-color: var(--surface-muted);
+  color: var(--text);
+}
+
+.errorBox {
+  border-color: var(--red);
+  background-color: var(--surface-muted);
+  color: var(--text);
+}
+
+.errorList {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.copiedBadge {
+  font-size: 0.875rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+@media (forced-colors: active) {
+  .cell {
+    border: 2px solid ButtonText;
+  }
+  .activeTab {
+    outline: 2px solid Highlight;
+  }
+}

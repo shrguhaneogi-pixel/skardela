@@ -32,6 +32,9 @@ export function Layout() {
           <Link className={styles.navLink} to="/atlas">
             {text.atlas.navLink}
           </Link>
+          <Link className={styles.navLink} to="/studio">
+            {text.studio.navLink}
+          </Link>
         </nav>
         <ThemeSwitcher />
       </header>

@@ -48,4 +48,9 @@ export const symbols = {
     queue: "🎯",
     recommend: "💡",
   },
+  studio: {
+    studio: "🛠️",
+    validate: "🔍",
+    export: "💾",
+  },
 } as const;
