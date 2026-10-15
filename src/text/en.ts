@@ -2,6 +2,7 @@ import type { Rule } from "../shared/RuleList";
 import { symbols } from "./symbols";
 import { studioText } from "./studio";
 import { duelText } from "./duel";
+import { expeditionsText } from "./expeditions";
 
 // "1 mistake", "2 mistakes". More than one text uses it.
 const mistakeCount = (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"}`;
@@ -282,6 +283,7 @@ export const text = {
   },
   studio: studioText,
   duel: duelText,
+  expeditions: expeditionsText,
   notFound: {
     title: "Page Not Found",
     body: "The page you are looking for does not exist.",

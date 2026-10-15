@@ -58,4 +58,10 @@ export const symbols = {
     trophy: "🏆",
     tie: "🤝",
   },
+  expeditions: {
+    compass: "🧭",
+    map: "🗺️",
+    locked: "🔒",
+    completed: "✅",
+  },
 } as const;

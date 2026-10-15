@@ -28,7 +28,7 @@ This document tracks the implementation, verification, and commit history for al
 | 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | COMMITTED | db14ffa     |
 | 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | COMMITTED | 6c6fc01     |
 | 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | COMMITTED | b9057dd     |
-| 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED   | Pending     |
+| 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | COMMITTED | 3cd0cf9     |
 | 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | PLANNED   | Pending     |
 | 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | PLANNED   | Pending     |
 | 26    | IMPROVEMENT 25 | Open Puzzle Exchange                       | PLANNED   | Pending     |
@@ -325,3 +325,21 @@ This document tracks the implementation, verification, and commit history for al
   - `src/text/symbols.ts` (studio icons and action symbols)
 - **Summary:** Implemented the client-side Skardela Puzzle Studio. Allows players to author, interactively validate, preview, and export custom puzzles. Utilizes real backtracking solvers and rule checkers, enforces 32 KB payload bounds on raw JSON, ensures zero code execution on imported data, and preserves isolation from daily rotations.
 - **Verification:** Ran `npm run fix && npm run check`. All 29 unit test suites (142 tests) and 5 validation suites (17 tests) passed. 0 linter warnings or errors.
+
+### Entry 23: Asynchronous Puzzle Duels (IMPROVEMENT 22)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/duel.ts` (compact URL-safe result encoder, decoder, and multi-metric comparison engine)
+  - `src/shared/duel.test.ts` (unit tests for encoding roundtrips, clean solves, corrupted code handling, and winner determination)
+  - `src/app/pages/DuelPage.tsx` (accessible duel page shell with code submission, comparison banner, and play actions)
+  - `src/app/pages/DuelPage.module.css` (tactile glass styling for duel cards, comparison tables, and disclaimer notes)
+  - `src/app/pages/DuelPage.test.tsx` (integration tests verifying duel header, client-side disclaimer, and comparison outcome rendering)
+  - `src/app/pages/index.ts` (re-exported DuelPage from pages barrel)
+  - `src/app/routes.tsx` (registered /duel route)
+  - `src/app/Layout.tsx` (added Duels navigation link in header)
+  - `src/text/duel.ts` (localized duel strings)
+  - `src/text/en.ts` (exported duel text slice)
+  - `src/text/symbols.ts` (duel and trophy symbols)
+- **Summary:** Implemented client-side Asynchronous Puzzle Duels. Enables players to encode, share, and compare puzzle results across speed, hints used, and mistakes made. Clearly marks results as self-reported without claiming server anti-cheat or matchmaking, operates 100% locally and account-free, and documents infrastructure requirements for future server features.
+- **Verification:** Ran `npm run fix && npm run check`. All 31 unit test suites (149 tests) and 5 validation suites (17 tests) passed. 0 linter warnings or errors.

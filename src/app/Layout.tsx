@@ -38,6 +38,9 @@ export function Layout() {
           <Link className={styles.navLink} to="/duel">
             {text.duel.navLink}
           </Link>
+          <Link className={styles.navLink} to="/expeditions">
+            {text.expeditions.navLink}
+          </Link>
         </nav>
         <ThemeSwitcher />
       </header>
