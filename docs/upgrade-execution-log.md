@@ -401,4 +401,3 @@ This document tracks the implementation, verification, and commit history for al
   - `src/text/symbols.ts` (exchange import, export, and pack symbols)
 - **Summary:** Implemented the Open Puzzle Exchange. Formulates the open puzzle pack JSON schema (`skardela-pack-v1`) and formal catalog specification. Validates puzzle packs completely in the browser with size bounds (256 KB max, 50 puzzles max), prototype pollution defense, and puzzle solver verification. Documents server catalog requirements honestly while providing client-side import and storage.
 - **Verification:** Ran `npm run fix && npm run check`. All 37 unit test suites (167 tests) and 6 validation suites (19 tests) passed. 0 linter warnings or errors.
-
