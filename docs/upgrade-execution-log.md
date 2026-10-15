@@ -23,9 +23,9 @@ This document tracks the implementation, verification, and commit history for al
 | 15    | IMPROVEMENT 04 | Historical Puzzle Archive                  | COMMITTED | 768bda6     |
 | 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | COMMITTED | 7b7b4ef     |
 | 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | COMMITTED | 8695a0a     |
-| 18    | IMPROVEMENT 15 | Personal Practice Queue                    | COMMITTED | pending     |
+| 18    | IMPROVEMENT 15 | Personal Practice Queue                    | COMMITTED | e87bc30     |
 | 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | PLANNED   | Pending     |
-| 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | PLANNED   | Pending     |
+| 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | COMMITTED | pending     |
 | 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | PLANNED   | Pending     |
 | 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | PLANNED   | Pending     |
 | 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED   | Pending     |
@@ -273,4 +273,14 @@ This document tracks the implementation, verification, and commit history for al
   - `src/text/symbols.ts` (symbols for practice queue)
 - **Summary:** Delivered the Personal Practice Queue providing local, explainable recommendations. Suggests warmups for new players, difficulty progressions when a level is completed, and unplayed puzzles from historical archives. Includes an opt-out toggle and explicit confirmation that recommendations are 100% deterministic and local without remote AI.
 - **Verification:** Ran `npm run fix && npm run check`. All 25 test suites (126 unit tests) and 2 validation suites (9 tests) passed. 0 linter warnings or errors.
+
+### Entry 20: Automated Accessibility Regression Suite (IMPROVEMENT 18)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/app/a11y-regression.test.tsx` (automated unit tests for skip link presence, landmark navigation, and WCAG 2.1 AA text/accent contrast ratios)
+  - `tools/a11y-stylesheet.test.ts` (validation tests verifying @media prefers-reduced-motion, forced-colors active adaptations, and focus-visible outlines)
+  - `docs/accessibility-testing.md` (comprehensive protocol for manual screen-reader testing on NVDA, VoiceOver, TalkBack, and zoom verification)
+- **Summary:** Established automated accessibility regression coverage locking in skip links, landmark regions, relative luminance contrast thresholds (>= 4.5:1), and stylesheet media queries. Documented essential manual physical testing guidelines for screen readers and high-contrast environments.
+- **Verification:** Ran `npm run fix && npm run check`. All 26 unit test suites (130 unit tests) and 3 validation suites (12 tests) passed. 0 linter warnings or errors.
 
