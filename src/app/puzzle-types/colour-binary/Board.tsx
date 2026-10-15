@@ -1,127 +1,31 @@
 import { useEffect, useRef, useState } from "react";
-import { gridStyle } from "../../../shared/grid";
+import {
+  advanceTier,
+  createColourBinaryHint,
+  explainColourBinaryLogic,
+  type GraduatedHint as GraduatedHintType,
+  type HintTier,
+  type LogicExplanation,
+} from "../../../shared/graduated-hints";
 import { getLogger } from "../../../shared/logger";
-import styles from "./Board.module.css";
-import shared from "../../../shared/Board.module.css";
-import { findHint, type Hint } from "./hint";
-import { toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
-import { nextSquare, obeysRules } from "./rules-check";
-import { text } from "../../../text/en";
+import {
+  calculateCompletionStats,
+  loadPuzzleProgress,
+  markPuzzleProgressSolved,
+  savePuzzleProgress,
+  type CompletionStats,
+} from "../../../shared/puzzle-progress";
+import { BoardView, type BoardViewProps } from "./BoardView";
+import { nextSquare, obeysRules, toSquares, type ColourBinaryPuzzle, type Square } from "./puzzle";
 
-const words = text["colour-binary"];
-
-// The status text tells the user if the board is solved, ready to play, or waiting for a hint.
-function statusText(isSolved: boolean, hint: Hint | undefined | null, size: number): string {
-  if (isSolved) return words.status.solved;
-  if (hint === null) return words.status.start;
-  if (hint === undefined) return words.noHint;
-  const otherColour = hint.colour === "R" ? "B" : "R";
-  return words.hint({
-    ...hint,
-    row: Math.floor(hint.index / size) + 1,
-    column: (hint.index % size) + 1,
-    colour: words.colours[hint.colour],
-    otherColour: words.colours[otherColour],
-  });
-}
-
-type SquareProps = {
-  square: Square;
-  index: number;
-  size: number;
-  isFixed: boolean;
-  isHint: boolean;
-  isSolved: boolean;
-  onTap: () => void;
-};
+// ASD-STE100 Simplified Technical English comments.
+// This component manages state and lifecycle for the Colour Binary puzzle board.
 
 type LogMeta = {
   puzzleId: string;
   puzzleType: ColourBinaryPuzzle["type"];
   difficulty: ColourBinaryPuzzle["difficulty"];
 };
-
-// Each square is a button so the user can tap a cell and cycle its colour.
-function SquareButton({ square, index, size, isFixed, isHint, isSolved, onTap }: SquareProps) {
-  const label = words.square({
-    row: Math.floor(index / size) + 1,
-    column: (index % size) + 1,
-    colour: words.colours[square],
-    isFixed,
-  });
-  return (
-    <button
-      type="button"
-      className={`${shared.square} ${styles.square}`}
-      data-colour={square}
-      data-fixed={isFixed}
-      data-hint={isHint}
-      aria-label={label}
-      aria-disabled={isFixed || isSolved}
-      onClick={() => {
-        if (!isFixed && !isSolved) onTap();
-      }}
-    >
-      <span aria-hidden="true">{words.symbols[square]}</span>
-    </button>
-  );
-}
-
-type BoardViewProps = {
-  size: number;
-  squares: Square[];
-  start: Square[];
-  hint: Hint | undefined | null;
-  isSolved: boolean;
-  onTapSquare: (square: Square, index: number) => void;
-  onHintRequest: () => void;
-};
-
-function BoardView({
-  size,
-  squares,
-  start,
-  hint,
-  isSolved,
-  onTapSquare,
-  onHintRequest,
-}: BoardViewProps) {
-  return (
-    <div className={shared.game}>
-      <fieldset className={shared.board}>
-        <legend className="visually-hidden">{words.boardLabel}</legend>
-        <div className={shared.grid} style={gridStyle(size)}>
-          {squares.map((square, index) => (
-            <SquareButton
-              // oxlint-disable-next-line react/no-array-index-key -- the index is the identity of a square. The squares never move.
-              key={index}
-              square={square}
-              index={index}
-              size={size}
-              isFixed={start[index] !== "."}
-              isHint={hint?.index === index}
-              isSolved={isSolved}
-              onTap={() => onTapSquare(square, index)}
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <output className={shared.status} data-solved={isSolved}>
-        {statusText(isSolved, hint, size)}
-      </output>
-
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        disabled={isSolved}
-        onClick={onHintRequest}
-      >
-        {words.hintButton}
-      </button>
-    </div>
-  );
-}
 
 function useLifecycleLog(
   log: ReturnType<typeof getLogger>,
@@ -141,12 +45,148 @@ function useLifecycleLog(
   }, [isSolved, log, meta, size]);
 }
 
-// The board keeps the start layout and the current player state in one place.
-// The puzzle is solved when the board matches the rule set.
-export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
+function loadInitialSquares(puzzleId: string, start: Square[]): Square[] {
+  const saved = loadPuzzleProgress(puzzleId);
+  const squares = saved?.colourBinaryState?.squares;
+  return squares && squares.length === start.length ? (squares as Square[]) : start;
+}
+
+function saveColourBinaryStep(puzzle: ColourBinaryPuzzle, squares: Square[], hintCount: number) {
+  savePuzzleProgress({
+    puzzleId: puzzle.id,
+    puzzleType: puzzle.type,
+    difficulty: puzzle.difficulty,
+    savedAt: Date.now(),
+    isSolved: obeysRules(squares),
+    timeSpentSeconds: 0,
+    hintCount,
+    mistakes: 0,
+    colourBinaryState: { squares },
+  });
+}
+
+function useSolvedSync(
+  puzzle: ColourBinaryPuzzle,
+  isSolved: boolean,
+  hintCountRef: { current: number },
+  startTimeRef: { current: number },
+  setStats: (stats: CompletionStats) => void,
+  setShowReview: (show: boolean) => void,
+) {
+  useEffect(() => {
+    if (!isSolved) return;
+    const start = startTimeRef.current > 0 ? startTimeRef.current : Date.now();
+    const timeSpentSeconds = Math.max(1, Math.round((Date.now() - start) / 1000));
+    const stats = calculateCompletionStats({
+      puzzleId: puzzle.id,
+      puzzleType: puzzle.type,
+      difficulty: puzzle.difficulty,
+      timeSpentSeconds,
+      hintCount: hintCountRef.current,
+      mistakes: 0,
+    });
+    setStats(stats);
+    setShowReview(true);
+    markPuzzleProgressSolved(puzzle.id, puzzle.type, puzzle.difficulty, {
+      timeSpentSeconds,
+      hintCount: hintCountRef.current,
+      mistakes: 0,
+    });
+  }, [isSolved, puzzle, hintCountRef, startTimeRef, setStats, setShowReview]);
+}
+
+function useBoardLogic(
+  squares: Square[],
+  size: number,
+  meta: LogMeta,
+  log: ReturnType<typeof getLogger>,
+  hintCountRef: { current: number },
+) {
+  const [hint, setHint] = useState<GraduatedHintType | undefined | null>(null);
+  const [logicExplanation, setLogicExplanation] = useState<LogicExplanation | null>(null);
+
+  function requestHint() {
+    if (hint) {
+      setHint({ ...hint, tier: advanceTier(hint.tier) });
+      return;
+    }
+    hintCountRef.current += 1;
+    const nextHint = createColourBinaryHint(squares, size, "nudge");
+    log.info("Hint requested", { ...meta, foundHint: nextHint !== undefined });
+    setHint(nextHint);
+  }
+
+  function showLogic() {
+    const explanation = explainColourBinaryLogic(squares, size);
+    log.info("Logic explanation requested", { ...meta, found: explanation !== undefined });
+    setLogicExplanation(explanation ?? null);
+  }
+
+  return {
+    hint,
+    setHint,
+    logicExplanation,
+    setLogicExplanation,
+    requestHint,
+    showLogic,
+  };
+}
+
+function useGameActions(
+  squares: Square[],
+  setSquares: (s: Square[]) => void,
+  start: Square[],
+  puzzle: ColourBinaryPuzzle,
+  hintCountRef: { current: number },
+  startTimeRef: { current: number },
+  setShowReview: (s: boolean) => void,
+  setStats: (s: CompletionStats | null) => void,
+  logic: ReturnType<typeof useBoardLogic>,
+  log: ReturnType<typeof getLogger>,
+  meta: LogMeta,
+) {
+  function onTapSquare(square: Square, index: number, specificNext?: Square) {
+    const next = specificNext ?? nextSquare[square];
+    log.debug("Square changed", { ...meta, index, from: square, to: next });
+    const nextSquares = squares.with(index, next);
+    setSquares(nextSquares);
+    logic.setHint(null);
+    logic.setLogicExplanation(null);
+    saveColourBinaryStep(puzzle, nextSquares, hintCountRef.current);
+  }
+
+  function handleRestart() {
+    setSquares(start);
+    hintCountRef.current = 0;
+    startTimeRef.current = Date.now();
+    setShowReview(false);
+    setStats(null);
+    logic.setHint(null);
+    logic.setLogicExplanation(null);
+    saveColourBinaryStep(puzzle, start, 0);
+  }
+
+  return {
+    onTapSquare,
+    onHintRequest: logic.requestHint,
+    onShowLogic: logic.showLogic,
+    onCloseLogic: () => logic.setLogicExplanation(null),
+    onTierChange: (tier: HintTier) =>
+      logic.hint ? logic.setHint({ ...logic.hint, tier }) : undefined,
+    onDismissHint: () => logic.setHint(null),
+    onRestart: handleRestart,
+    onOpenReview: () => setShowReview(true),
+    onCloseReview: () => setShowReview(false),
+  };
+}
+
+function useColourBinaryGame(puzzle: ColourBinaryPuzzle): BoardViewProps {
   const start = toSquares(puzzle.start);
-  const [squares, setSquares] = useState(start);
-  const [hint, setHint] = useState<Hint | undefined | null>(null);
+  const [squares, setSquares] = useState<Square[]>(() => loadInitialSquares(puzzle.id, start));
+  const [showReview, setShowReview] = useState(false);
+  const [stats, setStats] = useState<CompletionStats | null>(null);
+  const hintCountRef = useRef(0);
+  const startTimeRef = useRef(0);
   const isSolved = obeysRules(squares);
   const size = puzzle.start.length;
   const log = getLogger("game.colour-binary");
@@ -155,35 +195,43 @@ export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
     puzzleType: puzzle.type,
     difficulty: puzzle.difficulty,
   };
+
+  useEffect(() => {
+    if (startTimeRef.current === 0) startTimeRef.current = Date.now();
+  }, []);
+
   useLifecycleLog(log, meta, size, isSolved);
-
-  function onTapSquare(square: Square, index: number) {
-    const next = nextSquare[square];
-    log.debug("Square changed", { ...meta, index, from: square, to: next });
-    setSquares(squares.with(index, next));
-    setHint(null);
-  }
-
-  function onHintRequest() {
-    const nextHint = findHint(squares);
-    log.info("Hint requested", {
-      ...meta,
-      foundHint: nextHint !== undefined,
-      hintIndex: nextHint?.index,
-      hintColour: nextHint?.colour,
-    });
-    setHint(nextHint);
-  }
-
-  return (
-    <BoardView
-      size={size}
-      squares={squares}
-      start={start}
-      hint={hint}
-      isSolved={isSolved}
-      onTapSquare={onTapSquare}
-      onHintRequest={onHintRequest}
-    />
+  useSolvedSync(puzzle, isSolved, hintCountRef, startTimeRef, setStats, setShowReview);
+  const logic = useBoardLogic(squares, size, meta, log, hintCountRef);
+  const actions = useGameActions(
+    squares,
+    setSquares,
+    start,
+    puzzle,
+    hintCountRef,
+    startTimeRef,
+    setShowReview,
+    setStats,
+    logic,
+    log,
+    meta,
   );
+
+  return {
+    size,
+    squares,
+    start,
+    hint: logic.hint,
+    logicExplanation: logic.logicExplanation,
+    isSolved,
+    completionStats: stats,
+    showReview,
+    actions,
+  };
+}
+
+// The board keeps the start layout and the current player state in one place.
+export function Board({ puzzle }: { puzzle: ColourBinaryPuzzle }) {
+  const game = useColourBinaryGame(puzzle);
+  return <BoardView {...game} />;
 }

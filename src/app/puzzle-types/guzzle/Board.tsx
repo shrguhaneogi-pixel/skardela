@@ -1,15 +1,17 @@
-import { useEffect, useRef } from "react";
-import shared from "../../../shared/Board.module.css";
+import { useEffect, useRef, useState } from "react";
+import {
+  advanceTier,
+  createGuzzleHint,
+  explainGuzzleLogic,
+  type GraduatedHint as GraduatedHintType,
+  type HintTier,
+  type LogicExplanation,
+} from "../../../shared/graduated-hints";
 import { getLogger } from "../../../shared/logger";
-import { text } from "../../../text/en";
-import styles from "./Board.module.css";
-import { Controls } from "./Controls";
-import { Grid } from "./Grid";
-import { toSquares, type GuzzlePuzzle } from "./puzzle";
-import { statusText } from "./status";
-import { useGame } from "./useGame";
+import { calculateCompletionStats, type CompletionStats } from "../../../shared/puzzle-progress";
+import { GuzzleBoardView, type GuzzleBoardViewProps } from "./BoardView";
+import { toSquares, useGame, type Game, type GuzzlePuzzle } from "./useGame";
 
-const words = text.guzzle;
 type Meta = {
   puzzleId: string;
   puzzleType: GuzzlePuzzle["type"];
@@ -49,9 +51,105 @@ function useLifecycleLog(
   }, [isSolved, log, meta, mistakes]);
 }
 
-// The board shows the grid, the mistake count, the status text and the letter keys.
-// The puzzle is solved when all squares on the words are green.
-export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
+function useGuzzleBoardLogic(answer: readonly string[], game: Game, size: number) {
+  const [hint, setHint] = useState<GraduatedHintType | null>(null);
+  const [logicExplanation, setLogicExplanation] = useState<LogicExplanation | null>(null);
+
+  function handleHintRequest() {
+    if (hint) {
+      setHint({ ...hint, tier: advanceTier(hint.tier) });
+      return;
+    }
+    const nextHint = createGuzzleHint(answer, game.guesses, size, game.selected, "nudge");
+    setHint(nextHint ?? null);
+  }
+
+  function handleShowLogic() {
+    const explanation = explainGuzzleLogic(answer, game.guesses, size, game.selected);
+    setLogicExplanation(explanation ?? null);
+  }
+
+  return {
+    hint,
+    setHint,
+    logicExplanation,
+    setLogicExplanation,
+    handleHintRequest,
+    handleShowLogic,
+  };
+}
+
+function useGuzzleSolvedSync(
+  puzzle: GuzzlePuzzle,
+  isSolved: boolean,
+  mistakes: number,
+  hintCountRef: { current: number },
+  startTimeRef: { current: number },
+  setStats: (stats: CompletionStats) => void,
+  setShowReview: (show: boolean) => void,
+) {
+  useEffect(() => {
+    if (!isSolved) return;
+    const start = startTimeRef.current > 0 ? startTimeRef.current : Date.now();
+    const timeSpentSeconds = Math.max(1, Math.round((Date.now() - start) / 1000));
+    const completionStats = calculateCompletionStats({
+      puzzleId: puzzle.id,
+      puzzleType: puzzle.type,
+      difficulty: puzzle.difficulty,
+      timeSpentSeconds,
+      hintCount: hintCountRef.current,
+      mistakes,
+    });
+    setStats(completionStats);
+    setShowReview(true);
+  }, [
+    isSolved,
+    mistakes,
+    puzzle.difficulty,
+    puzzle.id,
+    puzzle.type,
+    hintCountRef,
+    startTimeRef,
+    setStats,
+    setShowReview,
+  ]);
+}
+
+function useGuzzleActions(
+  game: Game,
+  hintCountRef: { current: number },
+  startTimeRef: { current: number },
+  setShowReview: (s: boolean) => void,
+  setStats: (s: CompletionStats | null) => void,
+  logic: ReturnType<typeof useGuzzleBoardLogic>,
+) {
+  function handleRestart() {
+    game.restart();
+    hintCountRef.current = 0;
+    startTimeRef.current = Date.now();
+    setShowReview(false);
+    setStats(null);
+    logic.setHint(null);
+    logic.setLogicExplanation(null);
+  }
+
+  return {
+    onHintRequest: () => {
+      hintCountRef.current += 1;
+      logic.handleHintRequest();
+    },
+    onShowLogic: logic.handleShowLogic,
+    onTierChange: (tier: HintTier) =>
+      logic.hint ? logic.setHint({ ...logic.hint, tier }) : undefined,
+    onDismissHint: () => logic.setHint(null),
+    onCloseLogic: () => logic.setLogicExplanation(null),
+    onRestart: handleRestart,
+    onOpenReview: () => setShowReview(true),
+    onCloseReview: () => setShowReview(false),
+  };
+}
+
+function useGuzzleGame(puzzle: GuzzlePuzzle): GuzzleBoardViewProps {
   const answer = toSquares(puzzle.answer);
   const size = puzzle.answer.length;
   const log = getLogger("game.guzzle");
@@ -60,23 +158,51 @@ export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
     puzzleType: puzzle.type,
     difficulty: puzzle.difficulty,
   };
-  const game = useGame(answer, size, createHooks(log, meta));
-  useLifecycleLog(log, meta, size, game.isSolved, game.mistakes);
+  const game = useGame(answer, size, createHooks(log, meta), puzzle.id);
+  const logic = useGuzzleBoardLogic(answer, game, size);
+  const hintCountRef = useRef(0);
+  const startTimeRef = useRef(0);
+  const [showReview, setShowReview] = useState(false);
+  const [stats, setStats] = useState<CompletionStats | null>(null);
 
-  return (
-    <div className={shared.game}>
-      <fieldset className={shared.board}>
-        <legend className="visually-hidden">{words.boardLabel}</legend>
-        <Grid answer={answer} size={size} game={game} />
-      </fieldset>
+  useEffect(() => {
+    if (startTimeRef.current === 0) startTimeRef.current = Date.now();
+  }, []);
 
-      <output className={styles.mistakes}>{words.mistakes(game.mistakes)}</output>
-
-      <output className={shared.status} data-solved={game.isSolved}>
-        {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
-      </output>
-
-      <Controls answer={answer} game={game} />
-    </div>
+  useGuzzleSolvedSync(
+    puzzle,
+    game.isSolved,
+    game.mistakes,
+    hintCountRef,
+    startTimeRef,
+    setStats,
+    setShowReview,
   );
+  useLifecycleLog(log, meta, size, game.isSolved, game.mistakes);
+  const actions = useGuzzleActions(
+    game,
+    hintCountRef,
+    startTimeRef,
+    setShowReview,
+    setStats,
+    logic,
+  );
+
+  return {
+    answer,
+    size,
+    game,
+    hint: logic.hint,
+    logicExplanation: logic.logicExplanation,
+    completionStats: stats,
+    showReview,
+    actions,
+  };
+}
+
+// ASD-STE100 Simplified Technical English comments.
+// The board manages state, lifecycle, and renders GuzzleBoardView.
+export function Board({ puzzle }: { puzzle: GuzzlePuzzle }) {
+  const game = useGuzzleGame(puzzle);
+  return <GuzzleBoardView {...game} />;
 }

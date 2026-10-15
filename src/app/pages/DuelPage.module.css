@@ -1,0 +1,165 @@
+.hero {
+  padding-block: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.hero h1 {
+  margin-block: 0 0.5rem;
+  font-weight: 700;
+}
+
+.intro {
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1rem + 0.3vw, 1.15rem);
+  line-height: 1.5;
+  max-width: 58ch;
+}
+
+.disclaimer {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--surface-muted);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  max-width: 62ch;
+}
+
+.serverNote {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.formSection {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 36rem;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.btnPrimary {
+  background-color: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btnSecondary {
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.comparisonSection {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.outcomeBanner {
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bannerTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.duelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+.resultCard {
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  padding-block: 0.35rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.statRow:last-child {
+  border-bottom: none;
+}
+
+.statWinner {
+  font-weight: 700;
+  color: var(--green);
+}
+
+.playAction {
+  margin-top: 0.5rem;
+}
+
+@media (forced-colors: active) {
+  .resultCard,
+  .outcomeBanner {
+    border: 2px solid ButtonText;
+  }
+}

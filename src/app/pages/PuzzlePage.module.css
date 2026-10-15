@@ -81,6 +81,18 @@
   letter-spacing: 0.02em;
 }
 
+.archiveBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.75rem;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-h);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 /* Rules panel styled as a translucent glass card */
 .rules {
   padding: clamp(1.25rem, 2.5vw, 1.75rem);

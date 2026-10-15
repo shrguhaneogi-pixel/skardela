@@ -1,5 +1,11 @@
 import type { Rule } from "../shared/RuleList";
 import { symbols } from "./symbols";
+import { studioText } from "./studio";
+import { duelText } from "./duel";
+import { expeditionsText } from "./expeditions";
+import { learnText } from "./learn";
+import { exchangeText } from "./exchange";
+import { practiceQueueText } from "./practice";
 
 // "1 mistake", "2 mistakes". More than one text uses it.
 const mistakeCount = (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"}`;
@@ -27,8 +33,47 @@ export const text = {
     title: "Today's puzzles",
     intro: "New puzzles each day. They are free. You do not need an account or a download.",
     edition: "Daily edition",
+    editionWithDate: (date: string) => `Daily edition • ${date} UTC`,
     puzzleTypesHeading: "Puzzle types",
     levelsHeading: (puzzleTypeName: string) => `Today's ${puzzleTypeName}`,
+    quickPlay: "Continue playing",
+    quickStart: "Start daily challenge",
+    archiveLink: "Browse archive",
+    solved: "Solved",
+    resume: "Resume",
+  },
+  archive: {
+    title: "Puzzle Archive",
+    intro: "Solve puzzles from previous daily editions.",
+    datePickerLabel: "Pick date",
+    recentHeading: "Recent editions",
+    selectedDateHeading: (date: string) => `Puzzles for ${date}`,
+    archiveBadge: (date: string) => `Archive • ${date}`,
+    todayBadge: "Today's edition",
+    jumpToToday: "Go to today",
+    navLink: "Archive",
+  },
+  atlas: {
+    title: "Personal Logic Atlas",
+    intro:
+      "A local summary of your puzzle practice and reasoning skills. All data stays on your device.",
+    disclaimer:
+      "This atlas records your completed deductions in Skardela. It does not measure general intelligence.",
+    totalSolved: "Total Solved",
+    cleanSolves: "Perfect Solves",
+    currentStreak: "Daily Streak",
+    streakDays: (days: number) => `${days} ${days === 1 ? "day" : "days"}`,
+    totalTime: "Total Time",
+    skillsHeading: "Reasoning Skills",
+    breakdownHeading: "Puzzle Types",
+    settingsHeading: "Privacy & Controls",
+    enableLabel: "Enable Personal Logic Atlas",
+    enableHelp: "When disabled, stats are not collected or displayed.",
+    clearHistoryBtn: "Clear Atlas History",
+    clearConfirm: "Are you sure you want to clear your local puzzle history?",
+    historyCleared: "Atlas history cleared.",
+    navLink: "Atlas",
+    disabledMessage: "Personal Logic Atlas is disabled.",
   },
   puzzlePage: {
     title: (puzzleTypeName: string, id: string, siteName: string) =>
@@ -103,6 +148,7 @@ export const text = {
       "Make all squares green with the fewest mistakes.",
     ] satisfies Rule[],
     boardLabel: "Guzzle board",
+    hintButton: "Hint",
     modeLabel: "How do you want to play?",
     modes: { bank: "With bank", noBank: "Without bank" },
     bankLabel: "Letter bank",
@@ -149,6 +195,81 @@ export const text = {
         `You solved the puzzle. ${mode}, ${mistakeCount(mistakes)}.`,
     },
   },
+  hints: {
+    title: "Logic hint",
+    tierLabels: {
+      nudge: "1. Nudge",
+      explanation: "2. Explain",
+      solution: "3. Step",
+    },
+    advanceToExplanation: "Explain more",
+    advanceToSolution: "Show next step",
+    dismiss: "Hide hint",
+    noHintAvailable: "No hints available",
+  },
+  logicExplanation: {
+    button: "Show me the logic",
+    title: "Logic explanation",
+    close: "Close explanation",
+    premisesHeading: "Given clues",
+    stepsHeading: "Deduction steps",
+    conclusionHeading: "Conclusion",
+    colourBinary: {
+      halfRule: "Equal colour balance",
+      threeRule: "No three in a row",
+      halfSummary: (line: string, count: number, colour: string) =>
+        `${line} requires exactly ${count} ${colour} squares.`,
+      threeSummary: (line: string, colour: string) =>
+        `Three adjacent ${colour} squares are not allowed in ${line}.`,
+    },
+    guzzle: {
+      intersectionRule: "Word intersection",
+      intersectionSummary: (row: number, column: number) =>
+        `Square at row ${row}, column ${column} belongs to intersecting words.`,
+    },
+  },
+  contextHelp: {
+    conflictBadge: "Conflict detected",
+    exceedsHalf: (line: string, count: number, max: number, colour: string) =>
+      `${line} has ${count} ${colour} squares. Maximum allowed is ${max}.`,
+    threeInARow: (line: string, colour: string) =>
+      `${line} contains three consecutive ${colour} squares.`,
+    identicalLines: (lineType: string, num1: number, num2: number) =>
+      `${lineType} ${num1} and ${lineType} ${num2} are identical. Lines must be unique.`,
+    guzzleAbsentRepeated: (letter: string, line: string) =>
+      `Letter ${letter} was already marked absent in ${line}.`,
+    guzzlePresentSuggestion: (letter: string, line: string) =>
+      `Letter ${letter} is present in ${line}. Try an open square in this line.`,
+  },
+  completion: {
+    title: "Puzzle solved!",
+    subtitle: "Good work. Here is your summary:",
+    timeSpent: "Time",
+    hintsUsed: "Hints used",
+    mistakes: "Mistakes",
+    cleanSolve: "Perfect solve!",
+    cleanSolveDesc: "Solved with no hints and no errors.",
+    playAgain: "Play again",
+    reviewBoard: "Review board",
+    openSummary: "View solve summary",
+    sharePostcard: "Share postcard",
+    copied: "Copied to clipboard!",
+    shareFailed: "Could not share or copy postcard.",
+  },
+  postcard: {
+    header: (game: string, id: string, detail?: string) =>
+      detail ? `Skardela — ${game} #${id} (${detail})` : `Skardela — ${game} #${id}`,
+    stats: (time: string, hints: number, mistakes: number) =>
+      `⏱️ ${time} | 💡 ${hints} hints | ❌ ${mistakes} mistakes`,
+    cleanStats: (time: string) => `⏱️ ${time} | ✨ Perfect solve!`,
+    url: "https://skardela.app",
+  },
+  practiceQueue: practiceQueueText,
+  studio: studioText,
+  duel: duelText,
+  expeditions: expeditionsText,
+  learn: learnText,
+  exchange: exchangeText,
   notFound: {
     title: "Page Not Found",
     body: "The page you are looking for does not exist.",

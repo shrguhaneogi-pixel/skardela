@@ -1,0 +1,26 @@
+{
+  "name": "Skardela — Daily Logic Puzzles",
+  "short_name": "Skardela",
+  "description": "Daily logic puzzle challenges with zero ads, zero accounts, and complete privacy.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#c2410c",
+  "background_color": "#0d0f14",
+  "categories": ["games", "puzzle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

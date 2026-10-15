@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { dayNumber, localDate, puzzlesForDay } from "./daily";
+import { loadArchiveDay } from "./archive";
+import { dayNumber, formatDateString, localDate, puzzlesForDay, utcDate } from "./daily";
 import {
   isPuzzleType,
   puzzleTypes,
@@ -35,4 +36,15 @@ export function homeLoader() {
       levels: puzzlesForDay(await puzzleTypes[type].loadPuzzles(), day),
     })),
   );
+}
+
+// Loads historical daily puzzles for archive routes.
+export function archiveLoader({ params }: LoaderFunctionArgs) {
+  return loadArchiveDay(params.date);
+}
+
+// Check if a date string is today UTC.
+export function isTodayUtc(dateString: string | null): boolean {
+  if (!dateString) return true;
+  return dateString === formatDateString(utcDate());
 }

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/guzzle-0000.json";
@@ -8,6 +8,10 @@ import type { GuzzlePuzzle } from "./puzzle";
 
 const words = text.guzzle;
 const puzzle = example as GuzzlePuzzle;
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 // This helper finds a square by its row and column, so the test does not depend on the label end.
 function square(row: number, column: number): HTMLElement {
@@ -104,5 +108,16 @@ describe("guzzle board keyboard", () => {
     // R is correct in row 1, column 1. The next open square is row 1, column 2.
     expect(square(1, 2)).toHaveFocus();
     expect(square(1, 2)).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("navigates grid squares using arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    await user.click(square(1, 1));
+    await user.keyboard("{ArrowRight}");
+    expect(square(1, 2)).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(square(3, 2)).toHaveFocus();
   });
 });

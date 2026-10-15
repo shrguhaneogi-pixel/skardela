@@ -18,4 +18,61 @@ export const symbols = {
     light: "☀️",
     dark: "🌙",
   },
+  completion: {
+    clean: "✨",
+    time: "⏱️",
+    hint: "💡",
+    mistake: "❌",
+  },
+  postcard: {
+    colourBinary: {
+      R: "🟥",
+      B: "🟦",
+      empty: "⬜",
+    },
+    guzzle: {
+      correct: "🟩",
+      present: "🟨",
+      absent: "⬛",
+      empty: "⬜",
+    },
+  },
+  atlas: {
+    solved: "🎯",
+    clean: "✨",
+    streak: "🔥",
+    time: "⏱️",
+    skill: "🧩",
+  },
+  practiceQueue: {
+    queue: "🎯",
+    recommend: "💡",
+  },
+  studio: {
+    studio: "🛠️",
+    validate: "🔍",
+    export: "💾",
+  },
+  duel: {
+    duel: "⚔️",
+    trophy: "🏆",
+    tie: "🤝",
+  },
+  expeditions: {
+    compass: "🧭",
+    map: "🗺️",
+    locked: "🔒",
+    completed: "✅",
+  },
+  learn: {
+    pathway: "🎓",
+    lesson: "📖",
+    step: "🔹",
+    done: "✅",
+  },
+  exchange: {
+    exchange: "📦",
+    import: "📥",
+    export: "📤",
+  },
 } as const;

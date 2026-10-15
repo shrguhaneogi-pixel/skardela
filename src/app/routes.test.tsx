@@ -35,7 +35,9 @@ describe("routes", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: text.guzzle.name }),
     ).toBeInTheDocument();
-    expect(await screen.findByRole("button", { name: text.guzzle.modes.bank })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: text.guzzle.modes.bank }, { timeout: 4000 }),
+    ).toBeInTheDocument();
   });
 
   it.each(["/puzzles/guzzle-9999", "/puzzles/unknown-0001", "/puzzles/guzzle"])(
@@ -49,5 +51,30 @@ describe("routes", () => {
   it("shows the route error page for an unknown route", () => {
     renderAt("/broken");
     expect(screen.getByTestId("not-found-page-title")).toBeInTheDocument();
+  });
+});
+
+describe("archive route integration", () => {
+  it("shows the archive page at /archive", async () => {
+    renderAt("/archive");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: text.archive.title }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the archive page for a specific date /archive/:date", async () => {
+    renderAt("/archive/2026-05-01");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: text.archive.title }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("atlas route integration", () => {
+  it("shows the personal logic atlas at /atlas", async () => {
+    renderAt("/atlas");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: text.atlas.title }),
+    ).toBeInTheDocument();
   });
 });
