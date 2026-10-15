@@ -8,6 +8,7 @@ import {
   DuelPage,
   ExpeditionsPage,
   HomePage,
+  LearnPage,
   NotFoundPage,
   PuzzlePage,
   StudioPage,
@@ -55,6 +56,10 @@ export const routes: RouteObject[] = [
       {
         path: "expeditions",
         element: <ExpeditionsPage />,
+      },
+      {
+        path: "learn",
+        element: <LearnPage />,
       },
       {
         path: "puzzles/:puzzleId",

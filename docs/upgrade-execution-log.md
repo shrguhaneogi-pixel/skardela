@@ -29,7 +29,7 @@ This document tracks the implementation, verification, and commit history for al
 | 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | COMMITTED | 6c6fc01     |
 | 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | COMMITTED | b9057dd     |
 | 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | COMMITTED | 3cd0cf9     |
-| 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | PLANNED   | Pending     |
+| 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | COMMITTED | 182fde9     |
 | 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | PLANNED   | Pending     |
 | 26    | IMPROVEMENT 25 | Open Puzzle Exchange                       | PLANNED   | Pending     |
 
@@ -343,3 +343,22 @@ This document tracks the implementation, verification, and commit history for al
   - `src/text/symbols.ts` (duel and trophy symbols)
 - **Summary:** Implemented client-side Asynchronous Puzzle Duels. Enables players to encode, share, and compare puzzle results across speed, hints used, and mistakes made. Clearly marks results as self-reported without claiming server anti-cheat or matchmaking, operates 100% locally and account-free, and documents infrastructure requirements for future server features.
 - **Verification:** Ran `npm run fix && npm run check`. All 31 unit test suites (149 tests) and 5 validation suites (17 tests) passed. 0 linter warnings or errors.
+
+### Entry 24: Puzzle Seasons and Themed Expeditions (IMPROVEMENT 23)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/expeditions.ts` (structured season manifest, stages, prerequisites, and progress calculator)
+  - `src/shared/expeditions.test.ts` (unit tests for unlock progression, prerequisite gating, and completion percentages)
+  - `tools/expeditions.test.ts` (validation test verifying all referenced puzzle IDs exist in datasets and all prerequisites are valid)
+  - `src/app/pages/ExpeditionsPage.tsx` (accessible expeditions page shell, chapter cards, progress bars, and stage navigation)
+  - `src/app/pages/ExpeditionsPage.module.css` (tactile glass styling for expedition chapters, progress elements, and stage cards)
+  - `src/app/pages/ExpeditionsPage.test.tsx` (integration tests verifying header, chapters from manifest, and stage statuses)
+  - `src/app/pages/index.ts` (re-exported ExpeditionsPage from pages barrel)
+  - `src/app/routes.tsx` (registered /expeditions route)
+  - `src/app/Layout.tsx` (added Expeditions navigation link in top header)
+  - `src/text/expeditions.ts` (localized expeditions text strings)
+  - `src/text/en.ts` (exported expeditions text slice)
+  - `src/text/symbols.ts` (expeditions compass, map, locked, and completed symbols)
+- **Summary:** Implemented curated multi-puzzle journeys with Puzzle Seasons and Themed Expeditions. Defines a versioned, build-verified content manifest with chapters and prerequisite stages. Calculates progress locally without remote accounts, validates 100% of puzzle IDs at build time, and degrades gracefully on missing or locked content.
+- **Verification:** Ran `npm run fix && npm run check`. All 33 unit test suites (155 tests) and 6 validation suites (19 tests) passed. 0 linter warnings or errors.

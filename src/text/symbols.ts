@@ -64,4 +64,10 @@ export const symbols = {
     locked: "🔒",
     completed: "✅",
   },
+  learn: {
+    pathway: "🎓",
+    lesson: "📖",
+    step: "🔹",
+    done: "✅",
+  },
 } as const;
