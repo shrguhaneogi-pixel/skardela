@@ -24,8 +24,8 @@ This document tracks the implementation, verification, and commit history for al
 | 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | COMMITTED | 7b7b4ef     |
 | 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | COMMITTED | 8695a0a     |
 | 18    | IMPROVEMENT 15 | Personal Practice Queue                    | COMMITTED | e87bc30     |
-| 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | PLANNED   | Pending     |
-| 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | COMMITTED | pending     |
+| 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | COMMITTED | pending     |
+| 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | COMMITTED | db14ffa     |
 | 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | PLANNED   | Pending     |
 | 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | PLANNED   | Pending     |
 | 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED   | Pending     |
@@ -283,4 +283,3 @@ This document tracks the implementation, verification, and commit history for al
   - `docs/accessibility-testing.md` (comprehensive protocol for manual screen-reader testing on NVDA, VoiceOver, TalkBack, and zoom verification)
 - **Summary:** Established automated accessibility regression coverage locking in skip links, landmark regions, relative luminance contrast thresholds (>= 4.5:1), and stylesheet media queries. Documented essential manual physical testing guidelines for screen readers and high-contrast environments.
 - **Verification:** Ran `npm run fix && npm run check`. All 26 unit test suites (130 unit tests) and 3 validation suites (12 tests) passed. 0 linter warnings or errors.
-

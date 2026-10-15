@@ -3,6 +3,9 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
 import "./index.css";
 import { router } from "./app/router.ts";
+import { registerServiceWorker } from "./shared/pwa.ts";
+
+void registerServiceWorker();
 
 const rootElement = document.querySelector("#root");
 
