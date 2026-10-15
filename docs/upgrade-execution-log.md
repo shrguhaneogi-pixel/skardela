@@ -27,7 +27,7 @@ This document tracks the implementation, verification, and commit history for al
 | 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | COMMITTED | f6c7251     |
 | 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | COMMITTED | db14ffa     |
 | 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | COMMITTED | 6c6fc01     |
-| 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | PLANNED   | Pending     |
+| 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | COMMITTED | b9057dd     |
 | 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | PLANNED   | Pending     |
 | 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | PLANNED   | Pending     |
 | 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | PLANNED   | Pending     |
@@ -307,3 +307,21 @@ This document tracks the implementation, verification, and commit history for al
   - `tools/bundle-budget.test.ts` (automated bundle budget validation checking main bundle <= 550 kB, CSS <= 80 kB, and puzzle chunks <= 40 kB)
 - **Summary:** Established bundle size budgets and render discipline metrics. Verified route-level code splitting, lazy puzzle loading, compiler-driven memoization, and introduced automated validation tests enforcing file size constraints across all production output artifacts.
 - **Verification:** Ran `npm run fix && npm run check`. All 28 unit test suites (138 tests) and 5 validation suites (17 tests) passed. 0 linter warnings or errors.
+
+### Entry 22: Skardela Puzzle Studio (IMPROVEMENT 21)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/app/pages/StudioPage.tsx` (main Puzzle Studio page shell, header, tabs, and raw JSON editor)
+  - `src/app/pages/ColourBinaryStudio.tsx` (interactive Colour Binary editor, difficulty selector, cell grid, validation, and JSON export)
+  - `src/app/pages/ValidationReport.tsx` (semantic output component displaying actionable validation messages or success)
+  - `src/app/pages/StudioPage.module.css` (tactile glass styling for editor panels, interactive cells, buttons, and alert boxes)
+  - `src/app/pages/StudioPage.test.tsx` (unit tests covering title rendering, cell cycling, grid resize, and raw JSON validation)
+  - `src/app/pages/index.ts` (barrel export consolidating page imports to preserve dependency budget in routes)
+  - `src/app/routes.tsx` (registered /studio route with consolidated page imports)
+  - `src/app/Layout.tsx` (added Studio navigation link in top header)
+  - `src/text/studio.ts` (localized studio text strings)
+  - `src/text/en.ts` (imported studioText slice and preserved strict 300-line budget)
+  - `src/text/symbols.ts` (studio icons and action symbols)
+- **Summary:** Implemented the client-side Skardela Puzzle Studio. Allows players to author, interactively validate, preview, and export custom puzzles. Utilizes real backtracking solvers and rule checkers, enforces 32 KB payload bounds on raw JSON, ensures zero code execution on imported data, and preserves isolation from daily rotations.
+- **Verification:** Ran `npm run fix && npm run check`. All 29 unit test suites (142 tests) and 5 validation suites (17 tests) passed. 0 linter warnings or errors.

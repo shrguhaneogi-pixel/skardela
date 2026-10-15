@@ -35,6 +35,9 @@ export function Layout() {
           <Link className={styles.navLink} to="/studio">
             {text.studio.navLink}
           </Link>
+          <Link className={styles.navLink} to="/duel">
+            {text.duel.navLink}
+          </Link>
         </nav>
         <ThemeSwitcher />
       </header>

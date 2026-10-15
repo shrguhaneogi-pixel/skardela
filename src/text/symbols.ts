@@ -53,4 +53,9 @@ export const symbols = {
     validate: "🔍",
     export: "💾",
   },
+  duel: {
+    duel: "⚔️",
+    trophy: "🏆",
+    tie: "🤝",
+  },
 } as const;
