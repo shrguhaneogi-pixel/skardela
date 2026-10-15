@@ -30,8 +30,8 @@ This document tracks the implementation, verification, and commit history for al
 | 22    | IMPROVEMENT 21 | Skardela Puzzle Studio                     | COMMITTED | b9057dd     |
 | 23    | IMPROVEMENT 22 | Asynchronous Puzzle Duels                  | COMMITTED | 3cd0cf9     |
 | 24    | IMPROVEMENT 23 | Puzzle Seasons and Themed Expeditions      | COMMITTED | 182fde9     |
-| 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | PLANNED   | Pending     |
-| 26    | IMPROVEMENT 25 | Open Puzzle Exchange                       | PLANNED   | Pending     |
+| 25    | IMPROVEMENT 24 | Logic Learning Pathways                    | COMMITTED | 71a8f32     |
+| 26    | IMPROVEMENT 25 | Open Puzzle Exchange                       | COMMITTED | 686da11     |
 
 ---
 
@@ -362,3 +362,43 @@ This document tracks the implementation, verification, and commit history for al
   - `src/text/symbols.ts` (expeditions compass, map, locked, and completed symbols)
 - **Summary:** Implemented curated multi-puzzle journeys with Puzzle Seasons and Themed Expeditions. Defines a versioned, build-verified content manifest with chapters and prerequisite stages. Calculates progress locally without remote accounts, validates 100% of puzzle IDs at build time, and degrades gracefully on missing or locked content.
 - **Verification:** Ran `npm run fix && npm run check`. All 33 unit test suites (155 tests) and 6 validation suites (19 tests) passed. 0 linter warnings or errors.
+
+### Entry 25: Logic Learning Pathways (IMPROVEMENT 24)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/learning-pathways.ts` (curriculum data model, pathways, worked example steps, and local completion storage)
+  - `src/shared/learning-pathways.test.ts` (unit tests verifying pathways structure, progress persistence, and reset)
+  - `src/app/pages/LearnPage.tsx` (accessible interactive learning page with worked examples, concept explanations, and practice links)
+  - `src/app/pages/LearnPage.module.css` (tactile glass styling for lesson cards, concept boxes, and action buttons)
+  - `src/app/pages/LearnPage.test.tsx` (integration tests verifying header, non-cognitive disclaimer, and mark-completed interaction)
+  - `src/app/pages/index.ts` (re-exported LearnPage from pages barrel)
+  - `src/app/routes.tsx` (registered /learn route)
+  - `src/app/Layout.tsx` (added Learn navigation link in top header)
+  - `src/text/learn.ts` (localized learning pathway text strings)
+  - `src/text/en.ts` (exported learn text slice)
+  - `src/text/symbols.ts` (learning graduation cap, book, and step symbols)
+- **Summary:** Implemented Logic Learning Pathways. Delivers guided, structured lessons broken down into concept explanations, annotated worked examples, and independent practice challenges. Progress is tracked strictly locally on-device without remote accounts, and the page prominently features an honest disclaimer that the lessons teach specific puzzle deduction rules rather than general intelligence.
+- **Verification:** Ran `npm run fix && npm run check`. All 35 unit test suites (161 tests) and 6 validation suites (19 tests) passed. 0 linter warnings or errors.
+
+### Entry 26: Open Puzzle Exchange (IMPROVEMENT 25)
+
+- **Status:** COMMITTED
+- **Commit:** `686da11`
+- **Files Modified / Created:**
+  - `docs/puzzle-exchange-specification.md` (specification document detailing puzzle pack schema, server catalog protocol, size limits, and security guarantees)
+  - `src/shared/puzzle-pack.ts` (JSON validation, 256 KB bounds, prototype poisoning protection, solver verification, and local storage)
+  - `src/shared/puzzle-pack.test.ts` (unit tests verifying schema validation, size limits, prototype security, and error reporting)
+  - `src/app/pages/ExchangePage.tsx` (accessible exchange page with import, sample pack loader, list of packs, and server catalog requirement note)
+  - `src/app/pages/ExchangePage.module.css` (tactile glass styling for import textarea, validation feedback, and pack cards)
+  - `src/app/pages/ExchangePage.test.tsx` (integration tests verifying sample pack load, validation errors, and display)
+  - `src/app/pages/index.ts` (re-exported ExchangePage from pages barrel)
+  - `src/app/routes.tsx` (registered /exchange route)
+  - `src/app/Layout.tsx` (added Exchange navigation link in header with BrandLogo subcomponent)
+  - `src/text/exchange.ts` (localized exchange text strings)
+  - `src/text/practice.ts` (extracted practiceQueue text slice)
+  - `src/text/en.ts` (registered exchange text slice)
+  - `src/text/symbols.ts` (exchange import, export, and pack symbols)
+- **Summary:** Implemented the Open Puzzle Exchange. Formulates the open puzzle pack JSON schema (`skardela-pack-v1`) and formal catalog specification. Validates puzzle packs completely in the browser with size bounds (256 KB max, 50 puzzles max), prototype pollution defense, and puzzle solver verification. Documents server catalog requirements honestly while providing client-side import and storage.
+- **Verification:** Ran `npm run fix && npm run check`. All 37 unit test suites (167 tests) and 6 validation suites (19 tests) passed. 0 linter warnings or errors.
+
