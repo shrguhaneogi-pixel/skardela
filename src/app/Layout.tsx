@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router";
+import { Link, NavLink, Outlet } from "react-router";
 import { text } from "../text/en";
 import { ReactiveCursor } from "../shared/ReactiveCursor";
 import styles from "./Layout.module.css";
@@ -46,9 +46,15 @@ export function Layout() {
         <nav aria-label={text.nav.label} className={styles.nav}>
           <BrandLogo />
           {NAV_ITEMS.map((item) => (
-            <Link key={item.to} className={styles.navLink} to={item.to}>
+            <NavLink
+              key={item.to}
+              className={({ isActive }) =>
+                isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink
+              }
+              to={item.to}
+            >
               {item.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
         <ThemeSwitcher />
