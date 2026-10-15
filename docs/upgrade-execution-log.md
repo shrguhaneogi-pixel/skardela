@@ -23,7 +23,7 @@ This document tracks the implementation, verification, and commit history for al
 | 15    | IMPROVEMENT 04 | Historical Puzzle Archive                  | COMMITTED | 768bda6     |
 | 16    | IMPROVEMENT 08 | Personal Logic Atlas                       | COMMITTED | 7b7b4ef     |
 | 17    | IMPROVEMENT 10 | First-Class Accessible Puzzle Mode         | COMMITTED | 8695a0a     |
-| 18    | IMPROVEMENT 15 | Personal Practice Queue                    | PLANNED   | Pending     |
+| 18    | IMPROVEMENT 15 | Personal Practice Queue                    | COMMITTED | pending     |
 | 19    | IMPROVEMENT 16 | Installable Offline-First PWA              | PLANNED   | Pending     |
 | 20    | IMPROVEMENT 18 | Automated Accessibility Regression Suite   | PLANNED   | Pending     |
 | 21    | IMPROVEMENT 19 | Performance Budgets & Render Discipline    | PLANNED   | Pending     |
@@ -259,3 +259,18 @@ This document tracks the implementation, verification, and commit history for al
   - `src/app/puzzle-types/guzzle/Board.test.tsx` (tests for arrow navigation)
 - **Summary:** Implemented accessible puzzle mode across both puzzle types. Supports directional arrow navigation between squares, direct keystroke input for Colour Binary and Guzzle, detailed accessible names announcing conflicts, hint targets, and logic cues, and high-contrast and reduced-motion media query adaptations.
 - **Verification:** Ran `npm run fix && npm run check`. All 24 test suites (122 tests) and 2 validation suites (9 tests) passed. 0 linter warnings or errors.
+
+### Entry 18: Personal Practice Queue (IMPROVEMENT 15)
+
+- **Status:** COMMITTED
+- **Files Modified / Created:**
+  - `src/shared/practice-queue.ts` (deterministic practice recommendation engine based on local solve history and unplayed archive puzzles)
+  - `src/shared/practice-queue.test.ts` (unit tests verifying warmup suggestions, next tier difficulty recommendations, archive suggestions, and enable/disable toggle)
+  - `src/shared/PracticeQueue.tsx` (accessible tactile glass recommendation section with on/off toggle and direct play links)
+  - `src/shared/PracticeQueue.module.css` (tactile glass styling, responsive card grid, and accessible action buttons)
+  - `src/app/pages/HomePage.tsx` (integrated practice queue into home desk)
+  - `src/text/en.ts` (localized strings for practice queue title, explanations, badges, and toggle states)
+  - `src/text/symbols.ts` (symbols for practice queue)
+- **Summary:** Delivered the Personal Practice Queue providing local, explainable recommendations. Suggests warmups for new players, difficulty progressions when a level is completed, and unplayed puzzles from historical archives. Includes an opt-out toggle and explicit confirmation that recommendations are 100% deterministic and local without remote AI.
+- **Verification:** Ran `npm run fix && npm run check`. All 25 test suites (126 unit tests) and 2 validation suites (9 tests) passed. 0 linter warnings or errors.
+

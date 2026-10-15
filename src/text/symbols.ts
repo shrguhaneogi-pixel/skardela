@@ -44,4 +44,8 @@ export const symbols = {
     time: "⏱️",
     skill: "🧩",
   },
+  practiceQueue: {
+    queue: "🎯",
+    recommend: "💡",
+  },
 } as const;

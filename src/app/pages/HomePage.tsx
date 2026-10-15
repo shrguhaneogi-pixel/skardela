@@ -4,6 +4,7 @@ import { symbols } from "../../text/symbols";
 import { formatDateString, utcDate } from "../daily";
 import type { homeLoader } from "../puzzles";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
+import { PracticeQueue } from "../../shared/PracticeQueue";
 import styles from "./HomePage.module.css";
 
 type CardData = ReturnType<typeof useLoaderData<typeof homeLoader>>[number];
@@ -135,6 +136,7 @@ export function HomePage() {
           </Link>
         </div>
       </section>
+      <PracticeQueue />
     </>
   );
 }
