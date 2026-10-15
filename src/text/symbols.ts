@@ -70,4 +70,9 @@ export const symbols = {
     step: "🔹",
     done: "✅",
   },
+  exchange: {
+    exchange: "📦",
+    import: "📥",
+    export: "📤",
+  },
 } as const;

@@ -8,5 +8,6 @@ export { StudioPage } from "./StudioPage";
 export { DuelPage } from "./DuelPage";
 export { ExpeditionsPage } from "./ExpeditionsPage";
 export { LearnPage } from "./LearnPage";
+export { ExchangePage } from "./ExchangePage";
 export { PuzzlePage } from "./PuzzlePage";
 export { NotFoundPage } from "./NotFoundPage";

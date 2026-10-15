@@ -6,6 +6,7 @@ import {
   ArchivePage,
   AtlasPage,
   DuelPage,
+  ExchangePage,
   ExpeditionsPage,
   HomePage,
   LearnPage,
@@ -60,6 +61,10 @@ export const routes: RouteObject[] = [
       {
         path: "learn",
         element: <LearnPage />,
+      },
+      {
+        path: "exchange",
+        element: <ExchangePage />,
       },
       {
         path: "puzzles/:puzzleId",
