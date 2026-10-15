@@ -1,5 +1,6 @@
 import { Link, Outlet } from "react-router";
 import { text } from "../text/en";
+import { ReactiveCursor } from "../shared/ReactiveCursor";
 import styles from "./Layout.module.css";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
@@ -37,6 +38,7 @@ function BrandLogo() {
 export function Layout() {
   return (
     <>
+      <ReactiveCursor />
       <a className={styles.skipLink} href="#main">
         {text.skipLink}
       </a>

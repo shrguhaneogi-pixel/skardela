@@ -1,0 +1,90 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* This stylesheet provides styles for the precision crosshair reticle. */
+
+.cursorContainer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+  transition: opacity var(--transition-fast);
+}
+
+.cursorHidden {
+  opacity: 0;
+}
+
+.lineHorizontal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  will-change: transform;
+}
+
+.lineVertical {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  will-change: transform;
+}
+
+.reticle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  margin-left: -12px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 12px var(--accent-bg);
+  will-change: transform;
+  transition:
+    width var(--transition-fast),
+    height var(--transition-fast),
+    margin var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.reticleTargeted {
+  width: 36px;
+  height: 36px;
+  margin-top: -18px;
+  margin-left: -18px;
+  border-color: var(--accent);
+  background-color: var(--accent-bg);
+  box-shadow: 0 0 16px var(--accent-border);
+}
+
+.centerDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+/* Disable on touch screens and coarse pointer devices */
+@media (pointer: coarse), (hover: none) {
+  .cursorContainer {
+    display: none !important;
+  }
+}
+
+/* Disable animations and custom reticle under prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .cursorContainer {
+    display: none !important;
+  }
+}
