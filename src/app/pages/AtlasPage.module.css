@@ -31,6 +31,7 @@
 }
 
 .sectionTitle {
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -55,6 +56,16 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.metricCard:hover {
+  transform: translateY(-1px);
+  border-color: var(--line);
+  box-shadow: var(--shadow-md);
 }
 
 .metricHeader {
@@ -69,6 +80,7 @@
 }
 
 .metricValue {
+  font-family: var(--font-display);
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -96,6 +108,16 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-glass);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.skillCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-md), var(--accent-glow);
 }
 
 .skillHeader {
@@ -185,7 +207,9 @@
 .clearBtn {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1rem;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--red);
@@ -193,13 +217,30 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .clearBtn:hover {
   background-color: var(--red);
-  color: #fff;
+  color: var(--on-colour);
   border-color: var(--red);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.clearBtn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.clearBtn:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
 }
 
 .feedbackMsg {
