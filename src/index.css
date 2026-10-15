@@ -93,6 +93,20 @@
   /* High-contrast ring for selection, focus, and hints */
   --ring: var(--text-h);
 
+  /* Semantic state tokens for validation, alerts, and feedback */
+  --state-success: var(--green);
+  --state-success-bg: color-mix(in srgb, var(--green) 12%, transparent);
+  --state-success-border: color-mix(in srgb, var(--green) 35%, transparent);
+  --state-warning: var(--yellow);
+  --state-warning-bg: color-mix(in srgb, var(--yellow) 12%, transparent);
+  --state-warning-border: color-mix(in srgb, var(--yellow) 35%, transparent);
+  --state-error: var(--red);
+  --state-error-bg: color-mix(in srgb, var(--red) 12%, transparent);
+  --state-error-border: color-mix(in srgb, var(--red) 35%, transparent);
+  --state-info: var(--blue);
+  --state-info-bg: color-mix(in srgb, var(--blue) 12%, transparent);
+  --state-info-border: color-mix(in srgb, var(--blue) 35%, transparent);
+
   /* Animation curves & durations */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -255,6 +269,19 @@ code {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Custom reticle cursor active state (scoped to verified fine-pointer desktop with reduced-motion false) */
+:root[data-custom-cursor="active"],
+:root[data-custom-cursor="active"] * {
+  cursor: none !important;
+}
+
+:root[data-custom-cursor="active"] input,
+:root[data-custom-cursor="active"] textarea,
+:root[data-custom-cursor="active"] select,
+:root[data-custom-cursor="active"] [contenteditable="true"] {
+  cursor: auto !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -45,12 +45,20 @@ Three candidate cursor treatments from React Bits were systematically evaluated 
 
 ---
 
-## 4. Phased Implementation Roadmap
+## 4. Implementation Details & Architecture Enhancements
 
-1. `chore: establish visual overhaul baseline` — Architectural audit and reactive cursor evaluation matrix.
-2. `feat: introduce cohesive design token system` — Modernized design tokens for surface depth, contrast, spacing, elevation, and motion.
-3. `feat: integrate display and body typography` — Typography hierarchy pairing `Syne` (display) and `Inter` (body) with fluid optical scaling.
-4. `feat: refine buttons and interaction states` — Accessible tactile button states, active scale response, and focus illumination.
-5. `feat: implement responsive reactive cursor` — Performant crosshair reticle with coordinate tracking, touch detection, and input pass-through.
-6. `feat: polish page layouts and puzzle cards` — Hero presentation, daily challenge card, puzzle cards, navigation, and practice queue.
-7. `fix: improve responsive accessibility and visual regressions` — Multi-viewport responsive polish and WCAG validation.
+1. **Reactive Cursor Input Suppression & Lifecycle:**
+   - Over text inputs (`<input>`, `<textarea>`, `<select>`, `[contenteditable]`), `ReactiveCursor` continuously suppresses the custom reticle (`cursorHidden` class).
+   - Preserves standard native I-beam affordance and prevents pointer overlap while typing.
+   - Dynamic media query listeners (`(pointer: fine) and (hover: hover)` and `(prefers-reduced-motion: reduce)`) update cursor activity in real-time when system preferences change.
+   - Visibility change (`visibilitychange`) and window blur hide reticle when tabs are switched.
+   - Native cursor suppression is scoped via `:root[data-custom-cursor="active"]` and cleanly unbinds on unmount or on touch/coarse devices.
+
+2. **Centralized Semantic State Tokens:**
+   - Explicit CSS tokens defined in `src/index.css`: `--state-success`, `--state-warning`, `--state-error`, `--state-info` along with matching background and border tokens.
+   - Compliant with WCAG 2.1 AA dual visual encoding and light/dark mode contrast invariants.
+
+3. **Application-Wide Typography & Button Interactions:**
+   - Display typography (`--font-display: 'Syne'`) applied across all page headings and card titles in Home, Archive, Atlas, Studio, Duel, Exchange, Expeditions, Learn, and Puzzle views.
+   - Tactile button states across all sections: `:hover` with elevation, active press response (`transform: translateY(1px) scale(0.98)`), accessible `:focus-visible` offset outlines, and `--on-accent` token usage replacing hardcoded color values.
+   - Brand logo in header protected with `flex-shrink: 0; white-space: nowrap;` for 320px mobile viewport stability.
