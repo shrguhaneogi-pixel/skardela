@@ -73,9 +73,7 @@
   transform: translateY(-2px);
   border-color: var(--accent-border);
   border-top-color: var(--accent);
-  box-shadow:
-    var(--shadow-md),
-    var(--accent-glow);
+  box-shadow: var(--shadow-md), var(--accent-glow);
 }
 
 .cardHeader {

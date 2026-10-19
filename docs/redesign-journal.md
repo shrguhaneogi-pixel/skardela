@@ -24,11 +24,11 @@
 
 ## 3. ReactBits Custom Cursor Evaluation Matrix
 
-| Candidate | Visual Fit | Click Precision | Text Readability | Rendering Overhead | Touch / Coarse Fallback | Selected |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Shape Blur** | Poor (diffuse blur clashes with sharp editorial typography and ink rules) | Low (blurry edge prevents exact cell placement) | Medium (blur halos reduce clue reading comfort) | High (continual GPU rasterization of blur kernel) | Requires media query kill switch | No |
-| **Crosshair** | **Exceptional** (fine hairline drafting reticle evokes editorial proofreader's register mark) | **Superior** (1-pixel intersection matches tile coordinate grid) | **Superior** (suppressed over text inputs, clean 1px lines) | **Optimal** (hardware accelerated CSS transform3d, 0 renders) | **Native fallback** via `@media (pointer: coarse)` | **YES** |
-| **Glyph Stream** | Low (random stream characters clash with carefully typeset editorial copy) | Low (floating glyphs distract from crossword/letter solving) | Low (stream glyphs collide with puzzle letters) | Moderate (continuous particle animation tick) | Requires media query kill switch | No |
+| Candidate        | Visual Fit                                                                                    | Click Precision                                                  | Text Readability                                            | Rendering Overhead                                            | Touch / Coarse Fallback                            | Selected |
+| :--------------- | :-------------------------------------------------------------------------------------------- | :--------------------------------------------------------------- | :---------------------------------------------------------- | :------------------------------------------------------------ | :------------------------------------------------- | :------- |
+| **Shape Blur**   | Poor (diffuse blur clashes with sharp editorial typography and ink rules)                     | Low (blurry edge prevents exact cell placement)                  | Medium (blur halos reduce clue reading comfort)             | High (continual GPU rasterization of blur kernel)             | Requires media query kill switch                   | No       |
+| **Crosshair**    | **Exceptional** (fine hairline drafting reticle evokes editorial proofreader's register mark) | **Superior** (1-pixel intersection matches tile coordinate grid) | **Superior** (suppressed over text inputs, clean 1px lines) | **Optimal** (hardware accelerated CSS transform3d, 0 renders) | **Native fallback** via `@media (pointer: coarse)` | **YES**  |
+| **Glyph Stream** | Low (random stream characters clash with carefully typeset editorial copy)                    | Low (floating glyphs distract from crossword/letter solving)     | Low (stream glyphs collide with puzzle letters)             | Moderate (continuous particle animation tick)                 | Requires media query kill switch                   | No       |
 
 ## 4. Implementation Steps & Verification Plan
 
