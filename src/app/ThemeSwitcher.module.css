@@ -25,14 +25,17 @@
 }
 
 .select {
-  min-height: 2.75rem;
-  padding: 0.25rem 2.25rem 0.25rem 0.875rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 2.25rem 0.25rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xs);
   background-color: var(--surface-muted);
   color: var(--text-h);
-  font-size: 0.875rem;
-  font-weight: 550;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
   appearance: none;
   box-shadow: var(--shadow-sm);
@@ -44,7 +47,7 @@
 
 .select:hover {
   background-color: var(--surface-muted-hover);
-  border-color: var(--line);
+  border-color: var(--accent);
 }
 
 .select:focus-visible {
