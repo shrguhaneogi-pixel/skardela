@@ -151,8 +151,13 @@ body {
   color: var(--text);
   background-color: var(--bg);
   background-image:
+    radial-gradient(circle at 1px 1px, light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.05)) 1px, transparent 0),
     radial-gradient(ellipse 80% 50% at 50% -20%, var(--bg-radial-1), transparent),
     radial-gradient(ellipse 60% 40% at 85% 100%, var(--accent-bg), transparent);
+  background-size:
+    24px 24px,
+    auto,
+    auto;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
