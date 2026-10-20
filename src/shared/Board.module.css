@@ -45,6 +45,29 @@
     box-shadow var(--transition-fast);
 }
 
+/* Subtle geometric coordinate corner tick */
+.square::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  opacity: 0.25;
+  pointer-events: none;
+  transition:
+    opacity var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.square:hover::after,
+.square[data-selected="true"]::after {
+  opacity: 0.8;
+  border-color: var(--accent);
+}
+
 /* A fixed square has an inner light ring to show it cannot be changed. */
 .square[data-fixed="true"] {
   box-shadow:
