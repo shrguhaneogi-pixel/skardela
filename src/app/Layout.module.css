@@ -26,12 +26,14 @@
   margin-top: clamp(0.75rem, 2vw, 1.25rem);
   padding: 0.75rem clamp(1rem, 2.5vw, 1.75rem);
   background-color: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-top: 2px solid var(--accent);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);

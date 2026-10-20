@@ -35,7 +35,9 @@
   font-weight: 600;
   cursor: pointer;
   appearance: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
   transition:
     background-color var(--transition-fast),
     border-color var(--transition-fast),
