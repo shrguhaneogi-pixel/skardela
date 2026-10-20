@@ -14,4 +14,5 @@ export const learnText = {
   markCompletedBtn: "Mark Lesson Done",
   completedBadge: "Completed",
   availableBadge: "Ready to Learn",
+  stepNumber: (step: number) => `Step ${step}`,
 };

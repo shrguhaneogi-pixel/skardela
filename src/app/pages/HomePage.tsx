@@ -1,5 +1,6 @@
 import { Link, useLoaderData } from "react-router";
 import { text } from "../../text/en";
+import { symbols } from "../../text/symbols";
 import { formatDateString, utcDate } from "../daily";
 import type { homeLoader } from "../puzzles";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
@@ -17,9 +18,15 @@ function LevelItem({ id, difficulty }: { id: string; difficulty: keyof typeof te
       <Link className={styles.play} to={`/puzzles/${id}`}>
         {text.levels[difficulty]}
       </Link>
-      {status === "solved" && <span className={styles.statusPillSolved}>{text.home.solved} ✓</span>}
+      {status === "solved" && (
+        <span className={styles.statusPillSolved}>
+          {text.home.solved} {symbols.common.check}
+        </span>
+      )}
       {status === "in_progress" && (
-        <span className={styles.statusPillResume}>{text.home.resume} ⏱</span>
+        <span className={styles.statusPillResume}>
+          {text.home.resume} {symbols.common.time}
+        </span>
       )}
     </li>
   );
@@ -68,7 +75,7 @@ function QuickPlayBanner({ cards }: { cards: CardData[] }) {
         </p>
       </div>
       <Link className={styles.play} to={`/puzzles/${target.id}`}>
-        {actionLabel} →
+        {actionLabel} {symbols.common.arrowRight}
       </Link>
     </aside>
   );

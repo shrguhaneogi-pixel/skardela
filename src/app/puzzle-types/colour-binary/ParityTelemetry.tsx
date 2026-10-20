@@ -63,11 +63,20 @@ function computeBoardParity(size: number, squares: Square[]) {
 }
 
 function MeterDots({ stats }: { stats: LineStats[] }) {
+  const t = text["colour-binary"].telemetry;
   return (
     <div className={styles.meterDots}>
       {stats.map((s) => {
         const dotClass = s.isBalanced ? styles.dotBalanced : s.isOver ? styles.dotOver : styles.dot;
-        return <span key={s.id} className={`${styles.dot} ${dotClass}`} />;
+        const label = s.isBalanced ? t.lineBalanced : s.isOver ? t.lineOver : t.linePending;
+        return (
+          <span
+            key={s.id}
+            className={`${styles.dot} ${dotClass}`}
+            title={label}
+            aria-label={label}
+          />
+        );
       })}
     </div>
   );
@@ -96,7 +105,7 @@ export function ParityTelemetry({ size, squares }: TelemetryProps) {
       </div>
       {allBalanced ? (
         <span className={styles.badgeSuccess}>
-          {symbols.guzzle.correct} {t.allBalanced}
+          {symbols["colour-binary"].balanced} {t.allBalanced}
         </span>
       ) : (
         <span>{t.balanceStatus(balancedRows, balancedCols, size)}</span>

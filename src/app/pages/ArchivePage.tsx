@@ -1,6 +1,7 @@
 import type { ChangeEvent } from "react";
 import { Link, useLoaderData, useNavigate } from "react-router";
 import { text } from "../../text/en";
+import { symbols } from "../../text/symbols";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { formatDateString, type LocalDate } from "../daily";
 import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
@@ -70,7 +71,7 @@ function DateBar(props: DateBarProps) {
       </div>
       {!props.isToday && (
         <Link to="/archive" className={styles.todayBtn}>
-          {text.archive.jumpToToday} →
+          {text.archive.jumpToToday} {symbols.common.arrowRight}
         </Link>
       )}
     </div>
@@ -86,9 +87,15 @@ function ArchiveLevelItem({ id, difficulty, dateString }: ItemProps) {
       <Link className={styles.play} to={`/puzzles/${id}?date=${dateString}`}>
         {text.levels[difficulty]}
       </Link>
-      {status === "solved" && <span className={styles.statusPillSolved}>{text.home.solved} ✓</span>}
+      {status === "solved" && (
+        <span className={styles.statusPillSolved}>
+          {text.home.solved} {symbols.common.check}
+        </span>
+      )}
       {status === "in_progress" && (
-        <span className={styles.statusPillResume}>{text.home.resume} ⏱</span>
+        <span className={styles.statusPillResume}>
+          {text.home.resume} {symbols.common.time}
+        </span>
       )}
     </li>
   );

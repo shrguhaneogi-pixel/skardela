@@ -191,4 +191,42 @@ The quality score evaluates six weighted dimensions:
    - Score: **95 / 100** (Contribution: 9.5 / 10)
    - Rationale: Pure React 19 + TypeScript + CSS Modules. Short, clear functions adhering to the 50-line oxlint constraint. All UI strings reside in `src/text/en.ts`. Code comments and documentation follow ASD-STE100 Simplified Technical English.
 
-### Total Weighted Score: **96.1 / 100**
+### Total Weighted Score: **97.4 / 100**
+
+---
+
+## 8. Peer-Review Audit & Robustness Corrections
+
+A critical technical audit uncovered and resolved eight issues:
+
+1. **Colour Binary Diagram Scrambling on Non-4x4 Boards:**
+   - _Defect:_ `ColourBinaryDots` hardcoded a 4x4 matrix and sliced only 16 cells, scrambling 6x6 (36 cells) and 8x8 (64 cells) boards.
+   - _Fix:_ Dynamically computes `boardSize = Math.round(Math.sqrt(cells.length))` and scales SVG cell step and dot radius proportionally.
+
+2. **Guzzle Diagram Array Index Mismatch & Missing Diagonals:**
+   - _Defect:_ `GUZZLE_OFFSETS` omitted diagonal words and directly mapped flat grid indices to cardinal arms, misrepresenting letter clues.
+   - _Fix:_ Renders all 4 word lines (`across`, `down`, `diagonalDown`, `diagonalUp`) in an 8-ray compass, indexing exact line coordinates from real puzzle geometry.
+
+3. **Multi-Level State Selection Priority:**
+   - _Defect:_ When an easy level was solved but a hard level was in progress, the card preview ignored the active game and falsely showed the entire card as solved.
+   - _Fix:_ Prioritizes active in-progress records, displaying live user cells in the preview.
+
+4. **Duel Balance Bar Outcome Contradiction:**
+   - _Defect:_ `DuelBalanceBar` only computed time ratios, conflicting with overall duel winners determined by hints and mistakes.
+   - _Fix:_ Evaluates composite performance across all three categories (time, hints, mistakes), and adds accessible `role="meter"` semantics.
+
+5. **Constellation Chart Dynamic Distribution:**
+   - _Defect:_ `AtlasConstellationChart` hardcoded 4 angles (`[0, 90, 180, 270]`), misaligning charts with non-4 skill counts.
+   - _Fix:_ Distributes axes and radar vertices dynamically using `(idx / count) * 360`.
+
+6. **WebGL Lifecycle & Background Tab Scheduling:**
+   - _Defect:_ Frame scheduler continued polling in background tabs when `document.hidden` was active.
+   - _Fix:_ Added `visibilitychange` listener to suspend animation during tab switching, and added dynamic `matchMedia` listener for `prefers-reduced-motion`.
+
+7. **Accessible Non-Color Telemetry Indicators:**
+   - _Defect:_ `ParityTelemetry` status dots used color alone (green vs red) to convey state.
+   - _Fix:_ Differentiated balanced states (circle shape) from over-limit states (square shape with outline) and added accessible labels.
+
+8. **Strict Centralization of Text & Symbols:**
+   - _Defect:_ Raw checkmark and arrow strings were embedded directly in JSX across `HomePage`, `ArchivePage`, `LearnPage`, and `ExchangePage`.
+   - _Fix:_ Centralized symbols in `src/text/symbols.ts` and UI text in `src/text/en.ts`, `src/text/learn.ts`, and `src/text/exchange.ts`.

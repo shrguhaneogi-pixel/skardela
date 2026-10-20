@@ -33,8 +33,9 @@ function WebCircles({ center, maxR }: { center: number; maxR: number }) {
   });
 }
 
-function SkillAxes({ center, maxR }: { center: number; maxR: number }) {
-  const angles = [0, 90, 180, 270];
+function SkillAxes({ center, maxR, count }: { center: number; maxR: number; count: number }) {
+  const numAxes = Math.max(3, count);
+  const angles = Array.from({ length: numAxes }, (_, i) => (i / numAxes) * 360);
   return angles.map((angle) => {
     const pt = polarToCartesian(center, center, maxR, angle);
     return (
@@ -52,9 +53,9 @@ function SkillVertices({
   maxR: number;
   skills: LogicSkill[];
 }) {
-  const angles = [0, 90, 180, 270];
+  const count = skills.length;
   return skills.map((skill, idx) => {
-    const angle = angles[idx] ?? 0;
+    const angle = count > 0 ? (idx / count) * 360 : 0;
     const r = Math.max(12, maxR * (skill.proficiencyPercent / 100));
     const pt = polarToCartesian(center, center, r, angle);
     const labelPt = polarToCartesian(center, center, maxR + 18, angle);
@@ -72,15 +73,15 @@ function SkillVertices({
   });
 }
 
-const ANGLES = [0, 90, 180, 270] as const;
 const CENTER = 150;
 const MAX_R = 90;
 
 export function AtlasConstellationChart({ skills }: ChartProps) {
   const polygonPath = useMemo(() => {
     if (skills.length === 0) return "";
+    const count = skills.length;
     const points = skills.map((s, idx) => {
-      const angle = ANGLES[idx] ?? 0;
+      const angle = (idx / count) * 360;
       const r = Math.max(12, MAX_R * (s.proficiencyPercent / 100));
       return polarToCartesian(CENTER, CENTER, r, angle);
     });
@@ -96,7 +97,7 @@ export function AtlasConstellationChart({ skills }: ChartProps) {
       >
         <title>{text.atlas.constellationAria}</title>
         <WebCircles center={CENTER} maxR={MAX_R} />
-        <SkillAxes center={CENTER} maxR={MAX_R} />
+        <SkillAxes center={CENTER} maxR={MAX_R} count={skills.length} />
         {polygonPath && <path d={polygonPath} className={styles.polygonShape} />}
         <SkillVertices center={CENTER} maxR={MAX_R} skills={skills} />
       </svg>

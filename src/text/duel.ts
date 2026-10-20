@@ -28,4 +28,6 @@ export const duelText = {
   playPuzzleBtn: "Play This Puzzle",
   futureServerNote:
     "Real-time matchmaking and verified leaderboards require backend infrastructure not present in this local-first app.",
+  balanceMeterLabel: (playerPercent: number) =>
+    `Performance balance: ${playerPercent}% player advantage`,
 };

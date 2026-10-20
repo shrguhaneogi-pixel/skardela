@@ -7,7 +7,7 @@ import { text } from "../text/en";
 import { setupContextListeners } from "./editorial-canvas-gl";
 import { EditorialHeroCanvas } from "./EditorialHeroCanvas";
 
-describe("EditorialHeroCanvas", () => {
+describe("EditorialHeroCanvas rendering", () => {
   it("renders safely with fallback svg and accessible label when webgl is unavailable", () => {
     const { container } = render(<EditorialHeroCanvas />);
 
@@ -20,7 +20,9 @@ describe("EditorialHeroCanvas", () => {
     const svg = container.querySelector("svg");
     expect(svg).toBeInTheDocument();
   });
+});
 
+describe("EditorialHeroCanvas lifecycle events", () => {
   it("handles webgl context lifecycle events safely without throwing", () => {
     const { container, unmount } = render(<EditorialHeroCanvas />);
     const canvas = container.querySelector("canvas");
@@ -48,6 +50,16 @@ describe("EditorialHeroCanvas", () => {
     expect(restoredCalled).toBe(true);
 
     cleanup();
+    expect(() => unmount()).not.toThrow();
+  });
+
+  it("handles document visibilitychange without throwing errors", () => {
+    const { unmount } = render(<EditorialHeroCanvas />);
+
+    expect(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    }).not.toThrow();
+
     expect(() => unmount()).not.toThrow();
   });
 });

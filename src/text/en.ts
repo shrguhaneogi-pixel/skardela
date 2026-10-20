@@ -119,6 +119,9 @@ export const text = {
       balanceStatus: (rows: number, cols: number, size: number) =>
         `Rows ${rows}/${size} • Cols ${cols}/${size}`,
       allBalanced: "All lines are balanced",
+      lineBalanced: "Line is balanced",
+      lineOver: "Line exceeds colour limit",
+      linePending: "Line is incomplete",
     },
     hintButton: "Hint",
     hint: (hint: {

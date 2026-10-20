@@ -2,11 +2,17 @@
 // A symbol on a square has the text colour of the square, so it shows clearly on each square colour.
 // A symbol shows a colour as a shape too, so colour is not the only signal for the player.
 export const symbols = {
+  common: {
+    check: "✓",
+    time: "⏱",
+    arrowRight: "→",
+  },
   "colour-binary": {
     // A circle and a square have different shapes.
     R: "●",
     B: "■",
     ".": "",
+    balanced: "✓",
   },
   guzzle: {
     correct: "✓",

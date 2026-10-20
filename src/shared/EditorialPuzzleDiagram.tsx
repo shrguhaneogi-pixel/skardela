@@ -24,16 +24,12 @@ type BoardState = {
   guzzleMarks?: ("correct" | "present" | "absent" | undefined)[];
 };
 
-const GUZZLE_OFFSETS = [
-  { cx: 28, cy: 12, id: "arm-top-1" },
-  { cx: 28, cy: 20, id: "arm-top-2" },
-  { cx: 44, cy: 28, id: "arm-right-1" },
-  { cx: 36, cy: 28, id: "arm-right-2" },
-  { cx: 28, cy: 44, id: "arm-bottom-1" },
-  { cx: 28, cy: 36, id: "arm-bottom-2" },
-  { cx: 12, cy: 28, id: "arm-left-1" },
-  { cx: 20, cy: 28, id: "arm-left-2" },
-] as const;
+type GuzzleNode = {
+  id: string;
+  cx: number;
+  cy: number;
+  markClass: string;
+};
 
 const DEFAULT_BINARY = [
   "R",
@@ -54,24 +50,51 @@ const DEFAULT_BINARY = [
   "R",
 ] as const;
 
-function readPuzzleState(levels: LevelRef[]): BoardState {
-  let isSolved = false;
+const GUZZLE_LINES = ["across", "down", "diagonalDown", "diagonalUp"] as const;
+
+function getGuzzleLineIndexes(line: (typeof GUZZLE_LINES)[number], size: number): number[] {
+  const steps = Array.from({ length: size }, (_, step) => step);
+  const middle = (size - 1) / 2;
+  switch (line) {
+    case "across":
+      return steps.map((col) => middle * size + col);
+    case "down":
+      return steps.map((row) => row * size + middle);
+    case "diagonalDown":
+      return steps.map((step) => step * size + step);
+    case "diagonalUp":
+      return steps.map((step) => (size - 1 - step) * size + step);
+  }
+}
+
+function findActiveRecords(levels: LevelRef[]) {
+  let isAllSolved = levels.length > 0;
+  let hasAnySolved = false;
   let inProgressRecord: ReturnType<typeof loadPuzzleProgress> = null;
+  let solvedRecord: ReturnType<typeof loadPuzzleProgress> = null;
 
   for (const level of levels) {
     const record = loadPuzzleProgress(level.id);
-    if (!record) continue;
-    if (record.isSolved) {
-      isSolved = true;
+    if (!record) {
+      isAllSolved = false;
+      continue;
     }
-    if (record.colourBinaryState?.squares || record.guzzleState?.guesses) {
+    if (record.isSolved) {
+      hasAnySolved = true;
+      if (!solvedRecord) solvedRecord = record;
+    } else {
+      isAllSolved = false;
+    }
+    if (!record.isSolved && (record.colourBinaryState?.squares || record.guzzleState?.guesses)) {
       inProgressRecord = record;
     }
   }
+  return { isAllSolved, hasAnySolved, inProgressRecord, solvedRecord };
+}
 
-  if (isSolved) {
-    return { isSolved: true, isInProgress: false };
-  }
+function readPuzzleState(levels: LevelRef[]): BoardState {
+  const { isAllSolved, hasAnySolved, inProgressRecord, solvedRecord } = findActiveRecords(levels);
+
   if (inProgressRecord?.colourBinaryState?.squares) {
     return {
       isSolved: false,
@@ -84,6 +107,22 @@ function readPuzzleState(levels: LevelRef[]): BoardState {
       isSolved: false,
       isInProgress: true,
       guzzleMarks: inProgressRecord.guzzleState.guesses.map((g) => g?.mark),
+    };
+  }
+  if (isAllSolved) {
+    return {
+      isSolved: true,
+      isInProgress: false,
+      colourCells: solvedRecord?.colourBinaryState?.squares,
+      guzzleMarks: solvedRecord?.guzzleState?.guesses?.map((g) => g?.mark),
+    };
+  }
+  if (hasAnySolved) {
+    return {
+      isSolved: false,
+      isInProgress: false,
+      colourCells: solvedRecord?.colourBinaryState?.squares,
+      guzzleMarks: solvedRecord?.guzzleState?.guesses?.map((g) => g?.mark),
     };
   }
   return { isSolved: false, isInProgress: false };
@@ -112,62 +151,101 @@ function DiagramFrame({ isSolved }: { isSolved: boolean }) {
 }
 
 function ColourBinaryDots({ cells }: { cells: readonly string[] }) {
-  const size = 4;
-  const cellSize = 10;
-  const pad = 8;
+  const count = cells.length;
+  const boardSize = Math.max(2, Math.round(Math.sqrt(count)));
+  const pad = 6;
+  const available = 44;
+  const cellSize = available / boardSize;
 
-  return cells.slice(0, 16).map((val, idx) => {
-    const col = idx % size;
-    const row = Math.floor(idx / size);
+  const dotRadius = boardSize <= 4 ? 3 : boardSize <= 6 ? 2.2 : 1.6;
+  const emptyRadius = Math.max(0.7, dotRadius * 0.5);
+
+  return cells.map((val, idx) => {
+    const col = idx % boardSize;
+    const row = Math.floor(idx / boardSize);
     const cx = pad + col * cellSize + cellSize / 2;
     const cy = pad + row * cellSize + cellSize / 2;
-    const r = val === "." ? 1.5 : 3;
+    const r = val === "." ? emptyRadius : dotRadius;
     const fillClass =
       val === "R" ? styles.cellDotRed : val === "B" ? styles.cellDotBlue : styles.cellDotEmpty;
-    return <circle key={`cell-${col}-${row}`} cx={cx} cy={cy} r={r} className={fillClass} />;
+    return <circle key={`dot-${val}-${col}-${row}`} cx={cx} cy={cy} r={r} className={fillClass} />;
   });
 }
 
 function ColourBinarySvg({ state }: { state: BoardState }) {
   const cells =
-    state.colourCells && state.colourCells.length >= 16 ? state.colourCells : DEFAULT_BINARY;
+    state.colourCells && state.colourCells.length >= 4 ? state.colourCells : DEFAULT_BINARY;
   const label = text.home.diagramLabel(text["colour-binary"].name);
 
   return (
     <svg className={styles.svgRoot} viewBox="0 0 56 56" aria-label={label}>
       <title>{label}</title>
       <DiagramFrame isSolved={state.isSolved} />
-      <line x1="28" y1="8" x2="28" y2="48" className={styles.axisLine} />
-      <line x1="8" y1="28" x2="48" y2="28" className={styles.axisLine} />
+      <line x1="28" y1="6" x2="28" y2="50" className={styles.axisLine} />
+      <line x1="6" y1="28" x2="50" y2="28" className={styles.axisLine} />
       <ColourBinaryDots cells={cells} />
     </svg>
   );
 }
 
-function GuzzleArms({ marks }: { marks?: ("correct" | "present" | "absent" | undefined)[] }) {
-  return GUZZLE_OFFSETS.map((pos, idx) => {
-    const mark = marks?.[idx];
-    const markClass =
-      mark === "correct"
-        ? styles.cellCorrect
-        : mark === "present"
-          ? styles.cellPresent
-          : mark === "absent"
-            ? styles.cellAbsent
-            : styles.cellDotEmpty;
-    return <circle key={pos.id} cx={pos.cx} cy={pos.cy} r="3" className={markClass} />;
-  });
+function useGuzzleNodes(size: number, centerIndex: number, state: BoardState): GuzzleNode[] {
+  return useMemo(() => {
+    const list: GuzzleNode[] = [];
+    const seen = new Set<number>();
+    const pad = 8;
+    const available = 40;
+
+    for (const line of GUZZLE_LINES) {
+      const indices = getGuzzleLineIndexes(line, size);
+      for (const idx of indices) {
+        if (idx === centerIndex || seen.has(idx)) continue;
+        seen.add(idx);
+        const col = idx % size;
+        const row = Math.floor(idx / size);
+        const cx = pad + ((col + 0.5) / size) * available;
+        const cy = pad + ((row + 0.5) / size) * available;
+        const mark = state.isSolved ? "correct" : state.guzzleMarks?.[idx];
+        const markClass =
+          (mark === "correct"
+            ? styles.cellCorrect
+            : mark === "present"
+              ? styles.cellPresent
+              : mark === "absent"
+                ? styles.cellAbsent
+                : styles.cellDotEmpty) ?? "";
+        list.push({ id: `gz-node-${idx}`, cx, cy, markClass });
+      }
+    }
+    return list;
+  }, [size, centerIndex, state.isSolved, state.guzzleMarks]);
 }
 
 function GuzzleSvg({ state }: { state: BoardState }) {
   const label = text.home.diagramLabel(text.guzzle.name);
+  const size = state.guzzleMarks ? Math.round(Math.sqrt(state.guzzleMarks.length)) || 5 : 5;
+  const middle = (size - 1) / 2;
+  const centerIndex = middle * size + middle;
+  const nodes = useGuzzleNodes(size, centerIndex, state);
+
   return (
     <svg className={styles.svgRoot} viewBox="0 0 56 56" aria-label={label}>
       <title>{label}</title>
       <DiagramFrame isSolved={state.isSolved} />
-      <line x1="28" y1="8" x2="28" y2="48" className={styles.gridLine} />
       <line x1="8" y1="28" x2="48" y2="28" className={styles.gridLine} />
-      <GuzzleArms marks={state.guzzleMarks} />
+      <line x1="28" y1="8" x2="28" y2="48" className={styles.gridLine} />
+      <line x1="10" y1="10" x2="46" y2="46" className={styles.gridLine} />
+      <line x1="10" y1="46" x2="46" y2="10" className={styles.gridLine} />
+
+      {nodes.map((node) => (
+        <circle
+          key={node.id}
+          cx={node.cx}
+          cy={node.cy}
+          r={size > 5 ? 2 : 2.75}
+          className={node.markClass}
+        />
+      ))}
+
       <rect x="23" y="23" width="10" height="10" rx="2" className={styles.centerCell} />
       <text x="28" y="28" className={styles.centerText}>
         {text.guzzle.sampleCenter}

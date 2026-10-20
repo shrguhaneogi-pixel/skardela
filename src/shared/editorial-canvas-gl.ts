@@ -1,12 +1,8 @@
 // ASD-STE100 Simplified Technical English comments.
 // WebGL context and shader utilities for the editorial hero visual.
 
-const VERTEX_SHADER_SRC = `#version 300 es
-in vec2 aPosition;
-void main() {
-  gl_Position = vec4(aPosition, 0.0, 1.0);
-}
-`;
+const VERTEX_SHADER_SRC =
+  "#version 300 es\nin vec2 aPosition;\nvoid main() { gl_Position = vec4(aPosition, 0.0, 1.0); }\n";
 
 const FRAGMENT_SHADER_SRC = `#version 300 es
 precision highp float;
@@ -20,42 +16,33 @@ uniform vec3 uColorBg;
 void main() {
   vec2 uv = gl_FragCoord.xy / max(uResolution.xy, vec2(1.0));
   vec2 p = (gl_FragCoord.xy * 2.0 - uResolution.xy) / max(min(uResolution.x, uResolution.y), 1.0);
-
-  // Subtle wave deflection from pointer
-  float distToPointer = length(uv - uPointer);
-  float ripple = sin(distToPointer * 18.0 - uTime * 1.5) * 0.02 * exp(-distToPointer * 3.0);
+  float dist = length(uv - uPointer);
+  float ripple = sin(dist * 18.0 - uTime * 1.5) * 0.02 * exp(-dist * 3.0);
   p += ripple;
-
-  // Dual coordinate grid lines with safe derivatives
   vec2 fw = max(fwidth(p * 4.0), vec2(0.001));
   vec2 grid = abs(fract(p * 4.0 - 0.5) - 0.5) / fw;
   float line = min(grid.x, grid.y);
-  float gridPattern = 1.0 - min(line, 1.0);
-
-  // Center radial compass halo
   float ring = abs(length(p) - 0.85);
   float ringLine = 1.0 - smoothstep(0.0, 0.02, ring);
-
-  // Combine base with fine accents
-  vec3 col = uColorBg;
-  col = mix(col, uColorAccent, gridPattern * 0.14);
+  vec3 col = mix(uColorBg, uColorAccent, (1.0 - min(line, 1.0)) * 0.14);
   col = mix(col, uColorAccent, ringLine * 0.28);
-
   fragColor = vec4(col, 1.0);
 }
 `;
+
+export type GlLocations = {
+  resolution: WebGLUniformLocation | null;
+  pointer: WebGLUniformLocation | null;
+  time: WebGLUniformLocation | null;
+  accent: WebGLUniformLocation | null;
+  bg: WebGLUniformLocation | null;
+};
 
 export type GlContext = {
   gl: WebGL2RenderingContext;
   program: WebGLProgram;
   buffer: WebGLBuffer;
-  locations: {
-    resolution: WebGLUniformLocation | null;
-    pointer: WebGLUniformLocation | null;
-    time: WebGLUniformLocation | null;
-    accent: WebGLUniformLocation | null;
-    bg: WebGLUniformLocation | null;
-  };
+  locations: GlLocations;
 };
 
 function createShader(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader | null {
@@ -77,11 +64,9 @@ export function initGl(canvas: HTMLCanvasElement): GlContext | null {
     powerPreference: "low-power",
   });
   if (!gl) return null;
-
   const vs = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
   const fs = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
   if (!vs || !fs) return null;
-
   const program = gl.createProgram();
   if (!program) return null;
   gl.attachShader(program, vs);
@@ -89,31 +74,29 @@ export function initGl(canvas: HTMLCanvasElement): GlContext | null {
   gl.linkProgram(program);
   gl.deleteShader(vs);
   gl.deleteShader(fs);
-
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     gl.deleteProgram(program);
     return null;
   }
-
   const buffer = gl.createBuffer();
   if (!buffer) return null;
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-
   const posLoc = gl.getAttribLocation(program, "aPosition");
   gl.enableVertexAttribArray(posLoc);
   gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
+  const loc = (name: string) => gl.getUniformLocation(program, name);
   return {
     gl,
     program,
     buffer,
     locations: {
-      resolution: gl.getUniformLocation(program, "uResolution"),
-      pointer: gl.getUniformLocation(program, "uPointer"),
-      time: gl.getUniformLocation(program, "uTime"),
-      accent: gl.getUniformLocation(program, "uColorAccent"),
-      bg: gl.getUniformLocation(program, "uColorBg"),
+      resolution: loc("uResolution"),
+      pointer: loc("uPointer"),
+      time: loc("uTime"),
+      accent: loc("uColorAccent"),
+      bg: loc("uColorBg"),
     },
   };
 }
@@ -148,19 +131,12 @@ export function renderHeroFrame(
   const { gl, program, locations } = ctx;
   resizeCanvas(canvas, gl);
   gl.useProgram(program);
-
   gl.uniform2f(locations.resolution, canvas.width, canvas.height);
   gl.uniform2f(locations.pointer, pointer[0], pointer[1]);
   gl.uniform1f(locations.time, timeSec);
-
-  if (isDarkTheme()) {
-    gl.uniform3f(locations.accent, 0.98, 0.57, 0.23);
-    gl.uniform3f(locations.bg, 0.05, 0.06, 0.08);
-  } else {
-    gl.uniform3f(locations.accent, 0.76, 0.25, 0.05);
-    gl.uniform3f(locations.bg, 0.97, 0.98, 0.98);
-  }
-
+  const dark = isDarkTheme();
+  gl.uniform3f(locations.accent, dark ? 0.98 : 0.76, dark ? 0.57 : 0.25, dark ? 0.23 : 0.05);
+  gl.uniform3f(locations.bg, dark ? 0.05 : 0.97, dark ? 0.06 : 0.98, dark ? 0.08 : 0.98);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
@@ -185,13 +161,11 @@ export function setupContextListeners(
   onLost: () => void,
   onRestored: (newCtx: GlContext | null) => void,
 ): () => void {
-  const handleLost = (event: Event) => {
-    event.preventDefault();
+  const handleLost = (e: Event) => {
+    e.preventDefault();
     onLost();
   };
-  const handleRestored = () => {
-    onRestored(initGl(canvas));
-  };
+  const handleRestored = () => onRestored(initGl(canvas));
   canvas.addEventListener("webglcontextlost", handleLost);
   canvas.addEventListener("webglcontextrestored", handleRestored);
   return () => {
@@ -206,10 +180,13 @@ function startAnimation(
   pointerRef: { readonly current: [number, number] },
 ) {
   let animId = 0;
-  let isVisible = true;
+  let isIntersecting = true;
+  let isDocVisible = typeof document === "undefined" ? true : !document.hidden;
   const startTime = performance.now();
+  const isRunning = () => isIntersecting && isDocVisible;
+
   const loop = (now: number) => {
-    if (!isVisible) return;
+    if (!isRunning()) return;
     renderHeroFrame(ctx, canvas, (now - startTime) * 0.001, pointerRef.current);
     animId = requestAnimationFrame(loop);
   };
@@ -220,25 +197,77 @@ function startAnimation(
     stop: () => cancelAnimationFrame(animId),
     restart: () => {
       cancelAnimationFrame(animId);
-      if (isVisible) animId = requestAnimationFrame(loop);
+      if (isRunning()) animId = requestAnimationFrame(loop);
     },
     setVisible: (v: boolean) => {
-      isVisible = v;
+      isIntersecting = v;
       cancelAnimationFrame(animId);
-      if (v) animId = requestAnimationFrame(loop);
+      if (isRunning()) animId = requestAnimationFrame(loop);
+    },
+    setDocVisible: (v: boolean) => {
+      isDocVisible = v;
+      cancelAnimationFrame(animId);
+      if (isRunning()) animId = requestAnimationFrame(loop);
     },
   };
+}
+
+function setupDocVisibility(runner: ReturnType<typeof startAnimation>): () => void {
+  if (typeof document === "undefined") return () => {};
+  const handler = () => runner.setDocVisible(!document.hidden);
+  document.addEventListener("visibilitychange", handler);
+  return () => document.removeEventListener("visibilitychange", handler);
+}
+
+function setupMotionListener(
+  canvas: HTMLCanvasElement,
+  runner: ReturnType<typeof startAnimation>,
+): () => void {
+  const query =
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)")
+      : null;
+  const handler = (e: MediaQueryListEvent) => {
+    if (e.matches) {
+      canvas.dataset.active = "false";
+      runner.stop();
+    } else {
+      canvas.dataset.active = "true";
+      runner.restart();
+    }
+  };
+  query?.addEventListener?.("change", handler);
+  return () => query?.removeEventListener?.("change", handler);
+}
+
+function setupAllListeners(
+  canvas: HTMLCanvasElement,
+  runner: ReturnType<typeof startAnimation>,
+  onRestore: (ctx: GlContext | null) => void,
+) {
+  const c1 = setupIntersectionObserver(canvas, (visible) => runner.setVisible(visible));
+  const c2 = setupDocVisibility(runner);
+  const c3 = setupMotionListener(canvas, runner);
+  const c4 = setupContextListeners(
+    canvas,
+    () => {
+      canvas.dataset.active = "false";
+      runner.stop();
+    },
+    onRestore,
+  );
+  return () => [c1, c2, c3, c4].forEach((fn) => fn());
 }
 
 export function runWebGlLoop(
   canvas: HTMLCanvasElement,
   pointerRef: { readonly current: [number, number] },
 ): () => void {
-  if (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
+  const motionQuery =
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)")
+      : null;
+  if (motionQuery?.matches) {
     canvas.dataset.active = "false";
     return () => {};
   }
@@ -250,27 +279,17 @@ export function runWebGlLoop(
   canvas.dataset.active = "true";
 
   let runner = startAnimation(ctx, canvas, pointerRef);
-
-  const cleanupObs = setupIntersectionObserver(canvas, (visible) => runner.setVisible(visible));
-  const cleanupCtx = setupContextListeners(
-    canvas,
-    () => {
-      canvas.dataset.active = "false";
-      runner.stop();
-    },
-    (restored) => {
-      if (restored) {
-        ctx = restored;
-        canvas.dataset.active = "true";
-        runner = startAnimation(restored, canvas, pointerRef);
-      }
-    },
-  );
+  const cleanupAll = setupAllListeners(canvas, runner, (restored) => {
+    if (restored) {
+      ctx = restored;
+      canvas.dataset.active = "true";
+      runner = startAnimation(restored, canvas, pointerRef);
+    }
+  });
 
   return () => {
     runner.stop();
-    cleanupObs();
-    cleanupCtx();
+    cleanupAll();
     if (ctx) {
       ctx.gl.deleteBuffer(ctx.buffer);
       ctx.gl.deleteProgram(ctx.program);

@@ -48,11 +48,15 @@
 }
 
 .dotBalanced {
+  border-radius: 50%;
   background-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
 }
 
 .dotOver {
+  border-radius: 1px;
   background-color: var(--red);
+  box-shadow: 0 0 0 1px var(--red);
 }
 
 .badgeSuccess {

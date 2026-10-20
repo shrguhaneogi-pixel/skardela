@@ -67,4 +67,29 @@ describe("ParityTelemetry - solved state", () => {
     render(<ParityTelemetry size={4} squares={balancedBoard} />);
     expect(screen.getByText(/All lines are balanced/iu)).toBeInTheDocument();
   });
+
+  it("provides accessible titles and labels on status dots", () => {
+    const boardWithOver: Square[] = [
+      "R",
+      "R",
+      "R",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+      ".",
+    ];
+
+    const { container } = render(<ParityTelemetry size={4} squares={boardWithOver} />);
+    const overDot = container.querySelector("[title='Line exceeds colour limit']");
+    expect(overDot).not.toBeNull();
+  });
 });
