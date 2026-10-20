@@ -25,17 +25,19 @@
 }
 
 .select {
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   padding: 0.25rem 2.25rem 0.25rem 0.875rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background-color: var(--surface-muted);
   color: var(--text-h);
-  font-size: 0.875rem;
-  font-weight: 550;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
   appearance: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
   transition:
     background-color var(--transition-fast),
     border-color var(--transition-fast),
@@ -44,7 +46,7 @@
 
 .select:hover {
   background-color: var(--surface-muted-hover);
-  border-color: var(--line);
+  border-color: var(--accent);
 }
 
 .select:focus-visible {

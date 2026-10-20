@@ -37,8 +37,10 @@
   padding: 1.5rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  background-color: var(--surface);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--surface-card);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

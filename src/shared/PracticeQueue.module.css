@@ -4,11 +4,14 @@
   margin-top: 2rem;
   padding: 1.5rem;
   background-color: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
 }
 
 .header {
@@ -115,10 +118,13 @@
 
 .cardBadge {
   display: inline-block;
+  font-family: var(--mono);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   background-color: var(--surface-muted);
   border: 1px solid var(--border);
   color: var(--text-muted);

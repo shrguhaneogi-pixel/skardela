@@ -8,6 +8,7 @@ export const duelText = {
   disclaimer:
     "Self-Reported Results • Client-side comparison only. Does not guarantee anti-cheat protection.",
   navLink: "Duels",
+  outcomeHeading: "Duel Outcome",
   yourResultHeading: "Your Result",
   opponentResultHeading: "Opponent Result",
   pasteCodeLabel: "Paste Opponent Duel Code",
@@ -27,4 +28,6 @@ export const duelText = {
   playPuzzleBtn: "Play This Puzzle",
   futureServerNote:
     "Real-time matchmaking and verified leaderboards require backend infrastructure not present in this local-first app.",
+  balanceMeterLabel: (playerPercent: number) =>
+    `Performance balance: ${playerPercent}% player advantage`,
 };

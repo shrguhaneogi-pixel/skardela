@@ -1,0 +1,67 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* Styles for the AtlasConstellationChart component. */
+
+.chartCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
+  margin-block: 1rem 1.5rem;
+  overflow: hidden;
+}
+
+.chartSvg {
+  width: 100%;
+  max-width: 24rem;
+  aspect-ratio: 1;
+  display: block;
+}
+
+.gridAxis {
+  stroke: var(--border-subtle);
+  stroke-dasharray: 2 2;
+  stroke-width: 0.75;
+}
+
+.gridWeb {
+  stroke: var(--border);
+  stroke-width: 0.75;
+  fill: none;
+  opacity: 0.5;
+}
+
+.polygonShape {
+  fill: var(--accent-bg);
+  stroke: var(--accent);
+  stroke-width: 1.75;
+}
+
+.skillVertex {
+  fill: var(--accent);
+  stroke: var(--surface-elevated);
+  stroke-width: 2;
+}
+
+.labelAxis {
+  fill: var(--text-h);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.labelValue {
+  fill: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}

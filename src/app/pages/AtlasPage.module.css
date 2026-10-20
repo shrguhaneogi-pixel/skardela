@@ -51,11 +51,13 @@
   gap: 0.35rem;
   padding: 1.25rem;
   background-color: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
   transition:
     transform var(--transition-base),
     box-shadow var(--transition-base),
@@ -103,11 +105,14 @@
   gap: 0.75rem;
   padding: 1.25rem;
   background-color: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-glass);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
   transition:
     transform var(--transition-base),
     box-shadow var(--transition-base),
@@ -117,7 +122,11 @@
 .skillCard:hover {
   transform: translateY(-2px);
   border-color: var(--accent-border);
-  box-shadow: var(--shadow-md), var(--accent-glow);
+  border-top-color: var(--accent);
+  box-shadow:
+    var(--shadow-md),
+    var(--accent-glow),
+    inset 0 1px 0 var(--glass-highlight);
 }
 
 .skillHeader {

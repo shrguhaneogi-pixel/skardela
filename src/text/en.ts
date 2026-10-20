@@ -6,6 +6,7 @@ import { expeditionsText } from "./expeditions";
 import { learnText } from "./learn";
 import { exchangeText } from "./exchange";
 import { practiceQueueText } from "./practice";
+import { contextHelpText, hintsText, logicExplanationText } from "./logicExplanation";
 
 // "1 mistake", "2 mistakes". More than one text uses it.
 const mistakeCount = (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"}`;
@@ -41,6 +42,8 @@ export const text = {
     archiveLink: "Browse archive",
     solved: "Solved",
     resume: "Resume",
+    diagramLabel: (puzzleTypeName: string) => `Interactive diagram for ${puzzleTypeName}`,
+    canvasAria: "Interactive editorial visual canvas",
   },
   archive: {
     title: "Puzzle Archive",
@@ -73,6 +76,7 @@ export const text = {
     clearConfirm: "Are you sure you want to clear your local puzzle history?",
     historyCleared: "Atlas history cleared.",
     navLink: "Atlas",
+    constellationAria: "Reasoning skills constellation chart",
     disabledMessage: "Personal Logic Atlas is disabled.",
   },
   puzzlePage: {
@@ -104,6 +108,20 @@ export const text = {
     status: {
       start: "Tap a square to make it red. Tap again for blue, and again to make it empty.",
       solved: "You solved the puzzle. Each row and each column obeys the rules.",
+    },
+    telemetry: {
+      title: "Line balance telemetry",
+      rowLabel: "Rows",
+      colLabel: "Cols",
+      rowsBalanced: (balanced: number, total: number) => `Rows balanced: ${balanced} of ${total}`,
+      colsBalanced: (balanced: number, total: number) =>
+        `Columns balanced: ${balanced} of ${total}`,
+      balanceStatus: (rows: number, cols: number, size: number) =>
+        `Rows ${rows}/${size} • Cols ${cols}/${size}`,
+      allBalanced: "All lines are balanced",
+      lineBalanced: "Line is balanced",
+      lineOver: "Line exceeds colour limit",
+      linePending: "Line is incomplete",
     },
     hintButton: "Hint",
     hint: (hint: {
@@ -169,6 +187,17 @@ export const text = {
       diagonalDown: "diagonal from the top left",
       diagonalUp: "diagonal from the bottom left",
     },
+    lineShort: {
+      across: "Across",
+      down: "Down",
+      diagonalDown: "Diag ↘",
+      diagonalUp: "Diag ↗",
+    },
+    telemetry: {
+      title: "Word line progress",
+      wordsCompleted: (done: number, total: number) => `Lines solved: ${done} of ${total}`,
+      allCompleted: "All words solved",
+    },
     square: (square: {
       row: number;
       column: number;
@@ -195,52 +224,9 @@ export const text = {
         `You solved the puzzle. ${mode}, ${mistakeCount(mistakes)}.`,
     },
   },
-  hints: {
-    title: "Logic hint",
-    tierLabels: {
-      nudge: "1. Nudge",
-      explanation: "2. Explain",
-      solution: "3. Step",
-    },
-    advanceToExplanation: "Explain more",
-    advanceToSolution: "Show next step",
-    dismiss: "Hide hint",
-    noHintAvailable: "No hints available",
-  },
-  logicExplanation: {
-    button: "Show me the logic",
-    title: "Logic explanation",
-    close: "Close explanation",
-    premisesHeading: "Given clues",
-    stepsHeading: "Deduction steps",
-    conclusionHeading: "Conclusion",
-    colourBinary: {
-      halfRule: "Equal colour balance",
-      threeRule: "No three in a row",
-      halfSummary: (line: string, count: number, colour: string) =>
-        `${line} requires exactly ${count} ${colour} squares.`,
-      threeSummary: (line: string, colour: string) =>
-        `Three adjacent ${colour} squares are not allowed in ${line}.`,
-    },
-    guzzle: {
-      intersectionRule: "Word intersection",
-      intersectionSummary: (row: number, column: number) =>
-        `Square at row ${row}, column ${column} belongs to intersecting words.`,
-    },
-  },
-  contextHelp: {
-    conflictBadge: "Conflict detected",
-    exceedsHalf: (line: string, count: number, max: number, colour: string) =>
-      `${line} has ${count} ${colour} squares. Maximum allowed is ${max}.`,
-    threeInARow: (line: string, colour: string) =>
-      `${line} contains three consecutive ${colour} squares.`,
-    identicalLines: (lineType: string, num1: number, num2: number) =>
-      `${lineType} ${num1} and ${lineType} ${num2} are identical. Lines must be unique.`,
-    guzzleAbsentRepeated: (letter: string, line: string) =>
-      `Letter ${letter} was already marked absent in ${line}.`,
-    guzzlePresentSuggestion: (letter: string, line: string) =>
-      `Letter ${letter} is present in ${line}. Try an open square in this line.`,
-  },
+  hints: hintsText,
+  logicExplanation: logicExplanationText,
+  contextHelp: contextHelpText,
   completion: {
     title: "Puzzle solved!",
     subtitle: "Good work. Here is your summary:",

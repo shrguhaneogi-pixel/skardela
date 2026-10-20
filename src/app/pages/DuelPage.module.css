@@ -141,6 +141,25 @@
   gap: 1.5rem;
 }
 
+.balanceBarContainer {
+  display: flex;
+  height: 8px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+
+.balanceFillPlayer {
+  background-color: var(--accent);
+  transition: width var(--transition-smooth);
+}
+
+.balanceFillOpponent {
+  background-color: var(--cyan);
+  transition: width var(--transition-smooth);
+}
+
 .outcomeBanner {
   padding: 1rem 1.5rem;
   border-radius: var(--radius-lg);

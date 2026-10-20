@@ -1,0 +1,49 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* Styles for the ExpeditionRouteMap component. */
+
+.routeMapWrapper {
+  width: 100%;
+  padding-block: 0.5rem;
+  margin-block: 0.25rem 0.75rem;
+}
+
+.routeSvg {
+  width: 100%;
+  height: 2.5rem;
+  display: block;
+}
+
+.trailLine {
+  stroke: var(--border);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+}
+
+.trailCompleted {
+  stroke: var(--green);
+  stroke-width: 2.5;
+}
+
+.trailActive {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.waypointCompleted,
+.waypointAvailable,
+.waypointLocked {
+  stroke: var(--surface-elevated);
+  stroke-width: 2;
+}
+
+.waypointCompleted {
+  fill: var(--green);
+}
+
+.waypointAvailable {
+  fill: var(--accent);
+}
+
+.waypointLocked {
+  fill: var(--border);
+}

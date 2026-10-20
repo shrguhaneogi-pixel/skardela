@@ -129,6 +129,56 @@ function OutcomeBanner({ outcome }: { readonly outcome: "player" | "opponent" | 
   );
 }
 
+function calculateCompositeBalance(
+  player: DuelResult,
+  opponent: DuelResult,
+  comparison: DuelComparison,
+): number {
+  let playerWins = 0;
+  const metrics = [
+    comparison.timeComparison,
+    comparison.hintsComparison,
+    comparison.mistakesComparison,
+  ];
+  for (const m of metrics) {
+    if (m.winner === "player") playerWins += 1;
+    else if (m.winner === "tie") playerWins += 0.5;
+  }
+  const totalTime = player.timeSeconds + opponent.timeSeconds;
+  const timeRatio = totalTime > 0 ? opponent.timeSeconds / totalTime : 0.5;
+  return Math.max(5, Math.min(95, Math.round(((playerWins + timeRatio) / 4) * 100)));
+}
+
+function DuelBalanceBar({
+  player,
+  opponent,
+  comparison,
+}: {
+  player: DuelResult;
+  opponent: DuelResult;
+  comparison: DuelComparison;
+}) {
+  const playerPercent = calculateCompositeBalance(player, opponent, comparison);
+  const meterLabel = text.duel.balanceMeterLabel(playerPercent);
+
+  return (
+    <div className={styles.balanceBarContainer}>
+      <meter
+        className="visually-hidden"
+        value={playerPercent}
+        aria-valuenow={playerPercent}
+        min={0}
+        max={100}
+        aria-label={meterLabel}
+      >
+        {meterLabel}
+      </meter>
+      <div className={styles.balanceFillPlayer} style={{ width: `${playerPercent}%` }} />
+      <div className={styles.balanceFillOpponent} style={{ width: `${100 - playerPercent}%` }} />
+    </div>
+  );
+}
+
 export function DuelPage() {
   const [player] = useState<DuelResult>(defaultMockPlayerResult);
   const [opponent, setOpponent] = useState<DuelResult | null>(null);
@@ -147,8 +197,9 @@ export function DuelPage() {
       <DuelInputForm onCompare={handleCompare} error={error} />
 
       {comparison && opponent && (
-        <section className={styles.comparisonSection} aria-label="Duel Outcome">
+        <section className={styles.comparisonSection} aria-label={text.duel.outcomeHeading}>
           <OutcomeBanner outcome={comparison.overallWinner} />
+          <DuelBalanceBar player={player} opponent={opponent} comparison={comparison} />
           <div className={styles.duelGrid}>
             <ResultCard
               title={text.duel.yourResultHeading}

@@ -1,0 +1,65 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* Styles for Colour Binary row and column balance telemetry. */
+
+.telemetryStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: min(100%, 32rem);
+  margin-inline: auto;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.metricsGroup,
+.metricItem,
+.meterDots {
+  display: flex;
+  align-items: center;
+}
+
+.metricsGroup {
+  gap: 0.875rem;
+}
+
+.metricItem {
+  gap: 0.35rem;
+}
+
+.meterDots {
+  gap: 3px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--border);
+}
+
+.dotBalanced {
+  border-radius: 50%;
+  background-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+
+.dotOver {
+  border-radius: 1px;
+  background-color: var(--red);
+  box-shadow: 0 0 0 1px var(--red);
+}
+
+.badgeSuccess {
+  color: var(--green);
+  font-weight: 700;
+}

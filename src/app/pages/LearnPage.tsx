@@ -38,7 +38,7 @@ function WorkedExampleView({ steps }: { readonly steps: readonly WorkedExampleSt
         {steps.map((step, idx) => (
           <div key={step.title} className={styles.exampleStep}>
             <span className={styles.stepTitle}>
-              {symbols.learn.step} Step {idx + 1}: {step.title}
+              {symbols.learn.step} {text.learn.stepNumber(idx + 1)}: {step.title}
             </span>
             <span className={styles.stepExplanation}>{step.explanation}</span>
             <ul className={styles.cuesList}>

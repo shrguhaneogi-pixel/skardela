@@ -1,0 +1,52 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* Styles for the selective WebGL editorial hero visualization. */
+
+.heroGraphicWrapper {
+  position: relative;
+  width: 100%;
+  height: clamp(7.5rem, 16vw, 11rem);
+  margin-bottom: 1rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background-color: var(--surface-card);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
+.canvas,
+.fallbackSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.canvas {
+  display: none;
+}
+
+.canvas[data-active="true"] {
+  display: block;
+}
+
+.fallbackSvg {
+  opacity: 0.85;
+}
+
+.overlayFrame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cornerMarks {
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  border: 1px dashed var(--accent);
+  opacity: 0.35;
+  border-radius: var(--radius-sm);
+}

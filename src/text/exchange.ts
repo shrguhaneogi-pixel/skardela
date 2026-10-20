@@ -15,6 +15,7 @@ export const exchangeText = {
   packPuzzlesCount: (count: number) => `${count} ${count === 1 ? "puzzle" : "puzzles"}`,
   exportSampleBtn: "Download Sample Pack",
   samplePackSuccess: "Sample pack loaded successfully!",
+  importSuccess: "Pack imported and validated successfully!",
   serverRequirementsHeading: "Catalog Architecture Requirements",
   serverRequirementsNote:
     "A public, multi-user community catalog requires cloud object storage, ingestion sandboxing, and abuse moderation infrastructure not present in this client-side application.",

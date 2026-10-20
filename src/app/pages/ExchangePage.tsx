@@ -67,7 +67,7 @@ function ValidationFeedback({ result }: { readonly result: PackValidationResult 
   }
   return (
     <output className={`${styles.validationBox} ${styles.successBox}`}>
-      <strong>{result.errors[0] || "Pack imported and validated successfully!"}</strong>
+      <strong>{result.errors[0] || text.exchange.importSuccess}</strong>
     </output>
   );
 }

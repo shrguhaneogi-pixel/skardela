@@ -5,33 +5,11 @@ import { formatDateString, utcDate } from "../daily";
 import type { homeLoader } from "../puzzles";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { PracticeQueue } from "../../shared/PracticeQueue";
+import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
+import { EditorialHeroCanvas } from "../../shared/EditorialHeroCanvas";
 import styles from "./HomePage.module.css";
 
 type CardData = ReturnType<typeof useLoaderData<typeof homeLoader>>[number];
-
-// This badge shows a small geometric preview of each puzzle type.
-function PuzzleTypeBadge({ type }: { type: CardData["type"] }) {
-  if (type === "colour-binary") {
-    const binary = symbols["colour-binary"];
-    return (
-      <div className={styles.binaryMini}>
-        <span className={styles.miniRed}>{binary.R}</span>
-        <span className={styles.miniBlue}>{binary.B}</span>
-        <span className={styles.miniBlue}>{binary.B}</span>
-        <span className={styles.miniRed}>{binary.R}</span>
-      </div>
-    );
-  }
-  const guzzle = symbols.guzzle;
-  return (
-    <div className={styles.guzzleMini}>
-      <span className={styles.miniCorrect}>{guzzle.correct}</span>
-      <span className={styles.miniPresent}>{guzzle.present}</span>
-      <span className={styles.miniCenter}>{text.guzzle.sampleCenter}</span>
-      <span className={styles.miniAbsent}>{guzzle.absent}</span>
-    </div>
-  );
-}
 
 function LevelItem({ id, difficulty }: { id: string; difficulty: keyof typeof text.levels }) {
   const status = getPuzzleProgressStatus(id);
@@ -40,9 +18,15 @@ function LevelItem({ id, difficulty }: { id: string; difficulty: keyof typeof te
       <Link className={styles.play} to={`/puzzles/${id}`}>
         {text.levels[difficulty]}
       </Link>
-      {status === "solved" && <span className={styles.statusPillSolved}>{text.home.solved} ✓</span>}
+      {status === "solved" && (
+        <span className={styles.statusPillSolved}>
+          {text.home.solved} {symbols.common.check}
+        </span>
+      )}
       {status === "in_progress" && (
-        <span className={styles.statusPillResume}>{text.home.resume} ⏱</span>
+        <span className={styles.statusPillResume}>
+          {text.home.resume} {symbols.common.time}
+        </span>
       )}
     </li>
   );
@@ -53,9 +37,7 @@ function PuzzleCard({ type, levels }: CardData) {
   return (
     <li className={styles.card}>
       <div className={styles.cardHeader}>
-        <div className={styles.cardBadge} aria-hidden="true" data-type={type}>
-          <PuzzleTypeBadge type={type} />
-        </div>
+        <EditorialPuzzleDiagram type={type} levels={levels} />
         <div>
           <h3 className={styles.cardTitle}>{text[type].name}</h3>
           <span className={styles.cardTag}>{text[type].tag}</span>
@@ -93,7 +75,7 @@ function QuickPlayBanner({ cards }: { cards: CardData[] }) {
         </p>
       </div>
       <Link className={styles.play} to={`/puzzles/${target.id}`}>
-        {actionLabel} →
+        {actionLabel} {symbols.common.arrowRight}
       </Link>
     </aside>
   );
@@ -108,6 +90,7 @@ export function HomePage() {
     <>
       <title>{text.siteName}</title>
       <div className={styles.hero}>
+        <EditorialHeroCanvas />
         <div className={styles.badge} aria-hidden="true">
           <span className={styles.badgeDot} />
           <span>{text.home.editionWithDate(todayUtc)}</span>

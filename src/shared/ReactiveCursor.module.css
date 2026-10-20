@@ -19,7 +19,14 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 25%, transparent) 20%,
+    color-mix(in srgb, var(--accent) 38%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 25%, transparent) 80%,
+    transparent
+  );
   will-change: transform;
 }
 
@@ -28,7 +35,14 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 25%, transparent) 20%,
+    color-mix(in srgb, var(--accent) 38%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 25%, transparent) 80%,
+    transparent
+  );
   will-change: transform;
 }
 
@@ -40,9 +54,12 @@
   height: 24px;
   margin-top: -12px;
   margin-left: -12px;
-  border: 1.5px solid var(--accent);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-full);
-  box-shadow: 0 0 12px var(--accent-bg);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px var(--accent-border),
+    0 0 12px var(--accent-bg);
   will-change: transform;
   transition:
     width var(--transition-fast),
@@ -60,7 +77,10 @@
   margin-left: -18px;
   border-color: var(--accent);
   background-color: var(--accent-bg);
-  box-shadow: 0 0 16px var(--accent-border);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px var(--accent),
+    0 0 16px var(--accent-border);
 }
 
 .centerDot {

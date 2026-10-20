@@ -13,6 +13,7 @@ import {
 import { getAllProgressRecords } from "../../shared/puzzle-progress";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
+import { ExpeditionRouteMap } from "../../shared/ExpeditionRouteMap";
 import styles from "./ExpeditionsPage.module.css";
 
 function ExpeditionsHeader() {
@@ -118,6 +119,8 @@ function ChapterCard({
           </span>
         </div>
       </div>
+
+      <ExpeditionRouteMap stages={chapter.stages} statusMap={statusMap} />
 
       <div className={styles.stagesList}>
         {chapter.stages.map((stage) => (
