@@ -142,9 +142,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background-color: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 var(--glass-highlight);
   text-align: center;
   color: var(--text);
   line-height: 1.45;

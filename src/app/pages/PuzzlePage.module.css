@@ -72,26 +72,31 @@
 .level {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.75rem;
-  border-radius: var(--radius-full);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-xs);
   background-color: var(--accent-bg);
   border: 1px solid var(--accent-border);
   color: var(--accent-text);
-  font-size: 0.8125rem;
-  font-weight: 650;
-  letter-spacing: 0.02em;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .archiveBadge {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.75rem;
-  border-radius: var(--radius-full);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-xs);
   background-color: var(--surface-elevated);
   border: 1px solid var(--border);
   color: var(--text-h);
-  font-size: 0.8125rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* Rules panel styled as a translucent glass card */
@@ -99,8 +104,8 @@
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   border-radius: var(--radius-lg);
   background-color: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-top: 3px solid var(--accent);
   box-shadow:
