@@ -1,37 +1,13 @@
 import { Link, useLoaderData } from "react-router";
 import { text } from "../../text/en";
-import { symbols } from "../../text/symbols";
 import { formatDateString, utcDate } from "../daily";
 import type { homeLoader } from "../puzzles";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { PracticeQueue } from "../../shared/PracticeQueue";
+import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
 import styles from "./HomePage.module.css";
 
 type CardData = ReturnType<typeof useLoaderData<typeof homeLoader>>[number];
-
-// This badge shows a small geometric preview of each puzzle type.
-function PuzzleTypeBadge({ type }: { type: CardData["type"] }) {
-  if (type === "colour-binary") {
-    const binary = symbols["colour-binary"];
-    return (
-      <div className={styles.binaryMini}>
-        <span className={styles.miniRed}>{binary.R}</span>
-        <span className={styles.miniBlue}>{binary.B}</span>
-        <span className={styles.miniBlue}>{binary.B}</span>
-        <span className={styles.miniRed}>{binary.R}</span>
-      </div>
-    );
-  }
-  const guzzle = symbols.guzzle;
-  return (
-    <div className={styles.guzzleMini}>
-      <span className={styles.miniCorrect}>{guzzle.correct}</span>
-      <span className={styles.miniPresent}>{guzzle.present}</span>
-      <span className={styles.miniCenter}>{text.guzzle.sampleCenter}</span>
-      <span className={styles.miniAbsent}>{guzzle.absent}</span>
-    </div>
-  );
-}
 
 function LevelItem({ id, difficulty }: { id: string; difficulty: keyof typeof text.levels }) {
   const status = getPuzzleProgressStatus(id);
@@ -53,9 +29,7 @@ function PuzzleCard({ type, levels }: CardData) {
   return (
     <li className={styles.card}>
       <div className={styles.cardHeader}>
-        <div className={styles.cardBadge} aria-hidden="true" data-type={type}>
-          <PuzzleTypeBadge type={type} />
-        </div>
+        <EditorialPuzzleDiagram type={type} levels={levels} />
         <div>
           <h3 className={styles.cardTitle}>{text[type].name}</h3>
           <span className={styles.cardTag}>{text[type].tag}</span>

@@ -41,6 +41,7 @@ export const text = {
     archiveLink: "Browse archive",
     solved: "Solved",
     resume: "Resume",
+    diagramLabel: (puzzleTypeName: string) => `Interactive diagram for ${puzzleTypeName}`,
   },
   archive: {
     title: "Puzzle Archive",
