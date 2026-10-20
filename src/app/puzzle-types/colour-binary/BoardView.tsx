@@ -14,6 +14,7 @@ import { generateColourBinaryPostcard } from "../../../shared/postcard";
 import type { CompletionStats } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
 import { BoardGrid } from "./Grid";
+import { ParityTelemetry } from "./ParityTelemetry";
 import type { Square } from "./puzzle";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -128,6 +129,7 @@ export function BoardView(props: BoardViewProps) {
 
   return (
     <div className={shared.game}>
+      <ParityTelemetry size={props.size} squares={props.squares} />
       <BoardGrid
         size={props.size}
         squares={props.squares}

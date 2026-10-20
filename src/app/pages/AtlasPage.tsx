@@ -9,6 +9,7 @@ import {
 } from "../../shared/logic-atlas";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
+import { AtlasConstellationChart } from "../../shared/AtlasConstellationChart";
 import styles from "./AtlasPage.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -64,6 +65,7 @@ function AtlasSkillsSection({ skills }: SkillsSectionProps) {
       <h2 id="skills-heading" className={styles.sectionTitle}>
         {text.atlas.skillsHeading}
       </h2>
+      <AtlasConstellationChart skills={skills} />
       <ul className={styles.skillsList}>
         {skills.map((skill) => (
           <li key={skill.id} className={styles.skillCard}>

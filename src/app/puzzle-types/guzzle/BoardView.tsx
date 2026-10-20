@@ -14,6 +14,7 @@ import type { CompletionStats } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
 import { Controls } from "./Controls";
 import { Grid } from "./Grid";
+import { WordProgressTelemetry } from "./WordProgressTelemetry";
 import { statusText, type Game } from "./useGame";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -117,12 +118,26 @@ function getGuzzlePostcard(props: GuzzleBoardViewProps): string | undefined {
   });
 }
 
+function BoardStatusOutput({ game, size }: { game: Game; size: number }) {
+  return (
+    <>
+      <output className={shared.mistakes}>{words.mistakes(game.mistakes)}</output>
+      <output className={shared.status} data-solved={game.isSolved}>
+        {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
+      </output>
+    </>
+  );
+}
+
 export function GuzzleBoardView(props: GuzzleBoardViewProps) {
   const { answer, size, game, hint, logicExplanation, actions, completionStats } = props;
   const postcardText = getGuzzlePostcard(props);
 
   return (
     <div className={shared.game}>
+      {game.mode !== null && (
+        <WordProgressTelemetry size={size} guesses={game.guesses} selected={game.selected} />
+      )}
       <fieldset className={shared.board}>
         <legend className="visually-hidden">{words.boardLabel}</legend>
         <Grid
@@ -133,10 +148,7 @@ export function GuzzleBoardView(props: GuzzleBoardViewProps) {
           logicExplanation={logicExplanation}
         />
       </fieldset>
-      <output className={shared.mistakes}>{words.mistakes(game.mistakes)}</output>
-      <output className={shared.status} data-solved={game.isSolved}>
-        {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
-      </output>
+      <BoardStatusOutput game={game} size={size} />
       {hint && (
         <GraduatedHint
           hint={hint}

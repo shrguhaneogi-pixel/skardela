@@ -5,6 +5,7 @@ import type { homeLoader } from "../puzzles";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { PracticeQueue } from "../../shared/PracticeQueue";
 import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
+import { EditorialHeroCanvas } from "../../shared/EditorialHeroCanvas";
 import styles from "./HomePage.module.css";
 
 type CardData = ReturnType<typeof useLoaderData<typeof homeLoader>>[number];
@@ -82,6 +83,7 @@ export function HomePage() {
     <>
       <title>{text.siteName}</title>
       <div className={styles.hero}>
+        <EditorialHeroCanvas />
         <div className={styles.badge} aria-hidden="true">
           <span className={styles.badgeDot} />
           <span>{text.home.editionWithDate(todayUtc)}</span>

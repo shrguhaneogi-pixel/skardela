@@ -12,9 +12,42 @@ type HeaderProps = {
   isCleanSolve: boolean;
 };
 
+function CompletionRosette() {
+  return (
+    <div className={styles.rosetteWrapper} aria-hidden="true">
+      <svg className={styles.rosetteSvg} viewBox="0 0 64 64">
+        <circle
+          cx="32"
+          cy="32"
+          r="28"
+          fill="var(--accent-bg)"
+          stroke="var(--accent)"
+          strokeWidth="1.5"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r="23"
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="0.75"
+          strokeDasharray="3 3"
+        />
+        <path
+          d="M 32 10 L 36 24 L 50 24 L 39 33 L 43 47 L 32 38 L 21 47 L 25 33 L 14 24 L 28 24 Z"
+          fill="var(--accent)"
+          opacity="0.9"
+        />
+        <circle cx="32" cy="32" r="5" fill="var(--surface-elevated)" />
+      </svg>
+    </div>
+  );
+}
+
 function CompletionHeader({ isCleanSolve }: HeaderProps) {
   return (
     <div className={styles.header}>
+      <CompletionRosette />
       <h2 id="completion-title">{text.completion.title}</h2>
       <p>{text.completion.subtitle}</p>
       {isCleanSolve && (

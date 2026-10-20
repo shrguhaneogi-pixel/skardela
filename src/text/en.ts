@@ -106,6 +106,13 @@ export const text = {
       start: "Tap a square to make it red. Tap again for blue, and again to make it empty.",
       solved: "You solved the puzzle. Each row and each column obeys the rules.",
     },
+    telemetry: {
+      title: "Line balance telemetry",
+      rowsBalanced: (balanced: number, total: number) => `Rows balanced: ${balanced} of ${total}`,
+      colsBalanced: (balanced: number, total: number) =>
+        `Columns balanced: ${balanced} of ${total}`,
+      allBalanced: "All lines are balanced",
+    },
     hintButton: "Hint",
     hint: (hint: {
       row: number;
@@ -169,6 +176,11 @@ export const text = {
       down: "down word",
       diagonalDown: "diagonal from the top left",
       diagonalUp: "diagonal from the bottom left",
+    },
+    telemetry: {
+      title: "Word line progress",
+      wordsCompleted: (done: number, total: number) => `Lines solved: ${done} of ${total}`,
+      allCompleted: "All words solved",
     },
     square: (square: {
       row: number;

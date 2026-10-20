@@ -3,6 +3,7 @@ import { Link, useLoaderData, useNavigate } from "react-router";
 import { text } from "../../text/en";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { formatDateString, type LocalDate } from "../daily";
+import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
 import {
   getArchiveDateRange,
   getRecentArchiveDates,
@@ -100,6 +101,7 @@ function ArchiveCard({ group, dateString }: CardProps) {
   return (
     <li className={styles.card}>
       <div className={styles.cardHeader}>
+        <EditorialPuzzleDiagram type={group.type} levels={group.levels} />
         <div>
           <h3 className={styles.cardTitle}>{puzzleTypeText.name}</h3>
           <span className={styles.cardTag}>{puzzleTypeText.tag}</span>

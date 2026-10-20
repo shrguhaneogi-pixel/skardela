@@ -129,6 +129,17 @@ function OutcomeBanner({ outcome }: { readonly outcome: "player" | "opponent" | 
   );
 }
 
+function DuelBalanceBar({ player, opponent }: { player: DuelResult; opponent: DuelResult }) {
+  const total = player.timeSeconds + opponent.timeSeconds;
+  const playerPercent = total > 0 ? Math.round((opponent.timeSeconds / total) * 100) : 50;
+  return (
+    <div className={styles.balanceBarContainer} aria-hidden="true">
+      <div className={styles.balanceFillPlayer} style={{ width: `${playerPercent}%` }} />
+      <div className={styles.balanceFillOpponent} style={{ width: `${100 - playerPercent}%` }} />
+    </div>
+  );
+}
+
 export function DuelPage() {
   const [player] = useState<DuelResult>(defaultMockPlayerResult);
   const [opponent, setOpponent] = useState<DuelResult | null>(null);
@@ -149,6 +160,7 @@ export function DuelPage() {
       {comparison && opponent && (
         <section className={styles.comparisonSection} aria-label="Duel Outcome">
           <OutcomeBanner outcome={comparison.overallWinner} />
+          <DuelBalanceBar player={player} opponent={opponent} />
           <div className={styles.duelGrid}>
             <ResultCard
               title={text.duel.yourResultHeading}
