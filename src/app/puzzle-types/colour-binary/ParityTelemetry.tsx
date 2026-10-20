@@ -3,6 +3,7 @@
 
 import { useMemo } from "react";
 import { text } from "../../../text/en";
+import { symbols } from "../../../text/symbols";
 import styles from "./ParityTelemetry.module.css";
 import type { Square } from "./puzzle";
 
@@ -85,18 +86,20 @@ export function ParityTelemetry({ size, squares }: TelemetryProps) {
     <aside className={styles.telemetryStrip} aria-label={t.title}>
       <div className={styles.metricsGroup}>
         <div className={styles.metricItem}>
-          <span>{`R:${balancedRows}/${size}`}</span>
+          <span>{`${t.rowLabel} ${balancedRows}/${size}`}</span>
           <MeterDots stats={rowStats} />
         </div>
         <div className={styles.metricItem}>
-          <span>{`C:${balancedCols}/${size}`}</span>
+          <span>{`${t.colLabel} ${balancedCols}/${size}`}</span>
           <MeterDots stats={colStats} />
         </div>
       </div>
       {allBalanced ? (
-        <span className={styles.badgeSuccess}>✓ {t.allBalanced}</span>
+        <span className={styles.badgeSuccess}>
+          {symbols.guzzle.correct} {t.allBalanced}
+        </span>
       ) : (
-        <span>{t.rowsBalanced(balancedRows, size)}</span>
+        <span>{t.balanceStatus(balancedRows, balancedCols, size)}</span>
       )}
     </aside>
   );

@@ -3,6 +3,7 @@
 
 import { useMemo } from "react";
 import { text } from "../../../text/en";
+import { symbols } from "../../../text/symbols";
 import { lineIndexes, lineNames, lineOf, type Line } from "./puzzle";
 import type { Guesses } from "./rules-check";
 import styles from "./WordProgressTelemetry.module.css";
@@ -18,13 +19,6 @@ type LineProgress = {
   correctCount: number;
   totalPlayable: number;
   isComplete: boolean;
-};
-
-const LINE_LABELS: Record<Line, string> = {
-  across: "Across",
-  down: "Down",
-  diagonalDown: "Diag ↘",
-  diagonalUp: "Diag ↗",
 };
 
 function checkLineProgress(line: Line, size: number, guesses: Guesses): LineProgress {
@@ -56,8 +50,8 @@ function RayChip({ progress, isActive }: { progress: LineProgress; isActive: boo
   const countStr = `${progress.correctCount}/${progress.totalPlayable}`;
   return (
     <span className={`${styles.rayChip} ${chipClass}`}>
-      <span>{LINE_LABELS[progress.line]}</span>
-      <span>{progress.isComplete ? "✓" : countStr}</span>
+      <span>{text.guzzle.lineShort[progress.line]}</span>
+      <span>{progress.isComplete ? symbols.guzzle.correct : countStr}</span>
     </span>
   );
 }
@@ -80,7 +74,9 @@ export function WordProgressTelemetry({ size, guesses, selected }: TelemetryProp
         ))}
       </div>
       {allComplete ? (
-        <span className={styles.badgeSuccess}>✓ {t.allCompleted}</span>
+        <span className={styles.badgeSuccess}>
+          {symbols.guzzle.correct} {t.allCompleted}
+        </span>
       ) : (
         <span>{t.wordsCompleted(completedWords, 4)}</span>
       )}

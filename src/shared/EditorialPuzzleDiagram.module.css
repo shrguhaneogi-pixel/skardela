@@ -35,7 +35,8 @@
   display: block;
 }
 
-.cellDotRed {
+.cellDotRed,
+.cellAbsent {
   fill: var(--red);
 }
 
@@ -54,10 +55,6 @@
 
 .cellPresent {
   fill: var(--yellow);
-}
-
-.cellAbsent {
-  fill: var(--red);
 }
 
 .centerCell {

@@ -67,9 +67,10 @@ The implementation adds custom visual components to the application. All compone
 - **Resilience:**
   - Automatically pauses animation when outside the viewport using `IntersectionObserver`.
   - Disables animation and displays static SVG lines when `prefers-reduced-motion` is active.
-  - Listens for `webglcontextlost` and restores shader resources on `webglcontextrestored`.
+  - Listens for `webglcontextlost` (invokes `event.preventDefault()`) and restores shader resources on `webglcontextrestored`.
+  - Fully dynamic theme awareness: obsidian ink and amber accent in dark mode; warm paper base and terracotta accent in light mode.
   - Falls back completely to a crisp vector SVG canvas if WebGL2 is not supported.
-- **Accessibility:** Labeled with `aria-hidden="true"` and an accessible text label in the DOM.
+- **Accessibility:** Labeled with accessible text label (`text.home.canvasAria`) in the DOM and `aria-hidden` canvas.
 
 ### 5.2 Responsive Editorial Puzzle Previews (`EditorialPuzzleDiagram`)
 
@@ -87,7 +88,8 @@ The implementation adds custom visual components to the application. All compone
 - **Purpose:** Displays live row and column balance telemetry during puzzle play.
 - **Functionality:**
   - Computes count of red dots and blue dots for each row and column.
-  - Displays target balance indicators along the board perimeter.
+  - Displays target balance indicators along the board perimeter with clear `Rows` and `Cols` labels.
+  - Shows combined row and column balance telemetry (`Rows X/N • Cols Y/N`), preventing misleading row-only reports.
   - Highlights balanced rows and columns when parity matches the target count.
   - Fully integrated into `BoardView.tsx`.
 
@@ -97,6 +99,7 @@ The implementation adds custom visual components to the application. All compone
 - **Purpose:** Displays word formation progress and ray connections during Guzzle play.
 - **Functionality:**
   - Evaluates across, down, and diagonal word completion states in real time.
+  - Uses centralized localized line labels from `src/text/en.ts` and symbols from `src/text/symbols.ts`.
   - Renders ray status chips and progress percentages.
   - Integrates into Guzzle `BoardView.tsx`.
 
@@ -147,10 +150,10 @@ Verification was executed via `npm run fix && npm run check`.
 
 | Metric                 | Target Budget             | Verified Result          | Margin / Status           |
 | :--------------------- | :------------------------ | :----------------------- | :------------------------ |
-| **Total CSS Bundle**   | `< 81,920 B` (80.0 kB)    | `81,829 B` (79.91 kB)    | +91 B headroom (PASS)     |
-| **Main JS Bundle**     | `< 563,200 B` (550.0 kB)  | `466,515 B` (455.58 kB)  | +96.68 kB headroom (PASS) |
-| **Lazy Puzzle Chunks** | `< 40.0 kB` each          | Max chunk: `18.1 kB`     | +21.9 kB headroom (PASS)  |
-| **Unit Tests**         | 100% pass                 | 44 files, 184 tests pass | 0 failures                |
+| **Total CSS Bundle**   | `< 81,920 B` (80.0 kB)    | `81,075 B` (79.17 kB)    | +845 B headroom (PASS)    |
+| **Main JS Bundle**     | `< 563,200 B` (550.0 kB)  | `467,850 B` (456.88 kB)  | +95.35 kB headroom (PASS) |
+| **Lazy Puzzle Chunks** | `< 40.0 kB` each          | Max chunk: `19.39 kB`    | +20.61 kB headroom (PASS) |
+| **Unit Tests**         | 100% pass                 | 44 files, 185 tests pass | 0 failures                |
 | **Validation Tests**   | 100% pass                 | 6 files, 19 tests pass   | 0 failures                |
 | **TypeScript Check**   | 0 errors                  | `tsc -b` clean           | PASS                      |
 | **Linter (`oxlint`)**  | 0 warnings, 0 errors      | 139 files clean          | PASS                      |

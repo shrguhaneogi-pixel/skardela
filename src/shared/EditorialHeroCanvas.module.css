@@ -4,7 +4,7 @@
 .heroGraphicWrapper {
   position: relative;
   width: 100%;
-  height: clamp(8rem, 18vw, 12rem);
+  height: clamp(7.5rem, 16vw, 11rem);
   margin-bottom: 1rem;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -24,40 +24,29 @@
   display: block;
 }
 
+.canvas {
+  display: none;
+}
+
+.canvas[data-active="true"] {
+  display: block;
+}
+
 .fallbackSvg {
   opacity: 0.85;
 }
 
-.overlayReticle {
+.overlayFrame {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  color: var(--text-subtle);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .cornerMarks {
   position: absolute;
-  inset: 6px;
+  inset: 8px;
   pointer-events: none;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(to right, var(--accent) 8px, transparent 8px) top left,
-    linear-gradient(to bottom, var(--accent) 8px, transparent 8px) top left,
-    linear-gradient(to left, var(--accent) 8px, transparent 8px) top right,
-    linear-gradient(to bottom, var(--accent) 8px, transparent 8px) top right,
-    linear-gradient(to right, var(--accent) 8px, transparent 8px) bottom left,
-    linear-gradient(to top, var(--accent) 8px, transparent 8px) bottom left,
-    linear-gradient(to left, var(--accent) 8px, transparent 8px) bottom right,
-    linear-gradient(to top, var(--accent) 8px, transparent 8px) bottom right;
-  background-repeat: no-repeat;
-  background-size: 8px 8px;
-  opacity: 0.65;
+  border: 1px dashed var(--accent);
+  opacity: 0.35;
+  border-radius: var(--radius-sm);
 }

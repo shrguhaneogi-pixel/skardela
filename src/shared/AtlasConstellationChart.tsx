@@ -3,6 +3,7 @@
 
 import { useMemo } from "react";
 import type { LogicSkill } from "./logic-atlas";
+import { text } from "../text/en";
 import styles from "./AtlasConstellationChart.module.css";
 
 type ChartProps = {
@@ -91,9 +92,9 @@ export function AtlasConstellationChart({ skills }: ChartProps) {
       <svg
         className={styles.chartSvg}
         viewBox="0 0 300 300"
-        aria-label="Reasoning skills constellation chart"
+        aria-label={text.atlas.constellationAria}
       >
-        <title>Reasoning skills constellation chart</title>
+        <title>{text.atlas.constellationAria}</title>
         <WebCircles center={CENTER} maxR={MAX_R} />
         <SkillAxes center={CENTER} maxR={MAX_R} />
         {polygonPath && <path d={polygonPath} className={styles.polygonShape} />}

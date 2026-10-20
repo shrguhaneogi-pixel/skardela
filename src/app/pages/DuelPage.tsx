@@ -158,7 +158,7 @@ export function DuelPage() {
       <DuelInputForm onCompare={handleCompare} error={error} />
 
       {comparison && opponent && (
-        <section className={styles.comparisonSection} aria-label="Duel Outcome">
+        <section className={styles.comparisonSection} aria-label={text.duel.outcomeHeading}>
           <OutcomeBanner outcome={comparison.overallWinner} />
           <DuelBalanceBar player={player} opponent={opponent} />
           <div className={styles.duelGrid}>

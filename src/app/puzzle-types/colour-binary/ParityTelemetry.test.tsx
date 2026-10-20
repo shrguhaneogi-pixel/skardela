@@ -6,31 +6,44 @@ import { describe, expect, it } from "vitest";
 import { ParityTelemetry } from "./ParityTelemetry";
 import type { Square } from "./puzzle";
 
-describe("ParityTelemetry", () => {
+describe("ParityTelemetry - initial and partial states", () => {
   it("renders line balance telemetry for empty board", () => {
-    const emptyBoard: Square[] = [
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-      ".",
-    ];
+    const emptyBoard = Array.from({ length: 16 }, () => "." as Square);
 
     render(<ParityTelemetry size={4} squares={emptyBoard} />);
-    expect(screen.getByText("Rows balanced: 0 of 4")).toBeInTheDocument();
+    expect(screen.getByText("Rows 0/4 • Cols 0/4")).toBeInTheDocument();
+    expect(screen.getByText("Rows 0/4")).toBeInTheDocument();
+    expect(screen.getByText("Cols 0/4")).toBeInTheDocument();
   });
 
+  it("reports partial balance with accurate row and column metrics", () => {
+    const partialBoard: Square[] = [
+      "R",
+      "R",
+      "B",
+      "B",
+      "R",
+      "R",
+      "B",
+      "B",
+      "R",
+      "R",
+      "B",
+      "B",
+      "R",
+      "R",
+      "B",
+      "B",
+    ];
+
+    render(<ParityTelemetry size={4} squares={partialBoard} />);
+    expect(screen.getByText("Rows 4/4 • Cols 0/4")).toBeInTheDocument();
+    expect(screen.getByText("Rows 4/4")).toBeInTheDocument();
+    expect(screen.getByText("Cols 0/4")).toBeInTheDocument();
+  });
+});
+
+describe("ParityTelemetry - solved state", () => {
   it("identifies fully balanced board correctly", () => {
     const balancedBoard: Square[] = [
       "R",

@@ -8,6 +8,7 @@ export const duelText = {
   disclaimer:
     "Self-Reported Results • Client-side comparison only. Does not guarantee anti-cheat protection.",
   navLink: "Duels",
+  outcomeHeading: "Duel Outcome",
   yourResultHeading: "Your Result",
   opponentResultHeading: "Opponent Result",
   pasteCodeLabel: "Paste Opponent Duel Code",
