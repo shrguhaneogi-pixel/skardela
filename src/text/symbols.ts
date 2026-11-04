@@ -81,4 +81,12 @@ export const symbols = {
     import: "📥",
     export: "📤",
   },
+  cube: {
+    cube: "🧊",
+    solved: "✅",
+    active: "⚡",
+    scramble: "🔀",
+    reset: "🔄",
+    orbit: "🌐",
+  },
 } as const;

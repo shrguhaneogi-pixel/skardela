@@ -266,4 +266,26 @@ export const text = {
     body: "An error stopped this page. Reload the page to try again.",
     homeLink: "Go to the home page",
   },
+  cubeAgent: {
+    title: "Kinematic 3D Cube Agent UI",
+    subtitle: "Spatial drag vector kinematics with real-time LLM state synchronization",
+    statusSolved: `${symbols.cube.solved} Solved`,
+    statusActive: `${symbols.cube.active} Active Puzzle`,
+    moves: "Moves",
+    entropy: "Entropy",
+    lastMove: "Last Move",
+    llmContextPayload: "LLM Context Payload",
+    moveLedger: "Singmaster Move Ledger",
+    noMoves: "No moves recorded yet",
+    spatialControls: "Spatial Controls",
+    instructions:
+      "Click and drag directly on any cubie face. The projection engine calculates the orthogonal rotation axis relative to camera angle. Slices snap to the nearest 90° with spring physics.",
+    cameraInstructions:
+      "Click and drag empty background space to orbit the camera view around all faces.",
+    copyContext: "Copy Agent Context",
+    copied: "Copied Context",
+    copyHelp: "Click snippet to copy into agent prompt context.",
+    scramble: `${symbols.cube.scramble} Scramble`,
+    reset: `${symbols.cube.reset} Reset Cube`,
+  },
 };

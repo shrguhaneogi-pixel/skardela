@@ -1,0 +1,268 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* Styles for the 3D Rubik's Cube AI agent interface. */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 640px;
+  background-color: var(--color-bg-base, #0b0d11);
+  color: var(--color-text-main, #f1f3f7);
+  border-radius: 12px;
+  border: 1px solid var(--color-border-subtle, #1c212c);
+  overflow: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background-color: var(--color-bg-elevated, #101319);
+  border-bottom: 1px solid var(--color-border-subtle, #1c212c);
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #8a94a6);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statusSolved {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.statusActive {
+  background-color: rgba(234, 179, 8, 0.12);
+  color: #facc15;
+  border: 1px solid rgba(234, 179, 8, 0.28);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.mainStage {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  flex: 1;
+  min-height: 480px;
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .mainStage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.viewportContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  background: radial-gradient(circle at 50% 40%, #151922 0%, #0b0d11 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hudOverlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.hudChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: rgba(16, 19, 26, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+.hudLabel {
+  color: #64748b;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.hudValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-elevated, #101319);
+  border-left: 1px solid var(--color-border-subtle, #1c212c);
+  padding: 20px;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.promptCard {
+  background-color: #0b0d11;
+  border: 1px solid #1e2430;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #94a3b8;
+  word-break: break-all;
+  user-select: all;
+}
+
+.historyList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 40px;
+  max-height: 90px;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: #0b0d11;
+  border: 1px solid #1e2430;
+  border-radius: 6px;
+}
+
+.historyBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  background-color: #171d27;
+  color: #38bdf8;
+  border: 1px solid #232c3b;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+}
+
+.emptyText {
+  font-size: 0.75rem;
+  color: #475569;
+  font-style: italic;
+  margin: auto 0;
+}
+
+.actionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.buttonPrimary {
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.buttonPrimary:hover {
+  background-color: #1d4ed8;
+}
+
+.buttonSecondary {
+  background-color: #161b24;
+  color: #cbd5e1;
+  border: 1px solid #252e3d;
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.buttonSecondary:hover {
+  background-color: #1e2532;
+  border-color: #38465c;
+  color: #ffffff;
+}
+
+.instructions {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
