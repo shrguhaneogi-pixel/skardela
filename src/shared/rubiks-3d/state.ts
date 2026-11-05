@@ -1,12 +1,10 @@
 // ASD-STE100 Simplified Technical English comments.
-// LLM state synchronization, Singmaster move notation, and 54-facelet cube representation.
+// LLM state synchronization, cubie definitions, and 54-facelet cube representation.
 
 import {
   cleanCubiePosition,
-  copyVec3,
   createVec3,
   dotVec3,
-  matrixToQuaternion,
   multiplyQuaternions,
   quaternionFromAxisAngle,
   rotateVec3ByQuaternion,
@@ -16,6 +14,8 @@ import {
   type Vec3,
 } from "./math.ts";
 
+export * from "./singmaster.ts";
+
 export type FaceName = "U" | "D" | "F" | "B" | "L" | "R";
 
 export interface FaceletColor {
@@ -24,15 +24,22 @@ export interface FaceletColor {
 }
 
 export const CUBE_PALETTE: Record<FaceName, FaceletColor> = {
-  U: { hex: "#f8fafc", name: "White" }, // Up (+Y)
-  D: { hex: "#eab308", name: "Yellow" }, // Down (-Y)
-  F: { hex: "#10b981", name: "Green" }, // Front (+Z)
-  B: { hex: "#2563eb", name: "Blue" }, // Back (-Z)
-  L: { hex: "#f97316", name: "Orange" }, // Left (-X)
-  R: { hex: "#e11d48", name: "Red" }, // Right (+X)
+  // Up (+Y)
+  U: { hex: "#f8fafc", name: "White" },
+  // Down (-Y)
+  D: { hex: "#eab308", name: "Yellow" },
+  // Front (+Z)
+  F: { hex: "#10b981", name: "Green" },
+  // Back (-Z)
+  B: { hex: "#2563eb", name: "Blue" },
+  // Left (-X)
+  L: { hex: "#f97316", name: "Orange" },
+  // Right (+X)
+  R: { hex: "#e11d48", name: "Red" },
 };
 
-export const CORE_BODY_COLOR = "#111215"; // Obsidian dark graphite core
+// Obsidian dark graphite core.
+export const CORE_BODY_COLOR = "#111215";
 
 export interface CubieData {
   index: number;
@@ -42,13 +49,16 @@ export interface CubieData {
 }
 
 export interface CubeLLMContext {
-  facelets54: string; // 54-character URFDLB string
+  // 54-character URFDLB string.
+  facelets54: string;
   isSolved: boolean;
   moveCount: number;
   moveHistory: string[];
   lastMove: string | null;
-  entropy: number; // 0.0 (solved) to 1.0 (scrambled)
-  llmPromptSnippet: string; // Ready for agent prompt injection
+  // 0.0 (solved) to 1.0 (scrambled).
+  entropy: number;
+  // Text snippet for AI prompt injection.
+  llmPromptSnippet: string;
 }
 
 // Generate the 27 starting cubie definitions for a 3x3x3 cube.
@@ -92,22 +102,37 @@ export function normalToFaceName(norm: Vec3): FaceName {
   return "B";
 }
 
+// Compute 3D coordinate for a facelet row and col.
+function getFaceletCoordinate(face: FaceName, row: number, col: number): Vec3 {
+  if (face === "U") return createVec3(-1 + col, 1, -1 + row);
+  if (face === "R") return createVec3(1, 1 - row, 1 - col);
+  if (face === "F") return createVec3(-1 + col, 1 - row, 1);
+  if (face === "D") return createVec3(-1 + col, -1, 1 - row);
+  if (face === "L") return createVec3(-1, 1 - row, -1 + col);
+  return createVec3(1 - col, 1 - row, -1);
+}
+
+// Find which local face of the cubie currently points in targetNormal direction.
+function findStickerFace(cubie: CubieData, targetNormal: Vec3, defaultFace: FaceName): FaceName {
+  const entries = Object.entries(LOCAL_FACE_NORMALS) as [FaceName, Vec3][];
+  for (const [candidateFace, localNorm] of entries) {
+    const worldNorm = rotateVec3ByQuaternion(localNorm, cubie.quaternion);
+    const snapped = snapToCardinalNormal(worldNorm);
+    if (dotVec3(snapped, targetNormal) > 0.9) {
+      return candidateFace;
+    }
+  }
+  return defaultFace;
+}
+
 // Extract standard 54-facelet string (URFDLB sequence) from cubie positions and quaternions.
 export function extractFacelets54(cubies: CubieData[]): string {
-  // Build 3D spatial lookup: map "x,y,z" to cubie index.
   const grid = new Map<string, CubieData>();
   for (const c of cubies) {
     const p = cleanCubiePosition(c.currentPosition);
     grid.set(`${p.x},${p.y},${p.z}`, c);
   }
 
-  // Standard facelet order definition for each face:
-  // U: y=1, rows z=-1 to 1, cols x=-1 to 1
-  // R: x=1, rows y=1 to -1, cols z=1 to -1
-  // F: z=1, rows y=1 to -1, cols x=-1 to 1
-  // D: y=-1, rows z=1 to -1, cols x=-1 to 1
-  // L: x=-1, rows y=1 to -1, cols z=-1 to 1
-  // B: z=-1, rows y=1 to -1, cols x=1 to -1
   const faceOrder: FaceName[] = ["U", "R", "F", "D", "L", "B"];
   let result = "";
 
@@ -115,50 +140,13 @@ export function extractFacelets54(cubies: CubieData[]): string {
     const targetNormal = LOCAL_FACE_NORMALS[face];
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 3; col++) {
-        let x = 0, y = 0, z = 0;
-        if (face === "U") {
-          y = 1;
-          z = -1 + row;
-          x = -1 + col;
-        } else if (face === "R") {
-          x = 1;
-          y = 1 - row;
-          z = 1 - col;
-        } else if (face === "F") {
-          z = 1;
-          y = 1 - row;
-          x = -1 + col;
-        } else if (face === "D") {
-          y = -1;
-          z = 1 - row;
-          x = -1 + col;
-        } else if (face === "L") {
-          x = -1;
-          y = 1 - row;
-          z = -1 + col;
-        } else if (face === "B") {
-          z = -1;
-          y = 1 - row;
-          x = 1 - col;
-        }
-
-        const cubie = grid.get(`${x},${y},${z}`);
-        if (!cubie) {
+        const coord = getFaceletCoordinate(face, row, col);
+        const cubie = grid.get(`${coord.x},${coord.y},${coord.z}`);
+        if (cubie) {
+          result += findStickerFace(cubie, targetNormal, face);
+        } else {
           result += face;
-          continue;
         }
-
-        // Find which local face of the cubie currently points in targetNormal direction.
-        let stickerFace: FaceName = face;
-        for (const [candidateFace, localNorm] of Object.entries(LOCAL_FACE_NORMALS) as [FaceName, Vec3][]) {
-          const worldNorm = rotateVec3ByQuaternion(localNorm, cubie.quaternion);
-          const snapped = snapToCardinalNormal(worldNorm);
-          if (dotVec3(snapped, targetNormal) > 0.9) {
-            stickerFace = candidateFace;
-            break;
-          }
-        }
-        result += stickerFace;
       }
     }
   }
@@ -181,8 +169,8 @@ export function evaluateCubeState(
   }
 
   const isSolved = mismatches === 0;
-  const entropy = Number((mismatches / 48.0).toFixed(3)); // 48 non-center facelets
-
+  // 48 non-center facelets.
+  const entropy = Number((mismatches / 48.0).toFixed(3));
   const promptSnippet = `[RUBIKS_CUBE_STATE: moves=${moveHistory.length}, solved=${isSolved}, entropy=${entropy}, facelets=${facelets54}, last_move=${lastMove ?? "none"}]`;
 
   return {
@@ -194,139 +182,6 @@ export function evaluateCubeState(
     entropy,
     llmPromptSnippet: promptSnippet,
   };
-}
-
-// Convert slice rotation parameters into standard Singmaster notation.
-export function getSingmasterMove(
-  axis: Vec3,
-  layerCoord: number,
-  angleRadians: number,
-): string {
-  let a = snapToCardinalNormal(axis);
-  let layer = Math.round(layerCoord);
-  let angle = angleRadians;
-
-  // Canonicalize negative axis vectors to positive axis vectors.
-  if (a.x < 0 || a.y < 0 || a.z < 0) {
-    a = { x: -a.x, y: -a.y, z: -a.z };
-    layer = -layer;
-    angle = -angle;
-  }
-
-  const turns = Math.round(angle / (Math.PI * 0.5));
-  const modTurns = ((turns % 4) + 4) % 4;
-
-  if (modTurns === 0) return "";
-
-  let baseLetter = "";
-  let isClockwise = true;
-
-  if (a.y === 1) {
-    // Y-axis rotation
-    if (layer === 1) {
-      baseLetter = "U";
-      isClockwise = modTurns === 3;
-    } else if (layer === -1) {
-      baseLetter = "D";
-      isClockwise = modTurns === 1;
-    } else {
-      baseLetter = "E";
-      isClockwise = modTurns === 1;
-    }
-  } else if (a.x === 1) {
-    // X-axis rotation
-    if (layer === 1) {
-      baseLetter = "R";
-      isClockwise = modTurns === 3;
-    } else if (layer === -1) {
-      baseLetter = "L";
-      isClockwise = modTurns === 1;
-    } else {
-      baseLetter = "M";
-      isClockwise = modTurns === 1;
-    }
-  } else {
-    // Z-axis rotation
-    if (layer === 1) {
-      baseLetter = "F";
-      isClockwise = modTurns === 3;
-    } else if (layer === -1) {
-      baseLetter = "B";
-      isClockwise = modTurns === 1;
-    } else {
-      baseLetter = "S";
-      isClockwise = modTurns === 3;
-    }
-  }
-
-  if (modTurns === 2) {
-    return `${baseLetter}2`;
-  }
-  return isClockwise ? baseLetter : `${baseLetter}'`;
-}
-
-// Parse Singmaster notation move (e.g. "R", "U'", "F2") into rotation axis, layer, and angle.
-export function parseSingmasterMove(moveStr: string): {
-  axis: Vec3;
-  layer: number;
-  angle: number;
-} | null {
-  const trimmed = moveStr.trim();
-  if (!trimmed) return null;
-
-  const letter = trimmed[0]?.toUpperCase();
-  if (!letter) return null;
-  const modifier = trimmed.slice(1);
-
-  let multiplier = 1;
-  if (modifier === "'") multiplier = -1;
-  else if (modifier === "2") multiplier = 2;
-
-  const halfPi = Math.PI * 0.5;
-
-  switch (letter) {
-    case "U":
-      return { axis: createVec3(0, 1, 0), layer: 1, angle: -halfPi * multiplier };
-    case "D":
-      return { axis: createVec3(0, 1, 0), layer: -1, angle: halfPi * multiplier };
-    case "R":
-      return { axis: createVec3(1, 0, 0), layer: 1, angle: -halfPi * multiplier };
-    case "L":
-      return { axis: createVec3(1, 0, 0), layer: -1, angle: halfPi * multiplier };
-    case "F":
-      return { axis: createVec3(0, 0, 1), layer: 1, angle: -halfPi * multiplier };
-    case "B":
-      return { axis: createVec3(0, 0, 1), layer: -1, angle: halfPi * multiplier };
-    case "M":
-      return { axis: createVec3(1, 0, 0), layer: 0, angle: halfPi * multiplier };
-    case "E":
-      return { axis: createVec3(0, 1, 0), layer: 0, angle: halfPi * multiplier };
-    case "S":
-      return { axis: createVec3(0, 0, 1), layer: 0, angle: -halfPi * multiplier };
-    default:
-      return null;
-  }
-}
-
-// Generate a random valid scramble sequence of specified length.
-export function generateRandomScramble(moveCount = 20): string[] {
-  const baseMoves = ["U", "D", "R", "L", "F", "B"];
-  const modifiers = ["", "'", "2"];
-  const moves: string[] = [];
-
-  let lastMove = "";
-  for (let i = 0; i < moveCount; i++) {
-    let candidate = "";
-    do {
-      candidate = baseMoves[Math.floor(Math.random() * baseMoves.length)];
-    } while (candidate === lastMove);
-
-    lastMove = candidate;
-    const mod = modifiers[Math.floor(Math.random() * modifiers.length)];
-    moves.push(`${candidate}${mod}`);
-  }
-
-  return moves;
 }
 
 // Apply an instantaneous orthogonal move to an array of cubie definitions.

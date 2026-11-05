@@ -287,5 +287,7 @@ export const text = {
     copyHelp: "Click snippet to copy into agent prompt context.",
     scramble: `${symbols.cube.scramble} Scramble`,
     reset: `${symbols.cube.reset} Reset Cube`,
+    moveAnnounce: (lastMove: string, moveCount: number) =>
+      `Moved slice ${lastMove}. Current move count: ${moveCount}.`,
   },
 };

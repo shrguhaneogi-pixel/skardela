@@ -1,6 +1,7 @@
 # Skardela Project Constitution
 
 ## 1. Core Identity
+
 - **Project Name:** Skardela
 - **Stitch Project ID:** `[Stitch Project ID]`
 - **Mission:** Deliver free daily logic and spatial puzzles directly in the web browser with zero tracking, zero accounts, and zero installation friction.
@@ -8,6 +9,7 @@
 - **Voice:** Calm, precise, elegant, and focused.
 
 ## 2. Visual Language
+
 - **Primary Aesthetic:** Apple-inspired glassmorphism.
 - **Secondary Aesthetic:** Tactile precision mechanics.
 - **Tertiary Aesthetic:** Restrained minimalist typography.
@@ -19,6 +21,7 @@
   - Respect user motion preferences through reduced motion styles.
 
 ## 3. Architecture and File Structure
+
 - **Execution Model:** 100% client-side Single Page Application (SPA).
 - **Core Stack:** React 19, React Router 8, Vite 8, TypeScript 6.
 - **Directory Layout:**
@@ -36,6 +39,7 @@
   - React Router 8 handles client-side page transitions with zero full-page reloads.
 
 ## 4. Live Sitemap
+
 - [x] `/` (Home page with daily puzzles, difficulty selection, and play modes)
 - [x] `/puzzles/:puzzleId` (Interactive puzzle board for the selected puzzle)
 - [x] `/archive` (Archive of previous daily puzzles by calendar date)
@@ -51,6 +55,7 @@
 ## 5. The Roadmap (Backlog)
 
 ### High Priority
+
 - [x] Implement deterministic daily puzzle rotation via UTC epoch arithmetic.
 - [x] Build Colour Binary puzzle type with deductive hint engine.
 - [x] Build Guzzle word puzzle type with interactive letter keyboard.
@@ -58,17 +63,20 @@
 - [x] Add dual visual accessibility indicators for color-blind accessibility.
 
 ### Medium Priority
+
 - [ ] Mount the 3D Rubik's Cube agent interface into a dedicated agent playground page.
 - [ ] Add offline service worker support for complete offline gameplay.
 - [ ] Add sound effects for tactile cell interactions with mute control.
 - [ ] Expand daily puzzle pool with automated pre-validated puzzle sets.
 
 ### Low Priority
+
 - [ ] Add animated celebration particle effects for solved states.
 - [ ] Add exportable puzzle summary cards for social sharing.
 - [ ] Add custom color theme customization within high-contrast bounds.
 
 ## 6. Creative Freedom Guidelines
+
 - Keep all puzzle logic browser-safe, synchronous, and pure.
 - Do not introduce backend servers, databases, external network APIs, or authentication layers.
 - Preserve accessibility by ensuring interactive elements have minimum 44x44px touch targets.

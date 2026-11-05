@@ -1,11 +1,15 @@
 // ASD-STE100 Simplified Technical English comments.
-// Spring physics and momentum-based rotation solver for Rubik's Cube slices.
+// Spring physics and momentum rotation solver for Rubik's Cube slices.
 
 export interface SpringConfig {
-  stiffness: number; // Spring stiffness constant k (default 280)
-  damping: number; // Damping constant c (default 28)
-  mass: number; // Virtual mass m (default 1.0)
-  flickVelocityThreshold: number; // Velocity threshold to trigger momentum flick (rad/s)
+  // Spring stiffness constant k (default 280).
+  stiffness: number;
+  // Damping constant c (default 28).
+  damping: number;
+  // Virtual mass m (default 1.0).
+  mass: number;
+  // Velocity threshold to trigger momentum flick in radians per second.
+  flickVelocityThreshold: number;
 }
 
 export const DEFAULT_SPRING_CONFIG: SpringConfig = {
@@ -16,9 +20,12 @@ export const DEFAULT_SPRING_CONFIG: SpringConfig = {
 };
 
 export interface SpringState {
-  position: number; // Current rotation angle in radians
-  velocity: number; // Angular velocity in radians per second
-  target: number; // Target snap angle in radians
+  // Current rotation angle in radians.
+  position: number;
+  // Angular velocity in radians per second.
+  velocity: number;
+  // Target snap angle in radians.
+  target: number;
   isSettled: boolean;
 }
 
@@ -31,11 +38,15 @@ export function createSpringState(initialPosition = 0): SpringState {
   };
 }
 
-// Calculate the nearest 90-degree snap angle (multiple of PI / 2).
-export function computeSnapAngle(currentAngle: number, releaseVelocity: number, config: SpringConfig): number {
+// Calculate the nearest 90-degree snap angle.
+export function computeSnapAngle(
+  currentAngle: number,
+  releaseVelocity: number,
+  config: SpringConfig,
+): number {
   const halfPi = Math.PI * 0.5;
 
-  // Check if user flicked with high momentum.
+  // Check if the user flicked with high momentum.
   if (Math.abs(releaseVelocity) >= config.flickVelocityThreshold) {
     const direction = Math.sign(releaseVelocity);
     const forwardAngle = currentAngle + direction * (halfPi * 0.4);
@@ -56,7 +67,7 @@ export function stepSpring(
     return state;
   }
 
-  // Clamp maximum delta time to prevent numerical divergence on frame drops.
+  // Clamp maximum delta time to prevent divergence during lag.
   const dt = Math.min(deltaTimeSeconds, 0.05);
 
   const displacement = state.position - state.target;
@@ -67,7 +78,7 @@ export function stepSpring(
   const newVelocity = state.velocity + acceleration * dt;
   const newPosition = state.position + newVelocity * dt;
 
-  // Check if spring reached equilibrium within tolerance limits.
+  // Check if spring reached equilibrium.
   const posError = Math.abs(newPosition - state.target);
   const velError = Math.abs(newVelocity);
 
