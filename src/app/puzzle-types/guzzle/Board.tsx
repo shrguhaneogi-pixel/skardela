@@ -8,8 +8,18 @@ import {
   type LogicExplanation,
 } from "../../../shared/graduated-hints";
 import { getLogger } from "../../../shared/logger";
-import { calculateCompletionStats, type CompletionStats } from "../../../shared/puzzle-progress";
+import {
+  loadPuzzleProgress,
+  type CompletionStats,
+  type PuzzleProgressRecord,
+} from "../../../shared/puzzle-progress";
 import { GuzzleBoardView, type GuzzleBoardViewProps } from "./BoardView";
+import {
+  computeGuzzleElapsedSeconds,
+  saveGuzzleHintProgress,
+  useGuzzleSolvedSync,
+  useGuzzleStartTime,
+} from "./progress";
 import { toSquares, useGame, type Game, type GuzzlePuzzle } from "./useGame";
 
 type Meta = {
@@ -21,8 +31,14 @@ type Hooks = NonNullable<Parameters<typeof useGame>[2]>;
 type ModeArg = Parameters<NonNullable<Hooks["onModeChosen"]>>[0];
 type LetterEntry = Parameters<NonNullable<Hooks["onLetterPlaced"]>>[0];
 
-function createHooks(log: ReturnType<typeof getLogger>, meta: Meta): Hooks {
+function createHooks(
+  log: ReturnType<typeof getLogger>,
+  meta: Meta,
+  getTelemetry: Hooks["getTelemetry"],
+): Hooks {
   return {
+    difficulty: meta.difficulty,
+    getTelemetry,
     onModeChosen: (mode: ModeArg) => {
       log.info("Mode selected", { ...meta, mode });
     },
@@ -55,13 +71,14 @@ function useGuzzleBoardLogic(answer: readonly string[], game: Game, size: number
   const [hint, setHint] = useState<GraduatedHintType | null>(null);
   const [logicExplanation, setLogicExplanation] = useState<LogicExplanation | null>(null);
 
-  function handleHintRequest() {
+  function handleHintRequest(): boolean {
     if (hint) {
       setHint({ ...hint, tier: advanceTier(hint.tier) });
-      return;
+      return false;
     }
     const nextHint = createGuzzleHint(answer, game.guesses, size, game.selected, "nudge");
     setHint(nextHint ?? null);
+    return nextHint !== undefined;
   }
 
   function handleShowLogic() {
@@ -79,74 +96,66 @@ function useGuzzleBoardLogic(answer: readonly string[], game: Game, size: number
   };
 }
 
-function useGuzzleSolvedSync(
-  puzzle: GuzzlePuzzle,
-  isSolved: boolean,
-  mistakes: number,
-  hintCountRef: { current: number },
-  startTimeRef: { current: number },
-  setStats: (stats: CompletionStats) => void,
-  setShowReview: (show: boolean) => void,
-) {
-  useEffect(() => {
-    if (!isSolved) return;
-    const start = startTimeRef.current > 0 ? startTimeRef.current : Date.now();
-    const timeSpentSeconds = Math.max(1, Math.round((Date.now() - start) / 1000));
-    const completionStats = calculateCompletionStats({
-      puzzleId: puzzle.id,
-      puzzleType: puzzle.type,
-      difficulty: puzzle.difficulty,
-      timeSpentSeconds,
-      hintCount: hintCountRef.current,
-      mistakes,
-    });
-    setStats(completionStats);
-    setShowReview(true);
-  }, [
-    isSolved,
-    mistakes,
-    puzzle.difficulty,
-    puzzle.id,
-    puzzle.type,
-    hintCountRef,
-    startTimeRef,
-    setStats,
-    setShowReview,
-  ]);
-}
+type GuzzleActionsParams = {
+  puzzle: GuzzlePuzzle;
+  game: Game;
+  recordedSolvedRef: { current: boolean };
+  savedRecordRef: { current: PuzzleProgressRecord | null };
+  hintCountRef: { current: number };
+  startTimeRef: { current: number };
+  setShowReview: (s: boolean) => void;
+  setStats: (s: CompletionStats | null) => void;
+  logic: ReturnType<typeof useGuzzleBoardLogic>;
+};
 
-function useGuzzleActions(
-  game: Game,
-  hintCountRef: { current: number },
-  startTimeRef: { current: number },
-  setShowReview: (s: boolean) => void,
-  setStats: (s: CompletionStats | null) => void,
-  logic: ReturnType<typeof useGuzzleBoardLogic>,
-) {
+function useGuzzleActions(p: GuzzleActionsParams) {
   function handleRestart() {
-    game.restart();
-    hintCountRef.current = 0;
-    startTimeRef.current = Date.now();
-    setShowReview(false);
-    setStats(null);
-    logic.setHint(null);
-    logic.setLogicExplanation(null);
+    p.recordedSolvedRef.current = false;
+    p.savedRecordRef.current = null;
+    p.hintCountRef.current = 0;
+    p.startTimeRef.current = Date.now();
+    p.game.restart();
+    p.setShowReview(false);
+    p.setStats(null);
+    p.logic.setHint(null);
+    p.logic.setLogicExplanation(null);
   }
 
   return {
     onHintRequest: () => {
-      hintCountRef.current += 1;
-      logic.handleHintRequest();
+      if (p.logic.handleHintRequest()) {
+        p.hintCountRef.current += 1;
+        saveGuzzleHintProgress({
+          puzzle: p.puzzle,
+          guesses: p.game.guesses,
+          mode: p.game.mode,
+          mistakes: p.game.mistakes,
+          hintCount: p.hintCountRef.current,
+          timeSpentSeconds: computeGuzzleElapsedSeconds(p.startTimeRef.current),
+        });
+      }
     },
-    onShowLogic: logic.handleShowLogic,
+    onShowLogic: p.logic.handleShowLogic,
     onTierChange: (tier: HintTier) =>
-      logic.hint ? logic.setHint({ ...logic.hint, tier }) : undefined,
-    onDismissHint: () => logic.setHint(null),
-    onCloseLogic: () => logic.setLogicExplanation(null),
+      p.logic.hint ? p.logic.setHint({ ...p.logic.hint, tier }) : undefined,
+    onDismissHint: () => p.logic.setHint(null),
+    onCloseLogic: () => p.logic.setLogicExplanation(null),
     onRestart: handleRestart,
-    onOpenReview: () => setShowReview(true),
-    onCloseReview: () => setShowReview(false),
+    onOpenReview: () => p.setShowReview(true),
+    onCloseReview: () => p.setShowReview(false),
   };
+}
+
+function useGuzzleTelemetryRefs(puzzleId: string) {
+  const [initialSaved] = useState(() => loadPuzzleProgress(puzzleId));
+  const savedRecordRef = useRef<PuzzleProgressRecord | null>(initialSaved);
+  const hintCountRef = useRef(initialSaved?.hintCount ?? 0);
+  const startTimeRef = useGuzzleStartTime(initialSaved?.timeSpentSeconds ?? 0);
+  const getTelemetry = () => ({
+    timeSpentSeconds: computeGuzzleElapsedSeconds(startTimeRef.current),
+    hintCount: hintCountRef.current,
+  });
+  return { initialSaved, savedRecordRef, hintCountRef, startTimeRef, getTelemetry };
 }
 
 function useGuzzleGame(puzzle: GuzzlePuzzle): GuzzleBoardViewProps {
@@ -158,35 +167,17 @@ function useGuzzleGame(puzzle: GuzzlePuzzle): GuzzleBoardViewProps {
     puzzleType: puzzle.type,
     difficulty: puzzle.difficulty,
   };
-  const game = useGame(answer, size, createHooks(log, meta), puzzle.id);
-  const logic = useGuzzleBoardLogic(answer, game, size);
-  const hintCountRef = useRef(0);
-  const startTimeRef = useRef(0);
+  const refs = useGuzzleTelemetryRefs(puzzle.id);
+  const game = useGame(answer, size, createHooks(log, meta, refs.getTelemetry), puzzle.id);
+  const recordedSolvedRef = useRef(Boolean(refs.initialSaved?.isSolved && game.isSolved));
   const [showReview, setShowReview] = useState(false);
   const [stats, setStats] = useState<CompletionStats | null>(null);
+  const logic = useGuzzleBoardLogic(answer, game, size);
+  const sharedParams = { ...refs, recordedSolvedRef, setShowReview, setStats, puzzle };
 
-  useEffect(() => {
-    if (startTimeRef.current === 0) startTimeRef.current = Date.now();
-  }, []);
-
-  useGuzzleSolvedSync(
-    puzzle,
-    game.isSolved,
-    game.mistakes,
-    hintCountRef,
-    startTimeRef,
-    setStats,
-    setShowReview,
-  );
+  useGuzzleSolvedSync({ ...sharedParams, isSolved: game.isSolved, mistakes: game.mistakes });
   useLifecycleLog(log, meta, size, game.isSolved, game.mistakes);
-  const actions = useGuzzleActions(
-    game,
-    hintCountRef,
-    startTimeRef,
-    setShowReview,
-    setStats,
-    logic,
-  );
+  const actions = useGuzzleActions({ ...sharedParams, game, logic });
 
   return {
     answer,

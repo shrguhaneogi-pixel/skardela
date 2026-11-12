@@ -1,14 +1,20 @@
 import { createMemoryRouter } from "react-router";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { routes } from "./routes";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { RouterProvider } from "react-router/dom";
+import { saveImportedPack, type PuzzlePack } from "../shared/puzzle-pack";
 import { text } from "../text/en";
 
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   render(<RouterProvider router={router} />);
+  return router;
 }
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 afterEach(() => {
   vi.useRealTimers();
@@ -76,5 +82,59 @@ describe("atlas route integration", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: text.atlas.title }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("random puzzle and custom pack route integration", () => {
+  it("opens a random puzzle from the home page", async () => {
+    const router = renderAt("/");
+    const randomBtn = await screen.findByRole("button", { name: text.home.randomPuzzle });
+    fireEvent.click(randomBtn);
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toMatch(/^\/puzzles\/[a-z]+(?:-[a-z]+)*-\d{4}$/u);
+    });
+  });
+
+  it("opens another random puzzle from an active puzzle page", async () => {
+    const router = renderAt("/puzzles/colour-binary-0001");
+    const randomBtn = await screen.findByRole("button", { name: text.puzzlePage.randomButton });
+    fireEvent.click(randomBtn);
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toMatch(/^\/puzzles\/[a-z]+(?:-[a-z]+)*-\d{4}$/u);
+      expect(router.state.location.pathname).not.toBe("/puzzles/colour-binary-0001");
+    });
+  });
+});
+
+describe("custom pack route integration", () => {
+  it("loads an imported custom pack puzzle route", async () => {
+    const customPack: PuzzlePack = {
+      format: "skardela-pack-v1",
+      id: "pack-route-01",
+      title: "Route Test Pack",
+      author: "Tester",
+      version: "1.0.0",
+      license: "CC-BY-4.0",
+      puzzles: [
+        {
+          id: "colour-binary-9999",
+          type: "colour-binary",
+          difficulty: "easy",
+          author: "Tester",
+          license: "CC-BY-4.0",
+          start: ["R..R", "R.BR", "..RB", "..R."],
+          answer: ["RBBR", "RBBR", "BRRB", "BRRB"],
+        },
+      ],
+    };
+    saveImportedPack(customPack);
+
+    renderAt("/puzzles/colour-binary-9999?pack=pack-route-01");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: text["colour-binary"].name }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("#9999")).toBeInTheDocument();
   });
 });

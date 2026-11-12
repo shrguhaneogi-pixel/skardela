@@ -32,6 +32,7 @@ type ActionProps = {
   isSolved: boolean;
   onHintRequest: () => void;
   onShowLogic: () => void;
+  onRestart: () => void;
   onOpenReview?: () => void;
 };
 
@@ -53,6 +54,13 @@ function BoardActions(props: ActionProps) {
         onClick={props.onShowLogic}
       >
         {text.logicExplanation.button}
+      </button>
+      <button
+        type="button"
+        className={`${shared.button} ${shared.boxed}`}
+        onClick={props.onRestart}
+      >
+        {text.puzzlePage.restartButton}
       </button>
       {props.isSolved && props.onOpenReview && (
         <button
@@ -123,8 +131,29 @@ function getColourBinaryPostcard(props: BoardViewProps): string | undefined {
   });
 }
 
-export function BoardView(props: BoardViewProps) {
+function BoardModals({ props, postcardText }: { props: BoardViewProps; postcardText?: string }) {
   const { actions, completionStats } = props;
+  return (
+    <>
+      {props.logicExplanation && (
+        <LogicExplanationModal
+          explanation={props.logicExplanation}
+          onClose={actions.onCloseLogic}
+        />
+      )}
+      <SolvedReviewModal
+        show={props.showReview}
+        stats={completionStats}
+        postcardText={postcardText}
+        onRestart={actions.onRestart}
+        onClose={actions.onCloseReview}
+      />
+    </>
+  );
+}
+
+export function BoardView(props: BoardViewProps) {
+  const { actions } = props;
   const postcardText = getColourBinaryPostcard(props);
 
   return (
@@ -139,7 +168,7 @@ export function BoardView(props: BoardViewProps) {
         isSolved={props.isSolved}
         onTapSquare={actions.onTapSquare}
       />
-      <output className={shared.status} data-solved={props.isSolved}>
+      <output aria-live="polite" className={shared.status} data-solved={props.isSolved}>
         {statusText(props.isSolved, props.hint)}
       </output>
       {props.hint && (
@@ -153,21 +182,10 @@ export function BoardView(props: BoardViewProps) {
         isSolved={props.isSolved}
         onHintRequest={actions.onHintRequest}
         onShowLogic={actions.onShowLogic}
+        onRestart={actions.onRestart}
         onOpenReview={actions.onOpenReview}
       />
-      {props.logicExplanation && (
-        <LogicExplanationModal
-          explanation={props.logicExplanation}
-          onClose={actions.onCloseLogic}
-        />
-      )}
-      <SolvedReviewModal
-        show={props.showReview}
-        stats={completionStats}
-        postcardText={postcardText}
-        onRestart={actions.onRestart}
-        onClose={actions.onCloseReview}
-      />
+      <BoardModals props={props} postcardText={postcardText} />
     </div>
   );
 }

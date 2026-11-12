@@ -27,6 +27,7 @@ type ActionProps = {
   isSolved: boolean;
   onHintRequest: () => void;
   onShowLogic: () => void;
+  onRestart: () => void;
   onOpenReview?: () => void;
 };
 
@@ -49,6 +50,13 @@ function BoardActions(props: ActionProps) {
         onClick={props.onShowLogic}
       >
         {text.logicExplanation.button}
+      </button>
+      <button
+        type="button"
+        className={`${shared.button} ${shared.boxed}`}
+        onClick={props.onRestart}
+      >
+        {text.puzzlePage.restartButton}
       </button>
       {props.isSolved && props.onOpenReview && (
         <button
@@ -121,8 +129,10 @@ function getGuzzlePostcard(props: GuzzleBoardViewProps): string | undefined {
 function BoardStatusOutput({ game, size }: { game: Game; size: number }) {
   return (
     <>
-      <output className={shared.mistakes}>{words.mistakes(game.mistakes)}</output>
-      <output className={shared.status} data-solved={game.isSolved}>
+      <output aria-live="polite" className={shared.mistakes}>
+        {words.mistakes(game.mistakes)}
+      </output>
+      <output aria-live="polite" className={shared.status} data-solved={game.isSolved}>
         {statusText(game.mode, game.lastMove, game.isSolved, game.mistakes, size)}
       </output>
     </>
@@ -161,6 +171,7 @@ export function GuzzleBoardView(props: GuzzleBoardViewProps) {
         isSolved={game.isSolved}
         onHintRequest={actions.onHintRequest}
         onShowLogic={actions.onShowLogic}
+        onRestart={actions.onRestart}
         onOpenReview={actions.onOpenReview}
       />
       {logicExplanation && (

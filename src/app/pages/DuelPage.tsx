@@ -39,10 +39,11 @@ function DuelHeader() {
 
 interface FormProps {
   readonly onCompare: (opponent: DuelResult) => void;
+  readonly onInvalidCode: () => void;
   readonly error: string | null;
 }
 
-function DuelInputForm({ onCompare, error }: FormProps) {
+function DuelInputForm({ onCompare, onInvalidCode, error }: FormProps) {
   const [code, setCode] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,6 +51,8 @@ function DuelInputForm({ onCompare, error }: FormProps) {
     const opponent = decodeDuelResult(code.trim());
     if (opponent) {
       onCompare(opponent);
+    } else {
+      onInvalidCode();
     }
   };
 
@@ -70,7 +73,11 @@ function DuelInputForm({ onCompare, error }: FormProps) {
           {text.duel.compareBtn}
         </button>
       </div>
-      {error && <output className={styles.errorText}>{error}</output>}
+      {error && (
+        <output aria-live="polite" className={styles.errorText}>
+          {error}
+        </output>
+      )}
     </form>
   );
 }
@@ -122,7 +129,7 @@ function OutcomeBanner({ outcome }: { readonly outcome: "player" | "opponent" | 
   const icon = outcome === "tie" ? symbols.duel.tie : symbols.duel.trophy;
 
   return (
-    <output className={styles.outcomeBanner}>
+    <output aria-live="polite" className={styles.outcomeBanner}>
       <span className={styles.bannerTitle}>{title}</span>
       <span aria-hidden="true">{icon}</span>
     </output>
@@ -191,10 +198,16 @@ export function DuelPage() {
     setError(null);
   };
 
+  const handleInvalidCode = () => {
+    setOpponent(null);
+    setComparison(null);
+    setError(text.duel.invalidCode);
+  };
+
   return (
     <div>
       <DuelHeader />
-      <DuelInputForm onCompare={handleCompare} error={error} />
+      <DuelInputForm onCompare={handleCompare} onInvalidCode={handleInvalidCode} error={error} />
 
       {comparison && opponent && (
         <section className={styles.comparisonSection} aria-label={text.duel.outcomeHeading}>

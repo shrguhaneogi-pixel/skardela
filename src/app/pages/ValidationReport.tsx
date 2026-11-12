@@ -10,7 +10,7 @@ export function ValidationReport({ result }: { readonly result: ValidationResult
 
   if (result.valid) {
     return (
-      <output className={`${styles.validationBox} ${styles.successBox}`}>
+      <output aria-live="polite" className={`${styles.validationBox} ${styles.successBox}`}>
         <strong>{text.studio.validSuccess}</strong>
       </output>
     );

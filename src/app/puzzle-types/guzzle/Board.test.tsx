@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
+import { loadPuzzleProgress } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/guzzle-0000.json";
@@ -84,6 +85,101 @@ describe("guzzle board result", () => {
     expect(screen.getByText("You solved the puzzle. With bank, 2 mistakes.")).toBeInTheDocument();
   });
 
+  it("restarts active play and resets mistakes and entered letters", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    await user.click(square(1, 1));
+    await user.keyboard("t");
+    expect(screen.getByText(words.mistakes(1))).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: text.puzzlePage.restartButton }));
+    expect(screen.getByText(words.mistakes(0))).toBeInTheDocument();
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
+    const statusRegions = screen.getAllByRole("status");
+    expect(statusRegions.length).toBeGreaterThanOrEqual(2);
+    for (const region of statusRegions) {
+      expect(region).toHaveAttribute("aria-live", "polite");
+    }
+  });
+});
+
+describe("guzzle board telemetry persistence", () => {
+  it("saves real difficulty, time, and hint count and preserves them on reopen", async () => {
+    const user = userEvent.setup();
+    const mediumPuzzle: GuzzlePuzzle = {
+      id: "guzzle-0006",
+      type: "guzzle",
+      difficulty: "medium",
+      author: "skardela",
+      license: "CC-BY-4.0",
+      answer: ["RBP", "CAT", "MGN"],
+    };
+    const solveMoves: readonly [number, number, string][] = [
+      [1, 1, "R"],
+      [1, 2, "B"],
+      [1, 3, "P"],
+      [2, 1, "C"],
+      [2, 3, "T"],
+      [3, 1, "M"],
+      [3, 2, "G"],
+      [3, 3, "N"],
+    ];
+
+    const { unmount } = render(<Board puzzle={mediumPuzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    await user.click(screen.getByRole("button", { name: words.hintButton }));
+    await typeLetters(user, solveMoves);
+
+    const saved = loadPuzzleProgress(mediumPuzzle.id);
+    expect(saved?.isSolved).toBe(true);
+    expect(saved?.difficulty).toBe("medium");
+    expect(saved?.hintCount).toBe(1);
+    expect(saved?.timeSpentSeconds).toBeGreaterThanOrEqual(1);
+
+    const savedTime = saved?.timeSpentSeconds;
+    unmount();
+    render(<Board puzzle={mediumPuzzle} />);
+
+    const afterReopen = loadPuzzleProgress(mediumPuzzle.id);
+    expect(afterReopen?.difficulty).toBe("medium");
+    expect(afterReopen?.hintCount).toBe(1);
+    expect(afterReopen?.timeSpentSeconds).toBe(savedTime);
+  });
+});
+
+describe("guzzle mid-game reload persistence", () => {
+  it("preserves in-progress hint count across reload before completion", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    await user.click(screen.getByRole("button", { name: words.hintButton }));
+    await typeLetters(user, [[1, 1, "R"]]);
+
+    const midGame = loadPuzzleProgress(puzzle.id);
+    expect(midGame?.isSolved).toBe(false);
+    expect(midGame?.hintCount).toBe(1);
+
+    unmount();
+    render(<Board puzzle={puzzle} />);
+    await typeLetters(user, [
+      [1, 2, "B"],
+      [1, 3, "P"],
+      [2, 1, "C"],
+      [2, 3, "T"],
+      [3, 1, "M"],
+      [3, 2, "G"],
+      [3, 3, "N"],
+    ]);
+
+    const solved = loadPuzzleProgress(puzzle.id);
+    expect(solved?.isSolved).toBe(true);
+    expect(solved?.hintCount).toBe(1);
+    expect(screen.queryByText(text.completion.cleanSolve)).not.toBeInTheDocument();
+  });
+});
+
+describe("guzzle duplicate mistake check", () => {
   it("does not add a mistake for the same wrong letter two times", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);

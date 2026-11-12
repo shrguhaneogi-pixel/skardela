@@ -107,7 +107,11 @@ export function StudioPage() {
         </button>
       </div>
 
-      {copied && <output className={styles.copiedBadge}>{text.studio.copied}</output>}
+      {copied && (
+        <output aria-live="polite" className={styles.copiedBadge}>
+          {text.studio.copied}
+        </output>
+      )}
 
       {activeTab === "colour-binary" && <ColourBinaryStudio onExport={handleExport} />}
       {activeTab === "json" && <RawJsonStudio onExport={handleExport} />}

@@ -171,12 +171,12 @@
 
 .cellR {
   background-color: var(--red);
-  color: var(--colour-binary-r-text, #ffffff);
+  color: var(--on-colour);
 }
 
 .cellB {
   background-color: var(--blue);
-  color: var(--colour-binary-b-text, #ffffff);
+  color: var(--on-colour);
 }
 
 .actions {
@@ -190,7 +190,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   background-color: var(--accent);
   color: var(--on-accent);
   border: none;
@@ -225,7 +225,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   background-color: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
@@ -285,7 +285,7 @@
 
 .copiedBadge {
   font-size: 0.875rem;
-  color: var(--green);
+  color: light-dark(#15803d, #4ade80);
   font-weight: 600;
 }
 

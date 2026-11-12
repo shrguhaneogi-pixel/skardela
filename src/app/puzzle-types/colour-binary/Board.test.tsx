@@ -1,10 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
+import { loadPuzzleProgress, savePuzzleProgress } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/colour-binary-0000.json";
-import type { ColourBinaryPuzzle } from "./puzzle";
+import { toSquares, type ColourBinaryPuzzle } from "./puzzle";
 
 const words = text["colour-binary"];
 const puzzle = example as ColourBinaryPuzzle;
@@ -50,6 +51,17 @@ describe("colour-binary board interaction", () => {
     render(<Board puzzle={puzzle} />);
     await user.click(square(1, 3));
     expect(square(1, 3)).toHaveAccessibleName("Row 1, column 3, blue, fixed");
+  });
+
+  it("restarts the board during active play", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(square(1, 1));
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, red");
+
+    await user.click(screen.getByRole("button", { name: text.puzzlePage.restartButton }));
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
+    expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
   });
 });
 
@@ -108,6 +120,49 @@ describe("colour-binary board completion", () => {
     // Reopen completion review from action button
     await user.click(screen.getByRole("button", { name: text.completion.openSummary }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
+  it("preserves stored time and hints when reopening an already-solved puzzle", () => {
+    savePuzzleProgress({
+      puzzleId: puzzle.id,
+      puzzleType: puzzle.type,
+      difficulty: puzzle.difficulty,
+      savedAt: Date.now(),
+      isSolved: true,
+      completedAt: Date.now(),
+      timeSpentSeconds: 75,
+      hintCount: 2,
+      mistakes: 0,
+      colourBinaryState: { squares: toSquares(puzzle.answer) },
+    });
+
+    render(<Board puzzle={puzzle} />);
+
+    const afterMount = loadPuzzleProgress(puzzle.id);
+    expect(afterMount?.timeSpentSeconds).toBe(75);
+    expect(afterMount?.hintCount).toBe(2);
+    expect(screen.getByRole("dialog")).toHaveTextContent("1m 15s");
+  });
+});
+
+describe("colour-binary mid-game reload persistence", () => {
+  it("preserves in-progress hint count across reload before completion", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.hintButton }));
+
+    const midGame = loadPuzzleProgress(puzzle.id);
+    expect(midGame?.isSolved).toBe(false);
+    expect(midGame?.hintCount).toBe(1);
+
+    unmount();
+    render(<Board puzzle={puzzle} />);
+    await fillAnswer(user);
+
+    const solved = loadPuzzleProgress(puzzle.id);
+    expect(solved?.isSolved).toBe(true);
+    expect(solved?.hintCount).toBe(1);
+    expect(screen.queryByText(text.completion.cleanSolve)).not.toBeInTheDocument();
   });
 });
 

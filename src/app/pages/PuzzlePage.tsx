@@ -3,22 +3,18 @@ import { useLoaderData, useSearchParams } from "react-router";
 import { ErrorBoundary } from "../../shared/ErrorBoundary";
 import { RuleList } from "../../shared/RuleList";
 import { text } from "../../text/en";
-import { isTodayUtc, type puzzleLoader } from "../puzzles";
+import { isTodayUtc, type LoadedPuzzle, type puzzleLoader } from "../puzzles";
+import { RandomPuzzleButton } from "../RandomPuzzleButton";
 import { boards } from "../puzzle-types/boards";
-import type { PuzzleMap, PuzzleType } from "../puzzle-types/registry";
 import { NotFoundPage } from "./NotFoundPage";
 import styles from "./PuzzlePage.module.css";
 
 // This shows the board of the puzzle type.
-function PuzzleBoard<Type extends PuzzleType>({
-  type,
-  puzzle,
-}: {
-  type: Type;
-  puzzle: PuzzleMap[Type];
-}) {
-  const Board: ComponentType<{ puzzle: PuzzleMap[Type] }> = boards[type];
-  return <Board puzzle={puzzle} />;
+function PuzzleBoard({ loaded }: { loaded: LoadedPuzzle }) {
+  const Board = boards[loaded.type] as unknown as ComponentType<{
+    puzzle: LoadedPuzzle["puzzle"];
+  }>;
+  return <Board puzzle={loaded.puzzle} />;
 }
 
 type HeaderProps = {
@@ -35,14 +31,17 @@ function PuzzleDetailsHeader(props: HeaderProps) {
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>{props.typeName}</h1>
-      <ul className={styles.details} aria-label={page.detailsLabel}>
-        <li className={styles.level}>{text.levels[props.difficulty]}</li>
-        {props.isArchive && props.dateParam && (
-          <li className={styles.archiveBadge}>{text.archive.archiveBadge(props.dateParam)}</li>
-        )}
-        <li>{page.puzzleNumber(props.puzzleId.slice(props.puzzleId.lastIndexOf("-") + 1))}</li>
-        <li>{page.author(props.author)}</li>
-      </ul>
+      <div className={styles.details}>
+        <ul className={styles.details} aria-label={page.detailsLabel}>
+          <li className={styles.level}>{text.levels[props.difficulty]}</li>
+          {props.isArchive && props.dateParam && (
+            <li className={styles.archiveBadge}>{text.archive.archiveBadge(props.dateParam)}</li>
+          )}
+          <li>{page.puzzleNumber(props.puzzleId.slice(props.puzzleId.lastIndexOf("-") + 1))}</li>
+          <li>{page.author(props.author)}</li>
+        </ul>
+        <RandomPuzzleButton excludeId={props.puzzleId} label={page.randomButton} />
+      </div>
     </header>
   );
 }
@@ -82,7 +81,7 @@ export function PuzzlePage() {
             }
           >
             <Suspense fallback={<p className={styles.loading}>{page.loadingBoard}</p>}>
-              <PuzzleBoard type={loaded.type} puzzle={loaded.puzzle} />
+              <PuzzleBoard loaded={loaded} />
             </Suspense>
           </ErrorBoundary>
         </div>

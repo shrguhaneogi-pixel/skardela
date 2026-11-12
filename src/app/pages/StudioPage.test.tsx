@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import example from "../puzzle-types/colour-binary/examples/colour-binary-0000.json";
 import { StudioPage } from "./StudioPage";
 import { text } from "../../text/en";
 
@@ -49,5 +50,20 @@ describe("StudioPage", () => {
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.getByText(text.studio.jsonInvalid)).toBeInTheDocument();
+  });
+});
+
+describe("StudioPage validation output", () => {
+  it("announces valid puzzle validation results politely", () => {
+    render(<StudioPage />);
+    fireEvent.click(screen.getByRole("tab", { name: text.studio.tabJson }));
+
+    const textarea = screen.getByLabelText("Custom puzzle JSON");
+    fireEvent.change(textarea, { target: { value: JSON.stringify(example) } });
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(text.studio.validateBtn, "u") }));
+
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent(text.studio.validSuccess);
+    expect(status).toHaveAttribute("aria-live", "polite");
   });
 });

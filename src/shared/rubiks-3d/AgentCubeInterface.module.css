@@ -1,33 +1,34 @@
 /* ASD-STE100 Simplified Technical English comments. */
-/* Styles for the 3D Rubik's Cube AI agent interface. */
+/* Styles for the 3D Rubik's Cube AI agent interface with light-dark support. */
 
 .container {
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 640px;
-  background-color: var(--color-bg-base, #0b0d11);
-  color: var(--color-text-main, #f1f3f7);
-  border-radius: 12px;
-  border: 1px solid var(--color-border-subtle, #1c212c);
+  background-color: var(--bg);
+  color: var(--text);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  background-color: var(--color-bg-elevated, #101319);
-  border-bottom: 1px solid var(--color-border-subtle, #1c212c);
+  padding: 1rem 1.5rem;
+  background-color: var(--surface-elevated);
+  border-bottom: 1px solid var(--border);
 }
 
 .titleArea {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .title {
@@ -35,21 +36,21 @@
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: var(--text-h);
 }
 
 .subtitle {
   margin: 0;
   font-size: 0.8125rem;
-  color: var(--color-text-muted, #8a94a6);
+  color: var(--text-muted);
 }
 
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 9999px;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -57,15 +58,15 @@
 }
 
 .statusSolved {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background-color: var(--state-success-bg);
+  color: light-dark(#15803d, #34d399);
+  border: 1px solid var(--state-success-border);
 }
 
 .statusActive {
-  background-color: rgba(234, 179, 8, 0.12);
-  color: #facc15;
-  border: 1px solid rgba(234, 179, 8, 0.28);
+  background-color: var(--state-warning-bg);
+  color: light-dark(#854d0e, #facc15);
+  border: 1px solid var(--state-warning-border);
 }
 
 .statusDot {
@@ -83,18 +84,16 @@
   position: relative;
 }
 
-@media (max-width: 900px) {
-  .mainStage {
-    grid-template-columns: 1fr;
-  }
-}
-
 .viewportContainer {
   position: relative;
   width: 100%;
   height: 100%;
   min-height: 420px;
-  background: radial-gradient(circle at 50% 40%, #151922 0%, #0b0d11 75%);
+  background: radial-gradient(
+    circle at 50% 40%,
+    light-dark(#eef2f7, #151922) 0%,
+    light-dark(#dfe5ef, #0b0d11) 75%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,53 +101,65 @@
 
 .hudOverlay {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 1rem;
+  left: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   pointer-events: none;
 }
 
 .hudChip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background-color: rgba(16, 19, 26, 0.75);
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background-color: light-dark(rgba(255, 255, 255, 0.85), rgba(16, 19, 26, 0.75));
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.75rem;
-  color: #cbd5e1;
+  color: var(--text);
 }
 
 .hudLabel {
-  color: #64748b;
+  color: var(--text-muted);
   text-transform: uppercase;
   font-size: 0.6875rem;
   font-weight: 600;
 }
 
 .hudValue {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--mono);
   font-weight: 600;
-  color: #38bdf8;
+  color: var(--cyan-text);
 }
 
 .sidebar {
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg-elevated, #101319);
-  border-left: 1px solid var(--color-border-subtle, #1c212c);
-  padding: 20px;
-  gap: 20px;
+  background-color: var(--surface-elevated);
+  border-left: 1px solid var(--border);
+  padding: 1.25rem;
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .mainStage {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .sectionTitle {
@@ -156,53 +167,64 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin: 0;
 }
 
 .promptCard {
-  background-color: #0b0d11;
-  border: 1px solid #1e2430;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: light-dark(#f1f5f9, #0b0d11);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.75rem;
+  font-family: var(--mono);
   font-size: 0.75rem;
   line-height: 1.45;
-  color: #94a3b8;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
   word-break: break-all;
   user-select: all;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.promptCard:hover {
+  background-color: var(--surface-muted-hover);
+  border-color: var(--line);
 }
 
 .historyList {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 0.375rem;
   min-height: 40px;
   max-height: 90px;
   overflow-y: auto;
-  padding: 8px;
-  background-color: #0b0d11;
-  border: 1px solid #1e2430;
-  border-radius: 6px;
+  padding: 0.5rem;
+  background-color: light-dark(#f1f5f9, #0b0d11);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  list-style: none;
 }
 
 .historyBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 8px;
-  background-color: #171d27;
-  color: #38bdf8;
-  border: 1px solid #232c3b;
-  border-radius: 4px;
+  padding: 0.125rem 0.5rem;
+  background-color: var(--cyan-bg);
+  color: var(--cyan-text);
+  border: 1px solid var(--cyan-border);
+  border-radius: var(--radius-xs);
   font-size: 0.75rem;
   font-weight: 600;
-  font-family: ui-monospace, monospace;
+  font-family: var(--mono);
 }
 
 .emptyText {
   font-size: 0.75rem;
-  color: #475569;
+  color: var(--text-muted);
   font-style: italic;
   margin: auto 0;
 }
@@ -210,47 +232,53 @@
 .actionRow {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   margin-top: auto;
 }
 
 .buttonPrimary {
-  background-color: #2563eb;
-  color: #ffffff;
+  min-height: 2.75rem;
+  background-color: var(--accent);
+  color: var(--on-accent);
   border: none;
-  border-radius: 6px;
-  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 1rem;
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition:
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .buttonPrimary:hover {
-  background-color: #1d4ed8;
+  background-color: var(--accent-hover);
 }
 
 .buttonSecondary {
-  background-color: #161b24;
-  color: #cbd5e1;
-  border: 1px solid #252e3d;
-  border-radius: 6px;
-  padding: 9px 16px;
+  min-height: 2.75rem;
+  background-color: var(--surface-muted);
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5625rem 1rem;
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .buttonSecondary:hover {
-  background-color: #1e2532;
-  border-color: #38465c;
-  color: #ffffff;
+  background-color: var(--surface-muted-hover);
+  border-color: var(--line);
+  color: var(--text-h);
 }
 
 .instructions {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-muted);
   line-height: 1.4;
   margin: 0;
 }

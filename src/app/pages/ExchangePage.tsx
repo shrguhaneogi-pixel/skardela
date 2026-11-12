@@ -66,7 +66,7 @@ function ValidationFeedback({ result }: { readonly result: PackValidationResult 
     );
   }
   return (
-    <output className={`${styles.validationBox} ${styles.successBox}`}>
+    <output aria-live="polite" className={`${styles.validationBox} ${styles.successBox}`}>
       <strong>{result.errors[0] || text.exchange.importSuccess}</strong>
     </output>
   );
@@ -163,7 +163,11 @@ function PackList({ packs }: { readonly packs: readonly PuzzlePack[] }) {
                 {pack.puzzles.map((p) => {
                   const pId = String(p.id ?? "");
                   return (
-                    <Link key={pId} to={`/puzzles/${pId}`} className={styles.puzzleLink}>
+                    <Link
+                      key={pId}
+                      to={`/puzzles/${pId}?pack=${encodeURIComponent(pack.id)}`}
+                      className={styles.puzzleLink}
+                    >
                       #{pId}
                     </Link>
                   );

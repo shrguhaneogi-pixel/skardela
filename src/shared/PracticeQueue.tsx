@@ -23,7 +23,7 @@ function RecommendationCard({ rec }: { rec: PracticeRecommendation }) {
         <p className={styles.cardReason}>{rec.reason}</p>
       </div>
       <Link className={styles.playLink} to={rec.href}>
-        {text.practiceQueue.playButton} →
+        {text.practiceQueue.playButton} {symbols.common.arrowRight}
       </Link>
     </li>
   );

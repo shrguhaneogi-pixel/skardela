@@ -2,22 +2,13 @@ import { type RouteObject } from "react-router";
 import { Layout } from "./Layout";
 import { RouteError } from "./RouteError";
 import { text } from "../text/en";
-import {
-  ArchivePage,
-  AtlasPage,
-  DuelPage,
-  ExchangePage,
-  ExpeditionsPage,
-  HomePage,
-  LearnPage,
-  NotFoundPage,
-  PuzzlePage,
-  StudioPage,
-} from "./pages";
+import { HomePage } from "./pages/HomePage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 import { archiveLoader, homeLoader, puzzleLoader } from "./puzzles";
 
-// The route tree keeps the app shell and each page in one place.
-// This makes it easy to follow the main flow for the home page, archive, and puzzle pages.
+// ASD-STE100 Simplified Technical English comments.
+// The route tree keeps the app shell, home page, and lazy-loaded secondary pages in one place.
+// This reduces the main JavaScript bundle size while keeping initial home rendering fast.
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -33,43 +24,51 @@ export const routes: RouteObject[] = [
       {
         path: "archive",
         loader: archiveLoader,
-        element: <ArchivePage />,
+        lazy: async () => ({ Component: (await import("./pages/ArchivePage")).ArchivePage }),
         hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "archive/:date",
         loader: archiveLoader,
-        element: <ArchivePage />,
+        lazy: async () => ({ Component: (await import("./pages/ArchivePage")).ArchivePage }),
         hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "atlas",
-        element: <AtlasPage />,
+        lazy: async () => ({ Component: (await import("./pages/AtlasPage")).AtlasPage }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "studio",
-        element: <StudioPage />,
+        lazy: async () => ({ Component: (await import("./pages/StudioPage")).StudioPage }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "duel",
-        element: <DuelPage />,
+        lazy: async () => ({ Component: (await import("./pages/DuelPage")).DuelPage }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "expeditions",
-        element: <ExpeditionsPage />,
+        lazy: async () => ({
+          Component: (await import("./pages/ExpeditionsPage")).ExpeditionsPage,
+        }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "learn",
-        element: <LearnPage />,
+        lazy: async () => ({ Component: (await import("./pages/LearnPage")).LearnPage }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "exchange",
-        element: <ExchangePage />,
+        lazy: async () => ({ Component: (await import("./pages/ExchangePage")).ExchangePage }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
         path: "puzzles/:puzzleId",
         loader: puzzleLoader,
-        element: <PuzzlePage />,
+        lazy: async () => ({ Component: (await import("./pages/PuzzlePage")).PuzzlePage }),
         hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       { path: "*", element: <NotFoundPage /> },

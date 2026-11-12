@@ -1,4 +1,5 @@
 import { text } from "../text/en";
+import { symbols } from "../text/symbols";
 import styles from "./GraduatedHint.module.css";
 import {
   advanceTier,
@@ -45,7 +46,7 @@ function HintActions({ tier, onAdvance, onDismiss }: ActionProps) {
     <div className={styles.actions}>
       {tier !== "solution" && (
         <button type="button" className={styles.primaryButton} onClick={onAdvance}>
-          {advanceLabel} →
+          {advanceLabel} {symbols.common.arrowRight}
         </button>
       )}
       <button type="button" className={styles.actionButton} onClick={onDismiss}>

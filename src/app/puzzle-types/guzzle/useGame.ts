@@ -1,11 +1,8 @@
 import { useState } from "react";
+import type { Difficulty } from "../../../shared/difficulty";
 import { text } from "../../../text/en";
 import { checkLetter, isSolved as allGreen, nextOpenSquare, type Guess } from "./rules-check";
-import {
-  loadPuzzleProgress,
-  markPuzzleProgressSolved,
-  savePuzzleProgress,
-} from "../../../shared/puzzle-progress";
+import { loadPuzzleProgress, savePuzzleProgress } from "../../../shared/puzzle-progress";
 
 // "bank" shows the letters of the answer. "noBank" shows all letters from A to Z.
 export type Mode = keyof typeof text.guzzle.modes;
@@ -17,7 +14,14 @@ export type Game = ReturnType<typeof useGame>;
 export { statusText } from "./status";
 export { toSquares, type GuzzlePuzzle } from "./puzzle";
 
+type GuzzleTelemetrySnapshot = {
+  timeSpentSeconds: number;
+  hintCount: number;
+};
+
 type Hooks = {
+  difficulty?: Difficulty;
+  getTelemetry?: () => GuzzleTelemetrySnapshot;
   onModeChosen?: (mode: Mode) => void;
   onLetterPlaced?: (entry: {
     index: number;
@@ -38,33 +42,33 @@ function loadGuzzleSavedState(puzzleId: string | undefined, answerLength: number
   return { mode, guesses, mistakes };
 }
 
-function syncGuzzleProgress(
-  puzzleId: string | undefined,
-  answer: readonly string[],
-  nextGuesses: (Guess | undefined)[],
-  nextMode: Mode | null,
-  nextMistakes: number,
-) {
-  if (!puzzleId) return;
-  if (allGreen(answer, nextGuesses)) {
-    markPuzzleProgressSolved(puzzleId, "guzzle", "easy", {
-      timeSpentSeconds: 0,
-      hintCount: 0,
-      mistakes: nextMistakes,
-    });
-  } else {
-    savePuzzleProgress({
-      puzzleId,
-      puzzleType: "guzzle",
-      difficulty: "easy",
-      savedAt: Date.now(),
-      isSolved: false,
-      timeSpentSeconds: 0,
-      hintCount: 0,
-      mistakes: nextMistakes,
-      guzzleState: { guesses: nextGuesses, mode: nextMode ?? undefined },
-    });
-  }
+type SyncProgressParams = {
+  puzzleId: string | undefined;
+  difficulty: Difficulty;
+  answer: readonly string[];
+  nextGuesses: (Guess | undefined)[];
+  nextMode: Mode | null;
+  nextMistakes: number;
+  getTelemetry?: () => GuzzleTelemetrySnapshot;
+};
+
+function syncGuzzleProgress(p: SyncProgressParams) {
+  if (!p.puzzleId) return;
+  const existing = loadPuzzleProgress(p.puzzleId);
+  const telemetry = p.getTelemetry?.();
+  const solved = allGreen(p.answer, p.nextGuesses);
+  savePuzzleProgress({
+    puzzleId: p.puzzleId,
+    puzzleType: "guzzle",
+    difficulty: p.difficulty,
+    savedAt: Date.now(),
+    isSolved: solved,
+    completedAt: solved ? Date.now() : undefined,
+    timeSpentSeconds: telemetry?.timeSpentSeconds ?? existing?.timeSpentSeconds ?? 0,
+    hintCount: telemetry?.hintCount ?? existing?.hintCount ?? 0,
+    mistakes: p.nextMistakes,
+    guzzleState: { guesses: p.nextGuesses, mode: p.nextMode ?? undefined },
+  });
 }
 
 function processLetterPlacement(
@@ -82,23 +86,29 @@ function processLetterPlacement(
   return { guess, next, nextMistakes };
 }
 
+type LetterPlacementParams = {
+  answer: readonly string[];
+  guesses: (Guess | undefined)[];
+  selected: number;
+  letter: string;
+  mistakes: number;
+  size: number;
+  mode: Mode;
+  difficulty: Difficulty;
+  puzzleId?: string;
+  getTelemetry?: () => GuzzleTelemetrySnapshot;
+};
+
+type LetterPlacementSetters = {
+  setGuesses: (g: (Guess | undefined)[]) => void;
+  setLastMove: (m: LastMove) => void;
+  setSelected: (s: number | null) => void;
+  setMistakes: (m: number) => void;
+};
+
 function handleLetterPlacement(
-  params: {
-    answer: readonly string[];
-    guesses: (Guess | undefined)[];
-    selected: number;
-    letter: string;
-    mistakes: number;
-    size: number;
-    mode: Mode;
-    puzzleId?: string;
-  },
-  setters: {
-    setGuesses: (g: (Guess | undefined)[]) => void;
-    setLastMove: (m: LastMove) => void;
-    setSelected: (s: number | null) => void;
-    setMistakes: (m: number) => void;
-  },
+  params: LetterPlacementParams,
+  setters: LetterPlacementSetters,
   onPlaced?: Hooks["onLetterPlaced"],
 ) {
   const res = processLetterPlacement(
@@ -122,7 +132,15 @@ function handleLetterPlacement(
   } else {
     setters.setMistakes(res.nextMistakes);
   }
-  syncGuzzleProgress(params.puzzleId, params.answer, res.next, params.mode, res.nextMistakes);
+  syncGuzzleProgress({
+    puzzleId: params.puzzleId,
+    difficulty: params.difficulty,
+    answer: params.answer,
+    nextGuesses: res.next,
+    nextMode: params.mode,
+    nextMistakes: res.nextMistakes,
+    getTelemetry: params.getTelemetry,
+  });
 }
 
 function resetGuzzleState(
@@ -130,7 +148,7 @@ function resetGuzzleState(
   mode: Mode | null,
   size: number,
   puzzleId: string | undefined,
-  answer: readonly string[],
+  difficulty: Difficulty,
   setters: {
     setGuesses: (g: (Guess | undefined)[]) => void;
     setMistakes: (m: number) => void;
@@ -143,7 +161,19 @@ function resetGuzzleState(
   setters.setMistakes(0);
   setters.setLastMove(null);
   setters.setSelected(mode ? nextOpenSquare(empty, -1, size) : null);
-  syncGuzzleProgress(puzzleId, answer, empty, mode, 0);
+  if (puzzleId) {
+    savePuzzleProgress({
+      puzzleId,
+      puzzleType: "guzzle",
+      difficulty,
+      savedAt: Date.now(),
+      isSolved: false,
+      timeSpentSeconds: 0,
+      hintCount: 0,
+      mistakes: 0,
+      guzzleState: { guesses: empty, mode: mode ?? undefined },
+    });
+  }
 }
 
 function useGuzzleState(puzzleId: string | undefined, answerLength: number, size: number) {
@@ -194,7 +224,9 @@ function usePutLetterHandler(
         mistakes: s.mistakes,
         size,
         mode: s.mode,
+        difficulty: hooks.difficulty ?? "easy",
         puzzleId,
+        getTelemetry: hooks.getTelemetry,
       },
       setters,
       hooks.onLetterPlaced,
@@ -212,16 +244,25 @@ export function useGame(
   const s = useGuzzleState(puzzleId, answer.length, size);
   const isSolved = allGreen(answer, s.guesses);
   const putLetter = usePutLetterHandler(s, answer, size, isSolved, hooks, puzzleId);
+  const difficulty = hooks.difficulty ?? "easy";
 
   function chooseMode(newMode: Mode) {
     hooks.onModeChosen?.(newMode);
     s.setMode(newMode);
     s.setSelected(nextOpenSquare(s.guesses, -1, size));
-    syncGuzzleProgress(puzzleId, answer, s.guesses, newMode, s.mistakes);
+    syncGuzzleProgress({
+      puzzleId,
+      difficulty,
+      answer,
+      nextGuesses: s.guesses,
+      nextMode: newMode,
+      nextMistakes: s.mistakes,
+      getTelemetry: hooks.getTelemetry,
+    });
   }
 
   const restart = () =>
-    resetGuzzleState(answer.length, s.mode, size, puzzleId, answer, {
+    resetGuzzleState(answer.length, s.mode, size, puzzleId, difficulty, {
       setGuesses: s.setGuesses,
       setMistakes: s.setMistakes,
       setLastMove: s.setLastMove,

@@ -1,5 +1,8 @@
+import colourBinaryPuzzles from "../../puzzles/colour-binary.json";
+import guzzlePuzzles from "../../puzzles/guzzle.json";
 import { getRecentArchiveDates } from "../app/archive";
-import { formatDateString, utcDate, type LocalDate } from "../app/daily";
+import { dayNumber, formatDateString, puzzlesForDay, utcDate, type LocalDate } from "../app/daily";
+import type { Difficulty } from "./difficulty";
 import {
   getAllProgressRecords,
   getPuzzleProgressStatus,
@@ -21,6 +24,27 @@ const queueEnabledOptions = {
   validate: (v: unknown): v is boolean => typeof v === "boolean",
 };
 
+const puzzlePools: Record<
+  "colour-binary" | "guzzle",
+  readonly { id: string; difficulty: Difficulty }[]
+> = {
+  "colour-binary": colourBinaryPuzzles as readonly { id: string; difficulty: Difficulty }[],
+  guzzle: guzzlePuzzles as readonly { id: string; difficulty: Difficulty }[],
+};
+
+// Resolve a valid 4-digit puzzle ID for the given type, difficulty, and UTC date.
+function resolvePuzzleId(
+  type: "colour-binary" | "guzzle",
+  difficulty: Difficulty,
+  date: LocalDate,
+): string {
+  const forDay = puzzlesForDay(puzzlePools[type], dayNumber(date));
+  const match = forDay.find((item) => item.difficulty === difficulty);
+  if (match) return match.id;
+  const fallback = puzzlePools[type].find((item) => item.difficulty === difficulty);
+  return fallback?.id ?? `${type}-0001`;
+}
+
 export type PracticeRecommendation = {
   id: string;
   type: "colour-binary" | "guzzle";
@@ -40,9 +64,14 @@ export function setPracticeQueueEnabled(enabled: boolean): void {
   setStoredItem(queueEnabledOptions, enabled);
 }
 
-function getWarmupRecommendations(limit: number): PracticeRecommendation[] {
+function getWarmupRecommendations(
+  limit: number,
+  referenceDate: LocalDate,
+): PracticeRecommendation[] {
   const binaryName = text["colour-binary"].name;
   const guzzleName = text.guzzle.name;
+  const binaryId = resolvePuzzleId("colour-binary", "easy", referenceDate);
+  const guzzleId = resolvePuzzleId("guzzle", "easy", referenceDate);
   const warmups: PracticeRecommendation[] = [
     {
       id: "warmup-binary-easy",
@@ -50,7 +79,7 @@ function getWarmupRecommendations(limit: number): PracticeRecommendation[] {
       difficulty: "easy",
       title: `${binaryName} — ${text.levels.easy}`,
       reason: text.practiceQueue.emptyWarmupReason(binaryName),
-      href: "/puzzles/colour-binary-easy",
+      href: `/puzzles/${binaryId}`,
       isArchive: false,
     },
     {
@@ -59,7 +88,7 @@ function getWarmupRecommendations(limit: number): PracticeRecommendation[] {
       difficulty: "easy",
       title: `${guzzleName} — ${text.levels.easy}`,
       reason: text.practiceQueue.emptyWarmupReason(guzzleName),
-      href: "/puzzles/guzzle-easy",
+      href: `/puzzles/${guzzleId}`,
       isArchive: false,
     },
   ];
@@ -77,8 +106,13 @@ const progressions: Array<{
   { type: "guzzle", completedDiff: "medium", nextDiff: "hard" },
 ];
 
-function getProgressionRecommendations(records: PuzzleProgressRecord[]): PracticeRecommendation[] {
+function getProgressionRecommendations(
+  records: PuzzleProgressRecord[],
+  referenceDate: LocalDate,
+): PracticeRecommendation[] {
   const results: PracticeRecommendation[] = [];
+  const solvedIds = new Set(records.filter((r) => r.isSolved).map((r) => r.puzzleId));
+
   for (const prog of progressions) {
     const isCompleted = records.some(
       (r) =>
@@ -95,13 +129,20 @@ function getProgressionRecommendations(records: PuzzleProgressRecord[]): Practic
 
     if (isCompleted && !isNextDone) {
       const typeName = text[prog.type].name;
+      const dailyId = resolvePuzzleId(prog.type, prog.nextDiff, referenceDate);
+      const nextId = solvedIds.has(dailyId)
+        ? (puzzlePools[prog.type].find(
+            (item) => item.difficulty === prog.nextDiff && !solvedIds.has(item.id),
+          )?.id ?? dailyId)
+        : dailyId;
+
       results.push({
         id: `progression-${prog.type}-${prog.nextDiff}`,
         type: prog.type,
         difficulty: prog.nextDiff,
         title: `${typeName} — ${text.levels[prog.nextDiff]}`,
         reason: text.practiceQueue.nextLevelReason(typeName, text.levels[prog.completedDiff]),
-        href: `/puzzles/${prog.type}-${prog.nextDiff}`,
+        href: `/puzzles/${nextId}`,
         isArchive: false,
       });
     }
@@ -120,15 +161,15 @@ function getArchiveRecommendations(
     const dateStr = formatDateString(date);
     if (dateStr === todayStr) continue;
 
-    const archiveBinaryId = `archive-${dateStr}-colour-binary-easy`;
+    const archiveBinaryId = resolvePuzzleId("colour-binary", "easy", date);
     if (getPuzzleProgressStatus(archiveBinaryId) === "not_started") {
       results.push({
-        id: `rec-${archiveBinaryId}`,
+        id: `rec-archive-${dateStr}-${archiveBinaryId}`,
         type: "colour-binary",
         difficulty: "easy",
         title: `${text["colour-binary"].name} (${dateStr})`,
         reason: text.practiceQueue.archivePracticeReason(text["colour-binary"].name, dateStr),
-        href: `/archive/${dateStr}/colour-binary-easy`,
+        href: `/puzzles/${archiveBinaryId}?date=${dateStr}`,
         isArchive: true,
         dateString: dateStr,
       });
@@ -148,23 +189,24 @@ export function getPracticeRecommendations(
 
   const records = getAllProgressRecords();
   if (records.length === 0) {
-    return getWarmupRecommendations(limit);
+    return getWarmupRecommendations(limit, referenceDate);
   }
 
   const todayStr = formatDateString(referenceDate);
   const recommendations = [
-    ...getProgressionRecommendations(records),
+    ...getProgressionRecommendations(records, referenceDate),
     ...getArchiveRecommendations(referenceDate, todayStr, limit),
   ];
 
   if (recommendations.length === 0) {
+    const masteryId = resolvePuzzleId("colour-binary", "medium", referenceDate);
     recommendations.push({
       id: "review-binary-medium",
       type: "colour-binary",
       difficulty: "medium",
       title: `${text["colour-binary"].name} — ${text.levels.medium}`,
       reason: text.practiceQueue.masteryReason(text["colour-binary"].name),
-      href: "/puzzles/colour-binary-medium",
+      href: `/puzzles/${masteryId}`,
       isArchive: false,
     });
   }
