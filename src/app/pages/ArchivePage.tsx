@@ -2,15 +2,17 @@ import type { ChangeEvent } from "react";
 import { Link, useLoaderData, useNavigate } from "react-router";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
-import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
-import { formatDateString, type LocalDate } from "../daily";
 import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
+import { getViewTransitionNavigateOptions } from "../../shared/motion-prefs";
+import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { buttonVariants } from "../../shared/ui/button-variants";
 import {
+  formatDateString,
   getArchiveDateRange,
   getRecentArchiveDates,
   type ArchiveDayData,
   type ArchiveTypeGroup,
+  type LocalDate,
 } from "../archive";
 import styles from "./ArchivePage.module.css";
 
@@ -34,6 +36,7 @@ function RecentDateList({ dates, currentDateString }: RecentProps) {
                 className={styles.recentLink}
                 data-active={isActive}
                 aria-current={isActive ? "page" : undefined}
+                viewTransition
               >
                 {str}
               </Link>
@@ -71,7 +74,11 @@ function DateBar(props: DateBarProps) {
         />
       </div>
       {!props.isToday && (
-        <Link to="/archive" className={buttonVariants({ variant: "accentTint", size: "sm" })}>
+        <Link
+          to="/archive"
+          className={buttonVariants({ variant: "accentTint", size: "sm" })}
+          viewTransition
+        >
           {text.archive.jumpToToday} {symbols.common.arrowRight}
         </Link>
       )}
@@ -85,7 +92,7 @@ function ArchiveLevelItem({ id, difficulty, dateString }: ItemProps) {
   const status = getPuzzleProgressStatus(id);
   return (
     <li className={styles.levelItem}>
-      <Link className={styles.play} to={`/puzzles/${id}?date=${dateString}`}>
+      <Link className={styles.play} to={`/puzzles/${id}?date=${dateString}`} viewTransition>
         {text.levels[difficulty]}
       </Link>
       {status === "solved" && (
@@ -135,7 +142,7 @@ export function ArchivePage() {
 
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      navigate(`/archive/${e.target.value}`);
+      void navigate(`/archive/${e.target.value}`, getViewTransitionNavigateOptions());
     }
   };
 

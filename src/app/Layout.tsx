@@ -1,6 +1,8 @@
 import { Link, NavLink, Outlet } from "react-router";
 import { text } from "../text/en";
+import { MotionProvider } from "../shared/MotionProvider";
 import { ReactiveCursor } from "../shared/ReactiveCursor";
+import { useSmoothScroll } from "../shared/useSmoothScroll";
 import { cn } from "../shared/utils";
 import styles from "./Layout.module.css";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -22,7 +24,7 @@ const NAV_ITEMS = [
 
 function BrandLogo() {
   return (
-    <Link className={styles.siteName} to="/">
+    <Link className={styles.siteName} to="/" viewTransition>
       <span className={styles.brandIcon} aria-hidden="true">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="2" width="9" height="9" rx="2.5" fill="var(--accent)" />
@@ -36,22 +38,25 @@ function BrandLogo() {
   );
 }
 
-// This component provides the top navigation bar and the page footer.
+// This component provides the top navigation bar, smooth scrolling, motion context, and page footer.
 export function Layout() {
+  useSmoothScroll();
+
   return (
-    <>
+    <MotionProvider>
       <ReactiveCursor />
       <a className={styles.skipLink} href="#main">
         {text.skipLink}
       </a>
       <header className={styles.header}>
-        <nav aria-label={text.nav.label} className={styles.nav}>
+        <nav aria-label={text.nav.label} className={styles.nav} data-lenis-prevent>
           <BrandLogo />
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               className={({ isActive }) => cn(styles.navLink, isActive && styles.navLinkActive)}
               to={item.to}
+              viewTransition
             >
               {item.label}
             </NavLink>
@@ -65,6 +70,6 @@ export function Layout() {
       <footer className={styles.footer}>
         <p>{text.footer.content(currentYear)}</p>
       </footer>
-    </>
+    </MotionProvider>
   );
 }

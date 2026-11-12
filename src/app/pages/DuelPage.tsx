@@ -116,6 +116,7 @@ function ResultCard({
         <Link
           to={`/puzzles/${result.puzzleId}`}
           className={buttonVariants({ variant: "secondary" })}
+          viewTransition
         >
           {text.duel.playPuzzleBtn}
         </Link>

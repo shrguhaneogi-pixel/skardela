@@ -18,16 +18,6 @@
   place-items: center;
   padding: 1rem;
   z-index: 100;
-  animation: fadeIn var(--transition-fast);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .dialog {
@@ -48,22 +38,10 @@
   flex-direction: column;
   gap: 1.5rem;
   text-align: center;
-  animation: popIn var(--transition-fast);
 }
 
 .dialog:focus {
   outline: none;
-}
-
-@keyframes popIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
 .header {
@@ -78,30 +56,12 @@
   height: 4.5rem;
   margin-inline: auto;
   margin-bottom: 0.25rem;
-  animation: rosetteSpin var(--transition-smooth) var(--ease-spring);
 }
 
 .rosetteSvg {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-@keyframes rosetteSpin {
-  from {
-    transform: scale(0.6) rotate(-20deg);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rosetteWrapper {
-    animation: none;
-  }
 }
 
 .header h2 {

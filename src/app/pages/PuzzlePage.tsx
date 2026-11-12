@@ -1,4 +1,4 @@
-import { Suspense, type ComponentType } from "react";
+import { Suspense, ViewTransition, type ComponentType } from "react";
 import { useLoaderData, useSearchParams } from "react-router";
 import { ErrorBoundary } from "../../shared/ErrorBoundary";
 import { RuleList } from "../../shared/RuleList";
@@ -82,7 +82,9 @@ export function PuzzlePage() {
             }
           >
             <Suspense fallback={<p className={styles.loading}>{page.loadingBoard}</p>}>
-              <PuzzleBoard loaded={loaded} />
+              <ViewTransition>
+                <PuzzleBoard loaded={loaded} />
+              </ViewTransition>
             </Suspense>
           </ErrorBoundary>
         </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Shuffle } from "lucide-react";
+import { getViewTransitionNavigateOptions } from "../shared/motion-prefs";
 import { Button } from "../shared/ui/Button";
 import { pickRandomPuzzleId } from "./puzzles";
 
@@ -22,7 +23,7 @@ export function RandomPuzzleButton({ excludeId, className, label }: RandomPuzzle
     setPicking(true);
     try {
       const nextId = await pickRandomPuzzleId({ excludeId });
-      if (nextId) void navigate(`/puzzles/${nextId}`);
+      if (nextId) void navigate(`/puzzles/${nextId}`, getViewTransitionNavigateOptions());
     } finally {
       setPicking(false);
     }

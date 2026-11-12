@@ -1,3 +1,5 @@
+import { AnimatePresence } from "framer-motion";
+import * as m from "framer-motion/m";
 import { ArrowRight, Lightbulb, X } from "lucide-react";
 import { text } from "../text/en";
 import styles from "./GraduatedHint.module.css";
@@ -7,12 +9,14 @@ import {
   type GraduatedHint as HintData,
   type HintTier,
 } from "./graduated-hints";
+import { HINT_ANIMATE, HINT_EXIT, HINT_INITIAL, HINT_TRANSITION } from "./motion-presets";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 
 // ASD-STE100 Simplified Technical English comments.
 // This component shows graduated hints with tier progression controls.
 
+export { AnimatePresence } from "framer-motion";
 export { LogicExplanationModal } from "./LogicExplanation";
 export { CompletionReview, type CompletionReviewProps } from "./CompletionReview";
 export type { HintData as GraduatedHintData, HintTier };
@@ -75,7 +79,15 @@ export function GraduatedHint({ hint, onTierChange, onDismiss }: Props) {
   }
 
   return (
-    <section className={styles.container} aria-live="polite" aria-label={text.hints.title}>
+    <m.section
+      className={styles.container}
+      aria-live="polite"
+      aria-label={text.hints.title}
+      initial={HINT_INITIAL}
+      animate={HINT_ANIMATE}
+      exit={HINT_EXIT}
+      transition={HINT_TRANSITION}
+    >
       <div className={styles.header}>
         <h3 className={styles.title}>
           <Lightbulb size={15} aria-hidden="true" />
@@ -83,8 +95,19 @@ export function GraduatedHint({ hint, onTierChange, onDismiss }: Props) {
         </h3>
         <TierList activeTier={hint.tier} />
       </div>
-      <p className={styles.message}>{message}</p>
+      <AnimatePresence mode="wait" initial={false}>
+        <m.p
+          key={hint.tier}
+          className={styles.message}
+          initial={HINT_INITIAL}
+          animate={HINT_ANIMATE}
+          exit={HINT_EXIT}
+          transition={HINT_TRANSITION}
+        >
+          {message}
+        </m.p>
+      </AnimatePresence>
       <HintActions tier={hint.tier} onAdvance={handleAdvance} onDismiss={onDismiss} />
-    </section>
+    </m.section>
   );
 }

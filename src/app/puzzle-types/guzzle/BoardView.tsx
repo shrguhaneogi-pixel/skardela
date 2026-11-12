@@ -1,6 +1,7 @@
 import shared from "../../../shared/Board.module.css";
 import { BoardActions } from "../../../shared/BoardActions";
 import {
+  AnimatePresence,
   CompletionReview,
   GraduatedHint,
   LogicExplanationModal,
@@ -43,26 +44,6 @@ export type GuzzleBoardViewProps = {
   actions: GuzzleBoardActionsProps;
 };
 
-type ReviewModalProps = {
-  show: boolean;
-  stats: CompletionStats | null;
-  postcardText?: string;
-  onRestart: () => void;
-  onClose: () => void;
-};
-
-function SolvedReviewModal(props: ReviewModalProps) {
-  if (!props.show || !props.stats) return null;
-  return (
-    <CompletionReview
-      stats={props.stats}
-      postcardText={props.postcardText}
-      onRestart={props.onRestart}
-      onClose={props.onClose}
-    />
-  );
-}
-
 function getGuzzlePostcard(props: GuzzleBoardViewProps): string | undefined {
   if (!props.completionStats) return undefined;
   return generateGuzzlePostcard({
@@ -98,18 +79,24 @@ function GuzzleBoardModals({
 }) {
   const { actions, completionStats, logicExplanation, showReview } = props;
   return (
-    <>
+    <AnimatePresence>
       {logicExplanation && (
-        <LogicExplanationModal explanation={logicExplanation} onClose={actions.onCloseLogic} />
+        <LogicExplanationModal
+          key="guzzle-logic-modal"
+          explanation={logicExplanation}
+          onClose={actions.onCloseLogic}
+        />
       )}
-      <SolvedReviewModal
-        show={showReview}
-        stats={completionStats}
-        postcardText={postcardText}
-        onRestart={actions.onRestart}
-        onClose={actions.onCloseReview}
-      />
-    </>
+      {showReview && completionStats && (
+        <CompletionReview
+          key="guzzle-completion-modal"
+          stats={completionStats}
+          postcardText={postcardText}
+          onRestart={actions.onRestart}
+          onClose={actions.onCloseReview}
+        />
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -133,13 +120,16 @@ export function GuzzleBoardView(props: GuzzleBoardViewProps) {
         />
       </fieldset>
       <BoardStatusOutput game={game} size={size} />
-      {hint && (
-        <GraduatedHint
-          hint={hint}
-          onTierChange={actions.onTierChange}
-          onDismiss={actions.onDismissHint}
-        />
-      )}
+      <AnimatePresence>
+        {hint && (
+          <GraduatedHint
+            key="graduated-hint"
+            hint={hint}
+            onTierChange={actions.onTierChange}
+            onDismiss={actions.onDismissHint}
+          />
+        )}
+      </AnimatePresence>
       {game.mode !== null && (
         <BoardActions
           hintLabel={words.hintButton}

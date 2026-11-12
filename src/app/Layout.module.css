@@ -137,6 +137,16 @@
   outline: none;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .header {
+    view-transition-name: app-header;
+  }
+
+  .main {
+    view-transition-name: main-stage;
+  }
+}
+
 .footer {
   display: flex;
   justify-content: center;

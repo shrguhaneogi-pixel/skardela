@@ -90,6 +90,7 @@ function LessonCard({ lesson, isDone, onMarkDone }: LessonCardProps) {
         <Link
           to={`/puzzles/${lesson.practicePuzzleId}`}
           className={buttonVariants({ variant: "primary", size: "sm" })}
+          viewTransition
         >
           {text.learn.startPracticeBtn}
         </Link>

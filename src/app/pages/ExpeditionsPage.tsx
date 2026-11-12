@@ -77,6 +77,7 @@ function StageCard({
           <Link
             to={`/puzzles/${stage.puzzleId}`}
             className={buttonVariants({ variant: "primary", size: "sm" })}
+            viewTransition
           >
             {btnLabel}
           </Link>

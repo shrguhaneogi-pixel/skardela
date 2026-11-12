@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as m from "framer-motion/m";
 import { AlertCircle, Clock, Eye, Lightbulb, RotateCcw, Share2, Sparkles } from "lucide-react";
 import { text } from "../text/en";
 import { formatDuration, type CompletionStats } from "./completion";
@@ -11,13 +12,32 @@ import styles from "./CompletionReview.module.css";
 // ASD-STE100 Simplified Technical English comments.
 // This component displays a celebration modal dialog when a puzzle is solved.
 
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+const OVERLAY_INITIAL = { opacity: 0 } as const;
+const OVERLAY_ANIMATE = { opacity: 1 } as const;
+const OVERLAY_EXIT = { opacity: 0 } as const;
+const OVERLAY_TRANSITION = { duration: 0.16, ease: EASE_OUT_EXPO } as const;
+const PANEL_ENTER_INITIAL = { opacity: 0, scale: 0.96, y: 8 } as const;
+const PANEL_ENTER_ANIMATE = { opacity: 1, scale: 1, y: 0 } as const;
+const PANEL_ENTER_EXIT = { opacity: 0, scale: 0.96, y: 6 } as const;
+const PANEL_ENTER_TRANSITION = { duration: 0.2, ease: EASE_OUT_EXPO } as const;
+const ROSETTE_INITIAL = { opacity: 0, scale: 0.65, rotate: -18 } as const;
+const ROSETTE_ANIMATE = { opacity: 1, scale: 1, rotate: 0 } as const;
+const ROSETTE_TRANSITION = { type: "spring", stiffness: 280, damping: 20 } as const;
+
 type HeaderProps = {
   isCleanSolve: boolean;
 };
 
 function CompletionRosette() {
   return (
-    <div className={styles.rosetteWrapper} aria-hidden="true">
+    <m.div
+      className={styles.rosetteWrapper}
+      aria-hidden="true"
+      initial={ROSETTE_INITIAL}
+      animate={ROSETTE_ANIMATE}
+      transition={ROSETTE_TRANSITION}
+    >
       <svg className={styles.rosetteSvg} viewBox="0 0 64 64">
         <circle
           cx="32"
@@ -43,7 +63,7 @@ function CompletionRosette() {
         />
         <circle cx="32" cy="32" r="5" fill="var(--surface-elevated)" />
       </svg>
-    </div>
+    </m.div>
   );
 }
 
@@ -133,23 +153,32 @@ export function CompletionReview({
 
   async function handleShare() {
     if (!postcardText) return;
-    const res = await sharePostcard({
-      title: text.completion.title,
-      text: postcardText,
-    });
+    const res = await sharePostcard({ title: text.completion.title, text: postcardText });
     if (res === "copied") setFeedback(text.completion.copied);
     else if (res === "failed") setFeedback(text.completion.shareFailed);
   }
 
   return (
-    <dialog
+    <m.dialog
       open
       ref={overlayRef}
       className={styles.overlay}
       aria-labelledby="completion-title"
       aria-modal="true"
+      initial={OVERLAY_INITIAL}
+      animate={OVERLAY_ANIMATE}
+      exit={OVERLAY_EXIT}
+      transition={OVERLAY_TRANSITION}
     >
-      <div ref={panelRef} tabIndex={-1} className={styles.dialog}>
+      <m.div
+        ref={panelRef}
+        tabIndex={-1}
+        className={styles.dialog}
+        initial={PANEL_ENTER_INITIAL}
+        animate={PANEL_ENTER_ANIMATE}
+        exit={PANEL_ENTER_EXIT}
+        transition={PANEL_ENTER_TRANSITION}
+      >
         <CompletionHeader isCleanSolve={stats.isCleanSolve} />
         <CompletionStatsGrid stats={stats} />
         {feedback && <p className={styles.shareFeedback}>{feedback}</p>}
@@ -159,7 +188,7 @@ export function CompletionReview({
           onShare={handleShare}
           onClose={onClose}
         />
-      </div>
-    </dialog>
+      </m.div>
+    </m.dialog>
   );
 }

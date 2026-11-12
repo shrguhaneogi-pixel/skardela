@@ -1,7 +1,18 @@
+import * as m from "framer-motion/m";
 import { BookOpen, X } from "lucide-react";
 import { text } from "../text/en";
 import styles from "./LogicExplanation.module.css";
 import type { LogicExplanation as ExplanationData, LogicPremise } from "./logic-explainer";
+import {
+  OVERLAY_ANIMATE,
+  OVERLAY_EXIT,
+  OVERLAY_INITIAL,
+  OVERLAY_TRANSITION,
+  PANEL_ENTER_ANIMATE,
+  PANEL_ENTER_EXIT,
+  PANEL_ENTER_INITIAL,
+  PANEL_ENTER_TRANSITION,
+} from "./motion-presets";
 import { Button } from "./ui/Button";
 import { useModalA11y } from "./useModalA11y";
 
@@ -46,14 +57,26 @@ export function LogicExplanationModal({ explanation, onClose }: Props) {
   const { overlayRef, panelRef } = useModalA11y(onClose);
 
   return (
-    <dialog
+    <m.dialog
       open
       ref={overlayRef}
       className={styles.overlay}
       aria-label={text.logicExplanation.title}
       aria-modal="true"
+      initial={OVERLAY_INITIAL}
+      animate={OVERLAY_ANIMATE}
+      exit={OVERLAY_EXIT}
+      transition={OVERLAY_TRANSITION}
     >
-      <div ref={panelRef} tabIndex={-1} className={styles.panel}>
+      <m.div
+        ref={panelRef}
+        tabIndex={-1}
+        className={styles.panel}
+        initial={PANEL_ENTER_INITIAL}
+        animate={PANEL_ENTER_ANIMATE}
+        exit={PANEL_ENTER_EXIT}
+        transition={PANEL_ENTER_TRANSITION}
+      >
         <div className={styles.header}>
           <h2 className={styles.titleRow}>
             <BookOpen size={18} className={styles.titleIcon} aria-hidden="true" />
@@ -70,7 +93,7 @@ export function LogicExplanationModal({ explanation, onClose }: Props) {
         </div>
         <PremisesView premises={explanation.premises} />
         <StepsView steps={explanation.deductionSteps} />
-      </div>
-    </dialog>
+      </m.div>
+    </m.dialog>
   );
 }

@@ -30,7 +30,11 @@ export function RouteError() {
         </h1>
         <p className={styles.body}>{text.routeError.body}</p>
         <p>
-          <Link className={buttonVariants({ variant: "primary", size: "lg" })} to="/">
+          <Link
+            className={buttonVariants({ variant: "primary", size: "lg" })}
+            to="/"
+            viewTransition
+          >
             {text.routeError.homeLink}
           </Link>
         </p>

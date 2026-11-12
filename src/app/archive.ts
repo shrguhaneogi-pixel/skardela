@@ -12,6 +12,8 @@ import type { Difficulty } from "../shared/difficulty";
 // ASD-STE100 Simplified Technical English comments.
 // This module provides deterministic date calculation and puzzle loading for the archive.
 
+export { formatDateString, type LocalDate } from "./daily";
+
 export type ArchiveLevelItem = {
   id: string;
   difficulty: Difficulty;

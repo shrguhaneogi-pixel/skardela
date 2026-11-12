@@ -171,6 +171,7 @@ function PackList({ packs }: { readonly packs: readonly PuzzlePack[] }) {
                       key={pId}
                       to={`/puzzles/${pId}?pack=${encodeURIComponent(pack.id)}`}
                       className={styles.puzzleLink}
+                      viewTransition
                     >
                       #{pId}
                     </Link>

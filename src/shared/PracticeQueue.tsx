@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { AnimatePresence, m } from "framer-motion";
 import { text } from "../text/en";
 import { symbols } from "../text/symbols";
 import {
@@ -15,20 +16,73 @@ import styles from "./PracticeQueue.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
 // This component renders a single practice recommendation card.
+
+const ITEM_ENTER_INITIAL = { opacity: 0, y: 8 } as const;
+const ITEM_ENTER_ANIMATE = { opacity: 1, y: 0 } as const;
+const ITEM_ENTER_EXIT = { opacity: 0, y: -6 } as const;
+const ITEM_TRANSITION = { duration: 0.18, ease: [0.16, 1, 0.3, 1] as const } as const;
+
 function RecommendationCard({ rec }: { rec: PracticeRecommendation }) {
   const badgeText = rec.isArchive ? text.practiceQueue.archiveBadge : text.practiceQueue.todayBadge;
 
   return (
-    <li className={`sk-surface-card sk-surface-card-interactive ${styles.card}`}>
+    <m.li
+      className={`sk-surface-card sk-surface-card-interactive ${styles.card}`}
+      initial={ITEM_ENTER_INITIAL}
+      animate={ITEM_ENTER_ANIMATE}
+      transition={ITEM_TRANSITION}
+    >
       <div className={styles.cardTop}>
         <Badge>{badgeText}</Badge>
         <h3 className={styles.cardTitle}>{rec.title}</h3>
         <p className={styles.cardReason}>{rec.reason}</p>
       </div>
-      <Link className={buttonVariants({ variant: "accentTint", size: "sm" })} to={rec.href}>
+      <Link
+        className={buttonVariants({ variant: "accentTint", size: "sm" })}
+        to={rec.href}
+        viewTransition
+      >
         {text.practiceQueue.playButton} {symbols.common.arrowRight}
       </Link>
-    </li>
+    </m.li>
+  );
+}
+
+function PracticeContent({
+  enabled,
+  recommendations,
+}: {
+  enabled: boolean;
+  recommendations: PracticeRecommendation[];
+}) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      {enabled ? (
+        <m.ul
+          key="practice-list"
+          className={styles.cardList}
+          initial={ITEM_ENTER_INITIAL}
+          animate={ITEM_ENTER_ANIMATE}
+          exit={ITEM_ENTER_EXIT}
+          transition={ITEM_TRANSITION}
+        >
+          {recommendations.map((rec) => (
+            <RecommendationCard key={rec.id} rec={rec} />
+          ))}
+        </m.ul>
+      ) : (
+        <m.div
+          key="practice-disabled"
+          className={styles.disabledBanner}
+          initial={ITEM_ENTER_INITIAL}
+          animate={ITEM_ENTER_ANIMATE}
+          exit={ITEM_ENTER_EXIT}
+          transition={ITEM_TRANSITION}
+        >
+          {text.practiceQueue.disabledMessage}
+        </m.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -66,17 +120,7 @@ export function PracticeQueue() {
           {enabled ? text.practiceQueue.disableBtn : text.practiceQueue.enableBtn}
         </Button>
       </div>
-
-      {enabled ? (
-        <ul className={styles.cardList}>
-          {recommendations.map((rec) => (
-            <RecommendationCard key={rec.id} rec={rec} />
-          ))}
-        </ul>
-      ) : (
-        <div className={styles.disabledBanner}>{text.practiceQueue.disabledMessage}</div>
-      )}
-
+      <PracticeContent enabled={enabled} recommendations={recommendations} />
       <p className={styles.disclaimer}>{text.practiceQueue.disclaimer}</p>
     </section>
   );

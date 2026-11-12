@@ -1,6 +1,7 @@
 import shared from "../../../shared/Board.module.css";
 import { BoardActions } from "../../../shared/BoardActions";
 import {
+  AnimatePresence,
   CompletionReview,
   GraduatedHint,
   LogicExplanationModal,
@@ -53,26 +54,6 @@ export type BoardViewProps = {
   actions: BoardActionsProps;
 };
 
-type ReviewModalProps = {
-  show: boolean;
-  stats: CompletionStats | null;
-  postcardText?: string;
-  onRestart: () => void;
-  onClose: () => void;
-};
-
-function SolvedReviewModal(props: ReviewModalProps) {
-  if (!props.show || !props.stats) return null;
-  return (
-    <CompletionReview
-      stats={props.stats}
-      postcardText={props.postcardText}
-      onRestart={props.onRestart}
-      onClose={props.onClose}
-    />
-  );
-}
-
 function getColourBinaryPostcard(props: BoardViewProps): string | undefined {
   if (!props.completionStats) return undefined;
   return generateColourBinaryPostcard({
@@ -88,21 +69,24 @@ function getColourBinaryPostcard(props: BoardViewProps): string | undefined {
 function BoardModals({ props, postcardText }: { props: BoardViewProps; postcardText?: string }) {
   const { actions, completionStats } = props;
   return (
-    <>
+    <AnimatePresence>
       {props.logicExplanation && (
         <LogicExplanationModal
+          key="cb-logic-modal"
           explanation={props.logicExplanation}
           onClose={actions.onCloseLogic}
         />
       )}
-      <SolvedReviewModal
-        show={props.showReview}
-        stats={completionStats}
-        postcardText={postcardText}
-        onRestart={actions.onRestart}
-        onClose={actions.onCloseReview}
-      />
-    </>
+      {props.showReview && completionStats && (
+        <CompletionReview
+          key="cb-completion-modal"
+          stats={completionStats}
+          postcardText={postcardText}
+          onRestart={actions.onRestart}
+          onClose={actions.onCloseReview}
+        />
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -125,13 +109,16 @@ export function BoardView(props: BoardViewProps) {
       <output aria-live="polite" className={shared.status} data-solved={props.isSolved}>
         {statusText(props.isSolved, props.hint)}
       </output>
-      {props.hint && (
-        <GraduatedHint
-          hint={props.hint}
-          onTierChange={actions.onTierChange}
-          onDismiss={actions.onDismissHint}
-        />
-      )}
+      <AnimatePresence>
+        {props.hint && (
+          <GraduatedHint
+            key="graduated-hint"
+            hint={props.hint}
+            onTierChange={actions.onTierChange}
+            onDismiss={actions.onDismissHint}
+          />
+        )}
+      </AnimatePresence>
       <BoardActions
         hintLabel={words.hintButton}
         isSolved={props.isSolved}

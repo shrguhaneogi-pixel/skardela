@@ -1,4 +1,5 @@
 import { Link, type useLoaderData } from "react-router";
+import * as m from "framer-motion/m";
 import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { buttonVariants } from "../../shared/ui/button-variants";
@@ -11,13 +12,21 @@ import styles from "./HomePage.module.css";
 // ASD-STE100 Simplified Technical English comments.
 // This component renders one daily puzzle card on the home page.
 
+const CARD_ENTER_INITIAL = { opacity: 0, y: 10 } as const;
+const CARD_ENTER_ANIMATE = { opacity: 1, y: 0 } as const;
+const CARD_ENTER_TRANSITION = { duration: 0.24, ease: [0.16, 1, 0.3, 1] as const } as const;
+
 export type CardData = ReturnType<typeof useLoaderData<typeof homeLoader>>[number];
 
 function LevelItem({ id, difficulty }: { id: string; difficulty: keyof typeof text.levels }) {
   const status = getPuzzleProgressStatus(id);
   return (
     <li className={styles.levelItem}>
-      <Link className={buttonVariants({ variant: "accentTint", size: "lg" })} to={`/puzzles/${id}`}>
+      <Link
+        className={buttonVariants({ variant: "accentTint", size: "lg" })}
+        to={`/puzzles/${id}`}
+        viewTransition
+      >
         {text.levels[difficulty]}
       </Link>
       {status === "solved" && (
@@ -46,7 +55,13 @@ export function QuickPlayBanner({ cards }: { cards: CardData[] }) {
   const actionLabel = isResume ? text.home.quickPlay : text.home.quickStart;
 
   return (
-    <aside className={styles.quickPlayBanner} aria-label={actionLabel}>
+    <m.aside
+      className={styles.quickPlayBanner}
+      aria-label={actionLabel}
+      initial={CARD_ENTER_INITIAL}
+      animate={CARD_ENTER_ANIMATE}
+      transition={CARD_ENTER_TRANSITION}
+    >
       <div className={styles.quickPlayContent}>
         <h2>{actionLabel}</h2>
         <p>
@@ -56,16 +71,22 @@ export function QuickPlayBanner({ cards }: { cards: CardData[] }) {
       <Link
         className={buttonVariants({ variant: "primary", size: "lg" })}
         to={`/puzzles/${target.id}`}
+        viewTransition
       >
         {actionLabel} {symbols.common.arrowRight}
       </Link>
-    </aside>
+    </m.aside>
   );
 }
 
 export function PuzzleCard({ type, levels }: CardData) {
   return (
-    <li className="sk-surface-card sk-surface-card-interactive sk-puzzle-card">
+    <m.li
+      className="sk-surface-card sk-surface-card-interactive sk-puzzle-card"
+      initial={CARD_ENTER_INITIAL}
+      animate={CARD_ENTER_ANIMATE}
+      transition={CARD_ENTER_TRANSITION}
+    >
       <div className="sk-puzzle-card-header">
         <EditorialPuzzleDiagram type={type} levels={levels} />
         <div>
@@ -81,7 +102,7 @@ export function PuzzleCard({ type, levels }: CardData) {
           ))}
         </ul>
       </nav>
-    </li>
+    </m.li>
   );
 }
 
@@ -89,7 +110,11 @@ export function HomeActionsRow() {
   return (
     <div className="mt-8 flex justify-center">
       <div className={styles.levels}>
-        <Link to="/archive" className={buttonVariants({ variant: "secondary", size: "pill" })}>
+        <Link
+          to="/archive"
+          className={buttonVariants({ variant: "secondary", size: "pill" })}
+          viewTransition
+        >
           {text.home.archiveLink} {symbols.common.arrowRight}
         </Link>
         <RandomPuzzleButton
