@@ -11,6 +11,8 @@ import {
   type StageState,
 } from "../../shared/expeditions";
 import { getAllProgressRecords } from "../../shared/puzzle-progress";
+import { Badge } from "../../shared/ui/Badge";
+import { buttonVariants } from "../../shared/ui/button-variants";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
 import { ExpeditionRouteMap } from "../../shared/ExpeditionRouteMap";
@@ -18,13 +20,13 @@ import styles from "./ExpeditionsPage.module.css";
 
 function ExpeditionsHeader() {
   return (
-    <section className={styles.hero}>
+    <section className="sk-hero">
       <h1>
         <span aria-hidden="true">{symbols.expeditions.compass} </span>
         {text.expeditions.title}
       </h1>
-      <p className={styles.intro}>{text.expeditions.intro}</p>
-      <div className={styles.disclaimer} role="note">
+      <p className="sk-intro">{text.expeditions.intro}</p>
+      <div className="sk-disclaimer" role="note">
         {text.expeditions.disclaimer}
       </div>
     </section>
@@ -34,18 +36,18 @@ function ExpeditionsHeader() {
 function StageBadge({ status }: { readonly status: StageState }) {
   if (status === "completed") {
     return (
-      <span className={styles.badgeCompleted}>
+      <Badge variant="success">
         {symbols.expeditions.completed} {text.expeditions.stageCompleted}
-      </span>
+      </Badge>
     );
   }
   if (status === "available") {
-    return <span className={styles.badgeAvailable}>{text.expeditions.stageAvailable}</span>;
+    return <Badge variant="muted">{text.expeditions.stageAvailable}</Badge>;
   }
   return (
-    <span className={styles.badgeLocked}>
+    <Badge variant="muted">
       {symbols.expeditions.locked} {text.expeditions.stageLocked}
-    </span>
+    </Badge>
   );
 }
 
@@ -72,11 +74,32 @@ function StageCard({
             {text.expeditions.playStageBtn}
           </span>
         ) : (
-          <Link to={`/puzzles/${stage.puzzleId}`} className={styles.playBtn}>
+          <Link
+            to={`/puzzles/${stage.puzzleId}`}
+            className={buttonVariants({ variant: "primary", size: "sm" })}
+          >
             {btnLabel}
           </Link>
         )}
       </div>
+    </div>
+  );
+}
+
+function ChapterProgress({
+  progress,
+}: {
+  readonly progress: ReturnType<typeof getChapterProgress>;
+}) {
+  const label = text.expeditions.chapterProgress(
+    progress.completedCount,
+    progress.totalCount,
+    progress.percentage,
+  );
+  return (
+    <div className={styles.progressContainer}>
+      <progress className="sk-progress" value={progress.percentage} max={100} aria-label={label} />
+      <span className={styles.progressLabel}>{label}</span>
     </div>
   );
 }
@@ -92,32 +115,17 @@ function ChapterCard({
   const statusMap = new Map(progress.stages.map((s) => [s.stageId, s.status]));
 
   return (
-    <section className={styles.chapterCard} aria-labelledby={`chap-${chapter.id}`}>
+    <section
+      className={`sk-surface-card sk-surface-card-interactive ${styles.chapterCard}`}
+      aria-labelledby={`chap-${chapter.id}`}
+    >
       <div className={styles.chapterHeader}>
-        <span className={styles.seasonBadge}>{chapter.season}</span>
+        <span className="sk-eyebrow">{chapter.season}</span>
         <h2 id={`chap-${chapter.id}`} className={styles.chapterTitle}>
           {chapter.title}
         </h2>
         <p className={styles.chapterDescription}>{chapter.description}</p>
-        <div className={styles.progressContainer}>
-          <progress
-            className={styles.progressBar}
-            value={progress.percentage}
-            max={100}
-            aria-label={text.expeditions.chapterProgress(
-              progress.completedCount,
-              progress.totalCount,
-              progress.percentage,
-            )}
-          />
-          <span className={styles.progressLabel}>
-            {text.expeditions.chapterProgress(
-              progress.completedCount,
-              progress.totalCount,
-              progress.percentage,
-            )}
-          </span>
-        </div>
+        <ChapterProgress progress={progress} />
       </div>
 
       <ExpeditionRouteMap stages={chapter.stages} statusMap={statusMap} />

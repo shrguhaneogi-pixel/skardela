@@ -3,6 +3,8 @@
 
 import { useState } from "react";
 import { validatePuzzle, type ValidationResult } from "../../shared/puzzle-validator";
+import { Button } from "../../shared/ui/Button";
+import { Textarea } from "../../shared/ui/Textarea";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
 import styles from "./StudioPage.module.css";
@@ -14,13 +16,13 @@ const MAX_JSON_BYTES = 32768;
 
 function StudioHeader() {
   return (
-    <section className={styles.hero}>
+    <section className="sk-hero">
       <h1>
         <span aria-hidden="true">{symbols.studio.studio} </span>
         {text.studio.title}
       </h1>
-      <p className={styles.intro}>{text.studio.intro}</p>
-      <div className={styles.disclaimer} role="note">
+      <p className="sk-intro">{text.studio.intro}</p>
+      <div className="sk-disclaimer" role="note">
         {text.studio.disclaimer}
       </div>
     </section>
@@ -48,25 +50,25 @@ function RawJsonStudio({ onExport }: { readonly onExport: (json: string) => void
 
   return (
     <div className={styles.panel}>
-      <textarea
-        className={styles.textarea}
+      <Textarea
+        className="min-h-48"
         placeholder={text.studio.jsonPlaceholder}
         value={jsonText}
         onChange={(e) => setJsonText(e.target.value)}
         aria-label="Custom puzzle JSON"
       />
       <div className={styles.actions}>
-        <button type="button" className={styles.btnPrimary} onClick={handleValidate}>
+        <Button size="lg" onClick={handleValidate}>
           {symbols.studio.validate} {text.studio.validateBtn}
-        </button>
-        <button
-          type="button"
-          className={styles.btnSecondary}
+        </Button>
+        <Button
+          variant="secondary"
+          size="lg"
           onClick={() => onExport(jsonText)}
           disabled={!jsonText.trim()}
         >
           {symbols.studio.export} {text.studio.exportBtn}
-        </button>
+        </Button>
       </div>
       <ValidationReport result={validation} />
     </div>

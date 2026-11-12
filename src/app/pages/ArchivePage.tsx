@@ -5,6 +5,7 @@ import { symbols } from "../../text/symbols";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import { formatDateString, type LocalDate } from "../daily";
 import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
+import { buttonVariants } from "../../shared/ui/button-variants";
 import {
   getArchiveDateRange,
   getRecentArchiveDates,
@@ -54,7 +55,7 @@ type DateBarProps = {
 
 function DateBar(props: DateBarProps) {
   return (
-    <div className={styles.dateBar}>
+    <div className={`sk-surface-card ${styles.dateBar}`}>
       <div className={styles.pickerGroup}>
         <label htmlFor="archive-date-picker" className={styles.pickerLabel}>
           {text.archive.datePickerLabel}
@@ -70,7 +71,7 @@ function DateBar(props: DateBarProps) {
         />
       </div>
       {!props.isToday && (
-        <Link to="/archive" className={styles.todayBtn}>
+        <Link to="/archive" className={buttonVariants({ variant: "accentTint", size: "sm" })}>
           {text.archive.jumpToToday} {symbols.common.arrowRight}
         </Link>
       )}
@@ -88,12 +89,12 @@ function ArchiveLevelItem({ id, difficulty, dateString }: ItemProps) {
         {text.levels[difficulty]}
       </Link>
       {status === "solved" && (
-        <span className={styles.statusPillSolved}>
+        <span className="sk-status-pill sk-status-pill-solved">
           {text.home.solved} {symbols.common.check}
         </span>
       )}
       {status === "in_progress" && (
-        <span className={styles.statusPillResume}>
+        <span className="sk-status-pill sk-status-pill-resume">
           {text.home.resume} {symbols.common.time}
         </span>
       )}
@@ -106,15 +107,15 @@ type CardProps = { group: ArchiveTypeGroup; dateString: string };
 function ArchiveCard({ group, dateString }: CardProps) {
   const puzzleTypeText = text[group.type];
   return (
-    <li className={styles.card}>
-      <div className={styles.cardHeader}>
+    <li className="sk-surface-card sk-surface-card-interactive sk-puzzle-card">
+      <div className="sk-puzzle-card-header">
         <EditorialPuzzleDiagram type={group.type} levels={group.levels} />
         <div>
-          <h3 className={styles.cardTitle}>{puzzleTypeText.name}</h3>
-          <span className={styles.cardTag}>{puzzleTypeText.tag}</span>
+          <h3 className="sk-puzzle-card-title">{puzzleTypeText.name}</h3>
+          <span className="sk-puzzle-card-tag">{puzzleTypeText.tag}</span>
         </div>
       </div>
-      <p className={styles.summary}>{puzzleTypeText.summary}</p>
+      <p className="sk-puzzle-card-summary">{puzzleTypeText.summary}</p>
       <nav aria-label={text.home.levelsHeading(puzzleTypeText.name)}>
         <ul className={styles.levels}>
           {group.levels.map(({ id, difficulty }) => (
@@ -145,9 +146,9 @@ export function ArchivePage() {
   return (
     <>
       <title>{`${text.archive.title} | ${text.siteName}`}</title>
-      <div className={styles.hero}>
+      <div className="sk-hero">
         <h1 data-testid="archive-page-title">{text.archive.title}</h1>
-        <p className={styles.intro}>{text.archive.intro}</p>
+        <p className="sk-intro">{text.archive.intro}</p>
         <DateBar
           currentDateString={data.dateString}
           isToday={data.isToday}
@@ -158,7 +159,7 @@ export function ArchivePage() {
         <RecentDateList dates={recentDates} currentDateString={data.dateString} />
       </div>
 
-      <section className={styles.section} aria-labelledby="archive-puzzles-heading">
+      <section aria-labelledby="archive-puzzles-heading">
         <header className={styles.statusHeader}>
           <span className={styles.challengeBadge} data-today={data.isToday}>
             {badgeText}
@@ -167,7 +168,7 @@ export function ArchivePage() {
             {text.archive.selectedDateHeading(data.dateString)}
           </h2>
         </header>
-        <ul className={styles.list}>
+        <ul className="sk-puzzle-grid">
           {data.types.map((group) => (
             <ArchiveCard key={group.type} group={group} dateString={data.dateString} />
           ))}

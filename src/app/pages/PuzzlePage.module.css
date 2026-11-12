@@ -1,3 +1,6 @@
+/* ASD-STE100 Simplified Technical English comments. */
+/* Layout and typography styles for the active puzzle page and sticky rules sidebar. */
+
 .page {
   width: 100%;
 }
@@ -22,7 +25,7 @@
   .rules {
     grid-area: rules;
     position: sticky;
-    top: 1.5rem;
+    top: 5.5rem;
   }
 }
 
@@ -39,7 +42,7 @@
   font-family: var(--font-display);
   margin-block: 0 0.5rem;
   font-size: clamp(2rem, 3vw + 1rem, 2.75rem);
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: -0.03em;
 }
 
@@ -102,19 +105,10 @@
 /* Rules panel styled as a translucent glass card */
 .rules {
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
-  border-radius: var(--radius-lg);
-  background-color: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--accent);
-  box-shadow:
-    var(--shadow-sm),
-    inset 0 1px 0 var(--glass-highlight);
 }
 
 .rules h2 {
-  font-family: "Syne", Georgia, serif;
+  font-family: var(--font-display);
   margin-bottom: 0.75rem;
   font-size: 0.9375rem;
   letter-spacing: 0.04em;

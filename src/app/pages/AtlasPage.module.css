@@ -1,42 +1,8 @@
-.hero {
-  padding-block: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 2.5vw, 1.5rem);
-}
-
-.hero h1 {
-  margin-block: 0 0.5rem;
-  font-weight: 700;
-}
-
-.intro {
-  color: var(--text-muted);
-  font-size: clamp(1rem, 1rem + 0.3vw, 1.15rem);
-  line-height: 1.5;
-  max-width: 58ch;
-}
-
-.disclaimer {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--surface-muted);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  max-width: 62ch;
-}
+/* ASD-STE100 Simplified Technical English comments. */
+/* Page-specific grid and progress styles for the Personal Logic Atlas page. */
 
 .section {
-  margin-top: 2rem;
-}
-
-.sectionTitle {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
-  color: var(--text-h);
+  margin-top: 2.25rem;
 }
 
 .metricsGrid {
@@ -50,24 +16,6 @@
   flex-direction: column;
   gap: 0.35rem;
   padding: 1.25rem;
-  background-color: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    var(--shadow-sm),
-    inset 0 1px 0 var(--glass-highlight);
-  transition:
-    transform var(--transition-base),
-    box-shadow var(--transition-base),
-    border-color var(--transition-base);
-}
-
-.metricCard:hover {
-  transform: translateY(-1px);
-  border-color: var(--line);
-  box-shadow: var(--shadow-md);
 }
 
 .metricHeader {
@@ -104,29 +52,6 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.25rem;
-  background-color: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--accent);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    var(--shadow-sm),
-    inset 0 1px 0 var(--glass-highlight);
-  transition:
-    transform var(--transition-base),
-    box-shadow var(--transition-base),
-    border-color var(--transition-base);
-}
-
-.skillCard:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent-border);
-  border-top-color: var(--accent);
-  box-shadow:
-    var(--shadow-md),
-    var(--accent-glow),
-    inset 0 1px 0 var(--glass-highlight);
 }
 
 .skillHeader {
@@ -143,16 +68,6 @@
   margin: 0;
 }
 
-.skillBadge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-full);
-  background-color: var(--accent-bg);
-  border: 1px solid var(--accent-border);
-  color: var(--accent-text);
-}
-
 .skillDesc {
   font-size: 0.875rem;
   color: var(--text-muted);
@@ -160,36 +75,8 @@
   line-height: 1.4;
 }
 
-.progressBar {
-  width: 100%;
-  height: 0.5rem;
-  background-color: var(--surface-muted);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  border: 1px solid var(--border-subtle);
-  appearance: none;
-}
-
-.progressBar::-webkit-progress-bar {
-  background-color: var(--surface-muted);
-  border-radius: var(--radius-full);
-}
-
-.progressBar::-webkit-progress-value {
-  background-color: var(--accent);
-  border-radius: var(--radius-full);
-}
-
-.progressBar::-moz-progress-bar {
-  background-color: var(--accent);
-  border-radius: var(--radius-full);
-}
-
 .settingsCard {
   padding: 1.5rem;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -211,45 +98,6 @@
   font-size: 0.8125rem;
   color: var(--text-muted);
   margin: 0;
-}
-
-.clearBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: 0.5rem 1.25rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--red);
-  background-color: var(--surface-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.clearBtn:hover {
-  background-color: var(--red);
-  color: var(--on-colour);
-  border-color: var(--red);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.clearBtn:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-.clearBtn:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: 2px;
 }
 
 .feedbackMsg {

@@ -8,6 +8,9 @@ import {
   setPracticeQueueEnabled,
   type PracticeRecommendation,
 } from "./practice-queue";
+import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
+import { buttonVariants } from "./ui/button-variants";
 import styles from "./PracticeQueue.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -16,13 +19,13 @@ function RecommendationCard({ rec }: { rec: PracticeRecommendation }) {
   const badgeText = rec.isArchive ? text.practiceQueue.archiveBadge : text.practiceQueue.todayBadge;
 
   return (
-    <li className={styles.card}>
+    <li className={`sk-surface-card sk-surface-card-interactive ${styles.card}`}>
       <div className={styles.cardTop}>
-        <span className={styles.cardBadge}>{badgeText}</span>
+        <Badge>{badgeText}</Badge>
         <h3 className={styles.cardTitle}>{rec.title}</h3>
         <p className={styles.cardReason}>{rec.reason}</p>
       </div>
-      <Link className={styles.playLink} to={rec.href}>
+      <Link className={buttonVariants({ variant: "accentTint", size: "sm" })} to={rec.href}>
         {text.practiceQueue.playButton} {symbols.common.arrowRight}
       </Link>
     </li>
@@ -41,7 +44,10 @@ export function PracticeQueue() {
   }
 
   return (
-    <section className={styles.section} aria-labelledby="practice-queue-heading">
+    <section
+      className={`sk-surface-card ${styles.section}`}
+      aria-labelledby="practice-queue-heading"
+    >
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <h2 id="practice-queue-heading">
@@ -50,14 +56,15 @@ export function PracticeQueue() {
           </h2>
           <p>{text.practiceQueue.intro}</p>
         </div>
-        <button
-          type="button"
-          className={styles.toggleBtn}
+        <Button
+          variant="secondary"
+          size="sm"
+          className="rounded-full"
           onClick={handleToggle}
           aria-pressed={enabled}
         >
           {enabled ? text.practiceQueue.disableBtn : text.practiceQueue.enableBtn}
-        </button>
+        </Button>
       </div>
 
       {enabled ? (

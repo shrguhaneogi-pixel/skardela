@@ -11,19 +11,22 @@ import {
   type Pathway,
   type WorkedExampleStep,
 } from "../../shared/learning-pathways";
+import { Badge } from "../../shared/ui/Badge";
+import { Button } from "../../shared/ui/Button";
+import { buttonVariants } from "../../shared/ui/button-variants";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
 import styles from "./LearnPage.module.css";
 
 function LearnHeader() {
   return (
-    <section className={styles.hero}>
+    <section className="sk-hero">
       <h1>
         <span aria-hidden="true">{symbols.learn.pathway} </span>
         {text.learn.title}
       </h1>
-      <p className={styles.intro}>{text.learn.intro}</p>
-      <div className={styles.disclaimer} role="note">
+      <p className="sk-intro">{text.learn.intro}</p>
+      <div className="sk-disclaimer" role="note">
         {text.learn.disclaimer}
       </div>
     </section>
@@ -33,7 +36,7 @@ function LearnHeader() {
 function WorkedExampleView({ steps }: { readonly steps: readonly WorkedExampleStep[] }) {
   return (
     <div className={styles.sectionBlock}>
-      <span className={styles.sectionLabel}>{text.learn.workedExampleHeading}</span>
+      <span className="sk-eyebrow">{text.learn.workedExampleHeading}</span>
       <div className={styles.workedExampleBox}>
         {steps.map((step, idx) => (
           <div key={step.title} className={styles.exampleStep}>
@@ -68,29 +71,32 @@ function LessonCard({ lesson, isDone, onMarkDone }: LessonCardProps) {
           {lesson.title}
         </span>
         {isDone ? (
-          <span className={styles.badgeDone}>
+          <Badge variant="success">
             {symbols.learn.done} {text.learn.completedBadge}
-          </span>
+          </Badge>
         ) : (
-          <span className={styles.badgeReady}>{text.learn.availableBadge}</span>
+          <Badge variant="muted">{text.learn.availableBadge}</Badge>
         )}
       </div>
 
       <div className={styles.sectionBlock}>
-        <span className={styles.sectionLabel}>{text.learn.conceptHeading}</span>
+        <span className="sk-eyebrow">{text.learn.conceptHeading}</span>
         <p className={styles.conceptText}>{lesson.concept}</p>
       </div>
 
       <WorkedExampleView steps={lesson.workedExample} />
 
       <div className={styles.actionsBar}>
-        <Link to={`/puzzles/${lesson.practicePuzzleId}`} className={styles.practiceLink}>
+        <Link
+          to={`/puzzles/${lesson.practicePuzzleId}`}
+          className={buttonVariants({ variant: "primary", size: "sm" })}
+        >
           {text.learn.startPracticeBtn}
         </Link>
         {!isDone && (
-          <button type="button" className={styles.doneBtn} onClick={() => onMarkDone(lesson.id)}>
+          <Button variant="secondary" size="sm" onClick={() => onMarkDone(lesson.id)}>
             {text.learn.markCompletedBtn}
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -107,7 +113,10 @@ function PathwaySection({
   readonly onMarkDone: (id: string) => void;
 }) {
   return (
-    <section className={styles.pathwayCard} aria-labelledby={`pw-${pathway.id}`}>
+    <section
+      className={`sk-surface-card sk-surface-card-interactive ${styles.pathwayCard}`}
+      aria-labelledby={`pw-${pathway.id}`}
+    >
       <div>
         <h2 id={`pw-${pathway.id}`} className={styles.pathwayTitle}>
           {pathway.title}

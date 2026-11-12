@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { isRouteErrorResponse, Link, useRouteError } from "react-router";
+import { getLogger } from "../shared/logger";
+import { buttonVariants } from "../shared/ui/button-variants";
 import { text } from "../text/en";
 import styles from "./RouteError.module.css";
-import { getLogger } from "../shared/logger";
 
+// ASD-STE100 Simplified Technical English comments.
 // This view shows a clear message when a route fails.
 export function RouteError() {
   const error = useRouteError();
@@ -21,14 +23,14 @@ export function RouteError() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.card}>
+      <div className={`sk-surface-card ${styles.card}`}>
         <title>{`${text.routeError.title} | ${text.siteName}`}</title>
         <h1 data-testid="route-error-title" className={styles.title}>
           {text.routeError.title}
         </h1>
         <p className={styles.body}>{text.routeError.body}</p>
         <p>
-          <Link className={styles.link} to="/">
+          <Link className={buttonVariants({ variant: "primary", size: "lg" })} to="/">
             {text.routeError.homeLink}
           </Link>
         </p>

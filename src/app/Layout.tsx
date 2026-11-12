@@ -1,9 +1,11 @@
 import { Link, NavLink, Outlet } from "react-router";
 import { text } from "../text/en";
 import { ReactiveCursor } from "../shared/ReactiveCursor";
+import { cn } from "../shared/utils";
 import styles from "./Layout.module.css";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
+// ASD-STE100 Simplified Technical English comments.
 // Read the current year one time when the app loads.
 const currentYear = new Date().getFullYear();
 
@@ -48,9 +50,7 @@ export function Layout() {
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
-              className={({ isActive }) =>
-                isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink
-              }
+              className={({ isActive }) => cn(styles.navLink, isActive && styles.navLinkActive)}
               to={item.to}
             >
               {item.label}

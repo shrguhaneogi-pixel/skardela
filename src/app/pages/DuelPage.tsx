@@ -9,6 +9,9 @@ import {
   type DuelResult,
   type DuelComparison,
 } from "../../shared/duel";
+import { Button } from "../../shared/ui/Button";
+import { buttonVariants } from "../../shared/ui/button-variants";
+import { Input } from "../../shared/ui/Input";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
 import styles from "./DuelPage.module.css";
@@ -24,13 +27,13 @@ const defaultMockPlayerResult: DuelResult = {
 
 function DuelHeader() {
   return (
-    <section className={styles.hero}>
+    <section className="sk-hero">
       <h1>
         <span aria-hidden="true">{symbols.duel.duel} </span>
         {text.duel.title}
       </h1>
-      <p className={styles.intro}>{text.duel.intro}</p>
-      <div className={styles.disclaimer} role="note">
+      <p className="sk-intro">{text.duel.intro}</p>
+      <div className="sk-disclaimer" role="note">
         {text.duel.disclaimer}
       </div>
     </section>
@@ -62,16 +65,16 @@ function DuelInputForm({ onCompare, onInvalidCode, error }: FormProps) {
         {text.duel.pasteCodeLabel}
       </label>
       <div className={styles.inputGroup}>
-        <input
+        <Input
           id="duel-code"
-          className={styles.input}
+          className="flex-1"
           placeholder={text.duel.pastePlaceholder}
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
-        <button type="submit" className={styles.btnPrimary} disabled={!code.trim()}>
+        <Button type="submit" disabled={!code.trim()}>
           {text.duel.compareBtn}
-        </button>
+        </Button>
       </div>
       {error && (
         <output aria-live="polite" className={styles.errorText}>
@@ -92,7 +95,7 @@ function ResultCard({
   readonly isWinner: boolean;
 }) {
   return (
-    <div className={styles.resultCard}>
+    <div className={`sk-surface-card ${styles.resultCard}`}>
       <div className={styles.cardHeader}>
         <span className={styles.cardTitle}>{title}</span>
         {isWinner && <span aria-label="Winner">{symbols.duel.trophy}</span>}
@@ -110,7 +113,10 @@ function ResultCard({
         <span>{result.mistakes}</span>
       </div>
       <div className={styles.playAction}>
-        <Link to={`/puzzles/${result.puzzleId}`} className={styles.btnSecondary}>
+        <Link
+          to={`/puzzles/${result.puzzleId}`}
+          className={buttonVariants({ variant: "secondary" })}
+        >
           {text.duel.playPuzzleBtn}
         </Link>
       </div>
@@ -228,7 +234,7 @@ export function DuelPage() {
         </section>
       )}
 
-      <div className={styles.serverNote} role="note">
+      <div className="sk-server-note" role="note">
         {text.duel.futureServerNote}
       </div>
     </div>

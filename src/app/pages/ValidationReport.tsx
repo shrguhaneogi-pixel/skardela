@@ -3,23 +3,22 @@
 
 import type { ValidationResult } from "../../shared/puzzle-validator";
 import { text } from "../../text/en";
-import styles from "./StudioPage.module.css";
 
 export function ValidationReport({ result }: { readonly result: ValidationResult | null }) {
   if (!result) return null;
 
   if (result.valid) {
     return (
-      <output aria-live="polite" className={`${styles.validationBox} ${styles.successBox}`}>
+      <output aria-live="polite" className="sk-validation-box sk-validation-success">
         <strong>{text.studio.validSuccess}</strong>
       </output>
     );
   }
 
   return (
-    <div className={`${styles.validationBox} ${styles.errorBox}`} role="alert">
+    <div className="sk-validation-box sk-validation-error" role="alert">
       <strong>{text.studio.invalidHeader}</strong>
-      <ul className={styles.errorList}>
+      <ul className="sk-validation-list">
         {result.errors.map((err) => (
           <li key={err}>{err}</li>
         ))}

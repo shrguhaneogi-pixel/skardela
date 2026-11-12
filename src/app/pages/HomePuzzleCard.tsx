@@ -1,8 +1,10 @@
 import { Link, type useLoaderData } from "react-router";
 import { EditorialPuzzleDiagram } from "../../shared/EditorialPuzzleDiagram";
 import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
+import { buttonVariants } from "../../shared/ui/button-variants";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
+import { RandomPuzzleButton } from "../RandomPuzzleButton";
 import type { homeLoader } from "../puzzles";
 import styles from "./HomePage.module.css";
 
@@ -15,16 +17,16 @@ function LevelItem({ id, difficulty }: { id: string; difficulty: keyof typeof te
   const status = getPuzzleProgressStatus(id);
   return (
     <li className={styles.levelItem}>
-      <Link className={styles.play} to={`/puzzles/${id}`}>
+      <Link className={buttonVariants({ variant: "accentTint", size: "lg" })} to={`/puzzles/${id}`}>
         {text.levels[difficulty]}
       </Link>
       {status === "solved" && (
-        <span className={styles.statusPillSolved}>
+        <span className="sk-status-pill sk-status-pill-solved">
           {text.home.solved} {symbols.common.check}
         </span>
       )}
       {status === "in_progress" && (
-        <span className={styles.statusPillResume}>
+        <span className="sk-status-pill sk-status-pill-resume">
           {text.home.resume} {symbols.common.time}
         </span>
       )}
@@ -51,7 +53,10 @@ export function QuickPlayBanner({ cards }: { cards: CardData[] }) {
           {target.typeName} • {text.levels[target.difficulty]}
         </p>
       </div>
-      <Link className={styles.play} to={`/puzzles/${target.id}`}>
+      <Link
+        className={buttonVariants({ variant: "primary", size: "lg" })}
+        to={`/puzzles/${target.id}`}
+      >
         {actionLabel} {symbols.common.arrowRight}
       </Link>
     </aside>
@@ -60,15 +65,15 @@ export function QuickPlayBanner({ cards }: { cards: CardData[] }) {
 
 export function PuzzleCard({ type, levels }: CardData) {
   return (
-    <li className={styles.card}>
-      <div className={styles.cardHeader}>
+    <li className="sk-surface-card sk-surface-card-interactive sk-puzzle-card">
+      <div className="sk-puzzle-card-header">
         <EditorialPuzzleDiagram type={type} levels={levels} />
         <div>
-          <h3 className={styles.cardTitle}>{text[type].name}</h3>
-          <span className={styles.cardTag}>{text[type].tag}</span>
+          <h3 className="sk-puzzle-card-title">{text[type].name}</h3>
+          <span className="sk-puzzle-card-tag">{text[type].tag}</span>
         </div>
       </div>
-      <p className={styles.summary}>{text[type].summary}</p>
+      <p className="sk-puzzle-card-summary">{text[type].summary}</p>
       <nav aria-label={text.home.levelsHeading(text[type].name)}>
         <ul className={styles.levels}>
           {levels.map(({ id, difficulty }) => (
@@ -77,5 +82,21 @@ export function PuzzleCard({ type, levels }: CardData) {
         </ul>
       </nav>
     </li>
+  );
+}
+
+export function HomeActionsRow() {
+  return (
+    <div className="mt-8 flex justify-center">
+      <div className={styles.levels}>
+        <Link to="/archive" className={buttonVariants({ variant: "secondary", size: "pill" })}>
+          {text.home.archiveLink} {symbols.common.arrowRight}
+        </Link>
+        <RandomPuzzleButton
+          className={buttonVariants({ variant: "secondary", size: "pill" })}
+          label={text.home.randomPuzzle}
+        />
+      </div>
+    </div>
   );
 }

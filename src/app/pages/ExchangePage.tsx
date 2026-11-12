@@ -10,6 +10,8 @@ import {
   type PuzzlePack,
   type PackValidationResult,
 } from "../../shared/puzzle-pack";
+import { Button } from "../../shared/ui/Button";
+import { Textarea } from "../../shared/ui/Textarea";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
 import styles from "./ExchangePage.module.css";
@@ -37,13 +39,13 @@ const samplePack: PuzzlePack = {
 
 function ExchangeHeader() {
   return (
-    <section className={styles.hero}>
+    <section className="sk-hero">
       <h1>
         <span aria-hidden="true">{symbols.exchange.exchange} </span>
         {text.exchange.title}
       </h1>
-      <p className={styles.intro}>{text.exchange.intro}</p>
-      <div className={styles.disclaimer} role="note">
+      <p className="sk-intro">{text.exchange.intro}</p>
+      <div className="sk-disclaimer" role="note">
         {text.exchange.disclaimer}
       </div>
     </section>
@@ -56,8 +58,8 @@ function ValidationFeedback({ result }: { readonly result: PackValidationResult 
   }
   if (!result.valid) {
     return (
-      <div className={`${styles.validationBox} ${styles.errorBox}`} role="alert">
-        <ul className={styles.errorList}>
+      <div className="sk-validation-box sk-validation-error" role="alert">
+        <ul className="sk-validation-list">
           {result.errors.map((err) => (
             <li key={err}>{err}</li>
           ))}
@@ -66,7 +68,7 @@ function ValidationFeedback({ result }: { readonly result: PackValidationResult 
     );
   }
   return (
-    <output aria-live="polite" className={`${styles.validationBox} ${styles.successBox}`}>
+    <output aria-live="polite" className="sk-validation-box sk-validation-success">
       <strong>{result.errors[0] || text.exchange.importSuccess}</strong>
     </output>
   );
@@ -83,12 +85,12 @@ function ImportActions({
 }) {
   return (
     <div className={styles.actions}>
-      <button type="button" className={styles.btnPrimary} onClick={onImport} disabled={disabled}>
+      <Button onClick={onImport} disabled={disabled}>
         {text.exchange.importBtn}
-      </button>
-      <button type="button" className={styles.btnSecondary} onClick={onLoadSample}>
+      </Button>
+      <Button variant="secondary" onClick={onLoadSample}>
         {text.exchange.exportSampleBtn}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -119,11 +121,10 @@ function PackImporter({
 
   return (
     <section className={styles.section} aria-labelledby="import-title">
-      <h2 id="import-title" className={styles.sectionTitle}>
+      <h2 id="import-title" className="sk-section-title">
         {symbols.exchange.import} {text.exchange.importHeading}
       </h2>
-      <textarea
-        className={styles.textarea}
+      <Textarea
         placeholder={text.exchange.importPlaceholder}
         value={jsonText}
         onChange={(e) => setJsonText(e.target.value)}
@@ -142,7 +143,7 @@ function PackImporter({
 function PackList({ packs }: { readonly packs: readonly PuzzlePack[] }) {
   return (
     <section className={styles.section} aria-labelledby="packs-title">
-      <h2 id="packs-title" className={styles.sectionTitle}>
+      <h2 id="packs-title" className="sk-section-title">
         {text.exchange.importedHeading}
       </h2>
       {packs.length === 0 ? (
@@ -150,7 +151,10 @@ function PackList({ packs }: { readonly packs: readonly PuzzlePack[] }) {
       ) : (
         <div className={styles.packsGrid}>
           {packs.map((pack) => (
-            <div key={pack.id} className={styles.packCard}>
+            <div
+              key={pack.id}
+              className={`sk-surface-card sk-surface-card-interactive ${styles.packCard}`}
+            >
               <span className={styles.packTitle}>{pack.title}</span>
               <div className={styles.packMeta}>
                 <span>by {pack.author}</span>
@@ -193,7 +197,7 @@ export function ExchangePage() {
       <ExchangeHeader />
       <PackImporter onImportSuccess={handleImportSuccess} />
       <PackList packs={packs} />
-      <div className={styles.serverNote} role="note">
+      <div className="sk-server-note" role="note">
         <strong>{text.exchange.serverRequirementsHeading}</strong>
         <p>{text.exchange.serverRequirementsNote}</p>
       </div>

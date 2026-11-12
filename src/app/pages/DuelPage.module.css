@@ -1,41 +1,5 @@
-.hero {
-  padding-block: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 2.5vw, 1.5rem);
-}
-
-.hero h1 {
-  margin-block: 0 0.5rem;
-  font-weight: 700;
-}
-
-.intro {
-  color: var(--text-muted);
-  font-size: clamp(1rem, 1rem + 0.3vw, 1.15rem);
-  line-height: 1.5;
-  max-width: 58ch;
-}
-
-.disclaimer {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--surface-muted);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  max-width: 62ch;
-}
-
-.serverNote {
-  margin-top: 1.5rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  line-height: 1.4;
-}
+/* ASD-STE100 Simplified Technical English comments. */
+/* Page-specific comparison grid and balance bar styles for the Duels page. */
 
 .formSection {
   margin-top: 1.5rem;
@@ -45,93 +9,21 @@
   max-width: 36rem;
 }
 
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
 .inputGroup {
   display: flex;
   gap: 0.5rem;
 }
 
-.input {
-  flex: 1;
-  padding: 0.625rem 0.75rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+.errorText {
   font-size: 0.875rem;
-}
-
-.btnPrimary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  background-color: var(--accent);
-  color: var(--on-accent);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 0.625rem 1.25rem;
   font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: var(--shadow-sm);
-  transition:
-    background-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.btnPrimary:hover {
-  background-color: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md), var(--accent-glow);
-}
-
-.btnPrimary:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-.btnPrimary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.btnSecondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  background-color: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 0.625rem 1.25rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: var(--shadow-sm);
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.btnSecondary:hover {
-  background-color: var(--surface-muted-hover);
-  border-color: var(--accent-border);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-.btnSecondary:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-.btnSecondary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  color: var(--red);
 }
 
 .comparisonSection {
@@ -175,6 +67,7 @@
 .bannerTitle {
   font-size: 1.25rem;
   font-weight: 700;
+  color: var(--text-h);
 }
 
 .duelGrid {
@@ -185,10 +78,6 @@
 
 .resultCard {
   padding: 1.25rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  background-color: var(--surface);
-  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -201,8 +90,10 @@
 }
 
 .cardTitle {
+  font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 700;
+  color: var(--text-h);
 }
 
 .statRow {
@@ -215,11 +106,6 @@
 
 .statRow:last-child {
   border-bottom: none;
-}
-
-.statWinner {
-  font-weight: 700;
-  color: var(--green);
 }
 
 .playAction {

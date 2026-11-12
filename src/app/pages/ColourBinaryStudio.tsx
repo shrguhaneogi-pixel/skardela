@@ -2,73 +2,22 @@
 // Follows ASD-STE100 Simplified Technical English.
 
 import { useState } from "react";
-import { type Difficulty } from "../../shared/difficulty";
-import { validateColourBinaryPuzzle, type ValidationResult } from "../../shared/puzzle-validator";
-import {
-  sizes as cbSizes,
-  toRows as cbToRows,
-  type ColourBinaryPuzzle,
-  type Square as CbSquare,
-} from "../puzzle-types/colour-binary/puzzle";
-import { findAnswers } from "../puzzle-types/colour-binary/solver";
+import { Button } from "../../shared/ui/Button";
+import { Input } from "../../shared/ui/Input";
 import { text } from "../../text/en";
 import { symbols } from "../../text/symbols";
+import {
+  createEmptyGrid,
+  exportCbStudio,
+  gridSizeForDifficulty,
+  nextSquareCycle,
+  validateCbStudio,
+  type CbSquare,
+  type Difficulty,
+  type ValidationResult,
+} from "./colour-binary-studio-logic";
 import styles from "./StudioPage.module.css";
 import { ValidationReport } from "./ValidationReport";
-
-function nextSquareCycle(current: CbSquare): CbSquare {
-  if (current === ".") return "R";
-  if (current === "R") return "B";
-  return ".";
-}
-
-function buildCbExportObject(
-  difficulty: Difficulty,
-  id: string,
-  author: string,
-  squares: readonly CbSquare[],
-  answerSquares: readonly CbSquare[],
-): ColourBinaryPuzzle & { readonly schemaVersion: string } {
-  return {
-    schemaVersion: "skardela-custom-v1",
-    type: "colour-binary",
-    id,
-    difficulty,
-    author: author.trim() || "Local Creator",
-    license: "CC-BY-4.0",
-    start: cbToRows(squares),
-    answer: cbToRows(answerSquares),
-  };
-}
-
-function validateCbStudio(
-  squares: readonly CbSquare[],
-  difficulty: Difficulty,
-  id: string,
-  author: string,
-): ValidationResult {
-  const answers = findAnswers(squares, 2);
-  if (answers.length !== 1 || !answers[0]) {
-    return {
-      valid: false,
-      errors: [`Puzzle has ${answers.length} solutions. Expected exactly 1 unique solution.`],
-    };
-  }
-  const payload = buildCbExportObject(difficulty, id, author, squares, answers[0]);
-  return validateColourBinaryPuzzle(payload);
-}
-
-function exportCbStudio(
-  squares: readonly CbSquare[],
-  difficulty: Difficulty,
-  id: string,
-  author: string,
-): string {
-  const answers = findAnswers(squares, 1);
-  const ans = answers[0] ?? squares;
-  const payload = buildCbExportObject(difficulty, id, author, squares, ans);
-  return JSON.stringify(payload, null, 2);
-}
 
 interface CbMetaProps {
   readonly difficulty: Difficulty;
@@ -108,9 +57,9 @@ function CbMetaControls({
         <label className={styles.label} htmlFor="cb-id">
           {text.studio.idLabel}
         </label>
-        <input
+        <Input
           id="cb-id"
-          className={styles.input}
+          className="w-auto min-h-9 py-1.5"
           value={id}
           onChange={(e) => onIdChange(e.target.value)}
         />
@@ -119,9 +68,9 @@ function CbMetaControls({
         <label className={styles.label} htmlFor="cb-author">
           {text.studio.authorLabel}
         </label>
-        <input
+        <Input
           id="cb-author"
-          className={styles.input}
+          className="w-auto min-h-9 py-1.5"
           value={author}
           onChange={(e) => onAuthorChange(e.target.value)}
         />
@@ -178,15 +127,15 @@ interface CbActionsProps {
 function CbActions({ onValidate, onExport, onClear }: CbActionsProps) {
   return (
     <div className={styles.actions}>
-      <button type="button" className={styles.btnPrimary} onClick={onValidate}>
+      <Button size="lg" onClick={onValidate}>
         {symbols.studio.validate} {text.studio.validateBtn}
-      </button>
-      <button type="button" className={styles.btnSecondary} onClick={onExport}>
+      </Button>
+      <Button variant="secondary" size="lg" onClick={onExport}>
         {symbols.studio.export} {text.studio.exportBtn}
-      </button>
-      <button type="button" className={styles.btnSecondary} onClick={onClear}>
+      </Button>
+      <Button variant="secondary" size="lg" onClick={onClear}>
         {text.studio.clearBtn}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -195,16 +144,13 @@ function useColourBinaryStudio(onExport: (json: string) => void) {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [author, setAuthor] = useState("Creator");
   const [id, setId] = useState("colour-binary-9001");
-  const size = cbSizes[difficulty];
-  const [squares, setSquares] = useState<CbSquare[]>(() =>
-    Array.from({ length: size * size }, () => "."),
-  );
+  const size = gridSizeForDifficulty(difficulty);
+  const [squares, setSquares] = useState<CbSquare[]>(() => createEmptyGrid(difficulty));
   const [validation, setValidation] = useState<ValidationResult | null>(null);
 
   const handleDifficultyChange = (newDiff: Difficulty) => {
     setDifficulty(newDiff);
-    const newSize = cbSizes[newDiff];
-    setSquares(Array.from({ length: newSize * newSize }, () => "."));
+    setSquares(createEmptyGrid(newDiff));
     setValidation(null);
   };
 
@@ -231,7 +177,7 @@ function useColourBinaryStudio(onExport: (json: string) => void) {
     handleValidate: () => setValidation(validateCbStudio(squares, difficulty, id, author)),
     handleExportClick: () => onExport(exportCbStudio(squares, difficulty, id, author)),
     handleClear: () => {
-      setSquares(Array.from({ length: size * size }, () => "."));
+      setSquares(createEmptyGrid(difficulty));
       setValidation(null);
     },
   };

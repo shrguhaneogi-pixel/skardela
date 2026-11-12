@@ -9,6 +9,7 @@ import { boards } from "../puzzle-types/boards";
 import { NotFoundPage } from "./NotFoundPage";
 import styles from "./PuzzlePage.module.css";
 
+// ASD-STE100 Simplified Technical English comments.
 // This shows the board of the puzzle type.
 function PuzzleBoard({ loaded }: { loaded: LoadedPuzzle }) {
   const Board = boards[loaded.type] as unknown as ComponentType<{
@@ -86,7 +87,7 @@ export function PuzzlePage() {
           </ErrorBoundary>
         </div>
 
-        <section aria-labelledby="rules-heading" className={styles.rules}>
+        <section aria-labelledby="rules-heading" className={`sk-surface-card ${styles.rules}`}>
           <h2 id="rules-heading">{page.rulesHeading}</h2>
           <RuleList rules={typeText.rules} />
         </section>
