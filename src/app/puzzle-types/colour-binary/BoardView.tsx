@@ -1,4 +1,5 @@
 import shared from "../../../shared/Board.module.css";
+import { BoardActions } from "../../../shared/BoardActions";
 import {
   CompletionReview,
   GraduatedHint,
@@ -26,53 +27,6 @@ function statusText(isSolved: boolean, hint: GraduatedHintType | undefined | nul
   if (isSolved) return words.status.solved;
   if (!hint) return hint === null ? words.status.start : words.noHint;
   return getHintTierText(hint, hint.tier);
-}
-
-type ActionProps = {
-  isSolved: boolean;
-  onHintRequest: () => void;
-  onShowLogic: () => void;
-  onRestart: () => void;
-  onOpenReview?: () => void;
-};
-
-function BoardActions(props: ActionProps) {
-  return (
-    <div className={shared.actionsRow}>
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        disabled={props.isSolved}
-        onClick={props.onHintRequest}
-      >
-        {words.hintButton}
-      </button>
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        disabled={props.isSolved}
-        onClick={props.onShowLogic}
-      >
-        {text.logicExplanation.button}
-      </button>
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        onClick={props.onRestart}
-      >
-        {text.puzzlePage.restartButton}
-      </button>
-      {props.isSolved && props.onOpenReview && (
-        <button
-          type="button"
-          className={`${shared.button} ${shared.boxed}`}
-          onClick={props.onOpenReview}
-        >
-          {text.completion.openSummary}
-        </button>
-      )}
-    </div>
-  );
 }
 
 export type BoardActionsProps = {
@@ -179,6 +133,7 @@ export function BoardView(props: BoardViewProps) {
         />
       )}
       <BoardActions
+        hintLabel={words.hintButton}
         isSolved={props.isSolved}
         onHintRequest={actions.onHintRequest}
         onShowLogic={actions.onShowLogic}

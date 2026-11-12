@@ -5,12 +5,15 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  width: min(100%, 32rem);
+  margin-inline: auto;
   padding: 1rem 1.25rem;
   border-radius: var(--radius-lg);
   background-color: var(--surface-card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--accent-border);
+  border-left: 3px solid var(--accent);
   box-shadow: var(--shadow-glass);
   animation: fadeIn var(--transition-fast);
 }
@@ -28,12 +31,17 @@
 
 .header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
 .title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--mono);
   font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -44,37 +52,16 @@
 
 .tiers {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.375rem;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.tierPill {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  padding: 0.125rem 0.5rem;
-  border-radius: var(--radius-full);
-  background-color: var(--surface-muted);
-  color: var(--text-muted);
-  border: 1px solid transparent;
-  transition:
-    background-color var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.tierPillActive {
-  composes: tierPill;
-  background-color: var(--accent-bg);
-  color: var(--accent-text);
-  border-color: var(--accent-border);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 25%, transparent);
-}
-
 .message {
-  font-size: 0.875rem;
-  line-height: 1.4;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   margin: 0;
   color: var(--text);
 }
@@ -85,36 +72,4 @@
   justify-content: flex-end;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.actionButton {
-  min-height: 2.75rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 0.375rem 0.875rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background-color: var(--surface-card);
-  color: var(--text-h);
-  cursor: pointer;
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.actionButton:hover {
-  background-color: var(--surface-muted-hover);
-  border-color: var(--line);
-}
-
-.primaryButton {
-  composes: actionButton;
-  background-color: var(--accent-bg);
-  color: var(--accent-text);
-  border-color: var(--accent-border);
-}
-
-.primaryButton:hover {
-  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
-  border-color: var(--accent);
 }

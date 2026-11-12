@@ -1,7 +1,7 @@
 // ASD-STE100 Simplified Technical English comments.
 // This component renders an SVG radar constellation diagram for Personal Logic Atlas skills.
 
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import type { LogicSkill } from "./logic-atlas";
 import { text } from "../text/en";
 import styles from "./AtlasConstellationChart.module.css";
@@ -77,6 +77,7 @@ const CENTER = 150;
 const MAX_R = 90;
 
 export function AtlasConstellationChart({ skills }: ChartProps) {
+  const gradientId = useId();
   const polygonPath = useMemo(() => {
     if (skills.length === 0) return "";
     const count = skills.length;
@@ -96,9 +97,18 @@ export function AtlasConstellationChart({ skills }: ChartProps) {
         aria-label={text.atlas.constellationAria}
       >
         <title>{text.atlas.constellationAria}</title>
+        <defs>
+          <radialGradient id={gradientId} cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.08" />
+          </radialGradient>
+        </defs>
         <WebCircles center={CENTER} maxR={MAX_R} />
         <SkillAxes center={CENTER} maxR={MAX_R} count={skills.length} />
-        {polygonPath && <path d={polygonPath} className={styles.polygonShape} />}
+        <circle cx={CENTER} cy={CENTER} r={2.5} className={styles.centerPin} />
+        {polygonPath && (
+          <path d={polygonPath} className={styles.polygonShape} fill={`url(#${gradientId})`} />
+        )}
         <SkillVertices center={CENTER} maxR={MAX_R} skills={skills} />
       </svg>
     </div>

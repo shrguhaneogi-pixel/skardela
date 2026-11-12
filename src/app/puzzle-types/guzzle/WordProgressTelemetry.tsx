@@ -2,6 +2,8 @@
 // This component displays real-time line progression telemetry for Guzzle.
 
 import { useMemo } from "react";
+import { Badge } from "../../../shared/ui/Badge";
+import { cn } from "../../../shared/utils";
 import { text } from "../../../text/en";
 import { symbols } from "../../../text/symbols";
 import { lineIndexes, lineNames, lineOf, type Line } from "./puzzle";
@@ -45,13 +47,15 @@ function RayChip({ progress, isActive }: { progress: LineProgress; isActive: boo
     ? styles.rayCompleted
     : isActive
       ? styles.rayActive
-      : styles.rayChip;
+      : undefined;
 
   const countStr = `${progress.correctCount}/${progress.totalPlayable}`;
   return (
-    <span className={`${styles.rayChip} ${chipClass}`}>
+    <span className={cn(styles.rayChip, chipClass)}>
       <span>{text.guzzle.lineShort[progress.line]}</span>
-      <span>{progress.isComplete ? symbols.guzzle.correct : countStr}</span>
+      <span className={styles.rayCount}>
+        {progress.isComplete ? symbols.guzzle.correct : countStr}
+      </span>
     </span>
   );
 }
@@ -74,11 +78,11 @@ export function WordProgressTelemetry({ size, guesses, selected }: TelemetryProp
         ))}
       </div>
       {allComplete ? (
-        <span className={styles.badgeSuccess}>
+        <Badge variant="success">
           {symbols.guzzle.correct} {t.allCompleted}
-        </span>
+        </Badge>
       ) : (
-        <span>{t.wordsCompleted(completedWords, 4)}</span>
+        <Badge variant="muted">{t.wordsCompleted(completedWords, 4)}</Badge>
       )}
     </aside>
   );

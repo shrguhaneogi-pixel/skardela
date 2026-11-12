@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import shared from "../../../shared/Board.module.css";
 import { gridStyle } from "../../../shared/grid";
+import { cn } from "../../../shared/utils";
 import { text } from "../../../text/en";
 import styles from "./Board.module.css";
 import { isPlayable, type Guess } from "./rules-check";
@@ -98,7 +99,7 @@ function SquareButton({
     <button
       ref={ref}
       type="button"
-      className={`${shared.square} ${styles.square}`}
+      className={cn(shared.square, styles.square)}
       data-mark={guess?.mark ?? "none"}
       data-fixed={isFixed}
       data-selected={isSelected}
@@ -114,7 +115,9 @@ function SquareButton({
       }}
       onKeyDown={(event) => handleGuzzleKeyDown(event, isLocked, onNavigate, onLetter)}
     >
-      <span aria-hidden="true">{letter}</span>
+      <span className={styles.letter} aria-hidden="true">
+        {letter}
+      </span>
       {guess?.mark && !isFixed && (
         <span className={styles.symbol} aria-hidden="true">
           {words.symbols[guess.mark]}

@@ -7,12 +7,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 4.25rem;
-  height: 4.25rem;
-  border-radius: var(--radius-sm);
-  background-color: var(--surface-card);
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius-md);
+  background-color: var(--surface-elevated);
   border: 1px solid var(--border);
   box-shadow:
+    0 2px 0 var(--border),
     var(--shadow-sm),
     inset 0 1px 0 var(--glass-highlight);
   flex-shrink: 0;
@@ -23,9 +24,20 @@
     box-shadow var(--transition-fast);
 }
 
+.diagramContainer[data-solved="true"] {
+  border-color: var(--state-success-border);
+  box-shadow:
+    0 2px 0 var(--state-success-border),
+    0 0 14px -4px var(--state-success-bg),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
 .diagramContainer:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md), var(--accent-glow);
+  border-color: var(--accent-border);
+  box-shadow:
+    0 2px 0 var(--accent-border),
+    var(--shadow-md),
+    var(--accent-glow);
   transform: translateY(-1px);
 }
 
@@ -46,7 +58,7 @@
 
 .cellDotEmpty {
   fill: var(--border);
-  opacity: 0.45;
+  opacity: 0.5;
 }
 
 .cellCorrect {
@@ -71,7 +83,7 @@
 }
 
 .gridLine {
-  stroke: var(--border-subtle);
+  stroke: var(--border);
   stroke-width: 0.75;
 }
 
@@ -79,13 +91,13 @@
   stroke: var(--accent);
   stroke-width: 0.75;
   stroke-dasharray: 2 2;
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 .cornerMark {
   stroke: var(--accent);
-  stroke-width: 1;
-  opacity: 0.7;
+  stroke-width: 1.1;
+  opacity: 0.75;
 }
 
 .solvedGlow {
@@ -96,12 +108,15 @@
 
 .telemetryTag {
   position: absolute;
-  bottom: 2px;
-  right: 3px;
+  bottom: 3px;
+  right: 4px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  background-color: var(--surface-muted);
   font-family: var(--mono);
   font-size: 0.5rem;
   font-weight: 700;
-  color: var(--text-subtle);
+  color: var(--text-muted);
   letter-spacing: 0.05em;
   line-height: 1;
   pointer-events: none;

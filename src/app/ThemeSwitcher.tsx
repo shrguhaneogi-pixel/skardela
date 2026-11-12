@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { applyTheme, isTheme, readTheme, saveTheme, themes } from "../shared/theme";
 import { getLogger } from "../shared/logger";
 import { text } from "../text/en";
 import styles from "./ThemeSwitcher.module.css";
 
+// ASD-STE100 Simplified Technical English comments.
 // This list lets the player select the system theme, the light theme or the dark theme.
 // A native <select> works with a keyboard and a screen reader without more code.
 export function ThemeSwitcher() {
@@ -32,6 +34,7 @@ export function ThemeSwitcher() {
           </option>
         ))}
       </select>
+      <ChevronDown size={14} className={styles.chevron} aria-hidden="true" />
     </label>
   );
 }

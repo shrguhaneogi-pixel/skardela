@@ -1,9 +1,10 @@
-import shared from "../../../shared/Board.module.css";
+import { Button } from "../../../shared/ui/Button";
 import { text } from "../../../text/en";
 import styles from "./Board.module.css";
 import { bankLetters, type LetterKey } from "./rules-check";
 import type { Game, Mode } from "./useGame";
 
+// ASD-STE100 Simplified Technical English comments.
 const words = text.guzzle;
 
 const alphabet: LetterKey[] = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].map((letter) => ({ letter }));
@@ -16,16 +17,16 @@ export function Controls({ answer, game }: { answer: readonly string[]; game: Ga
       <fieldset className={styles.modes}>
         <legend className="visually-hidden">{words.modeLabel}</legend>
         {(Object.keys(words.modes) as Mode[]).map((option) => (
-          <button
+          <Button
             key={option}
-            type="button"
-            className={shared.button}
+            variant="accentTint"
+            size="lg"
             onClick={() => {
               game.chooseMode(option);
             }}
           >
             {words.modes[option]}
-          </button>
+          </Button>
         ))}
       </fieldset>
     );
@@ -41,7 +42,7 @@ export function Controls({ answer, game }: { answer: readonly string[]; game: Ga
         <button
           key={letter}
           type="button"
-          className={`${shared.button} ${styles.key}`}
+          className={styles.key}
           aria-label={words.key(letter, count)}
           onClick={() => {
             game.putLetter(letter);

@@ -5,13 +5,25 @@
   position: relative;
   width: 100%;
   height: clamp(7.5rem, 16vw, 11rem);
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--border);
+  border-top: 2px solid var(--accent-border);
   background-color: var(--surface-card);
   box-shadow:
-    var(--shadow-sm),
+    var(--shadow-md),
+    inset 0 1px 0 var(--glass-highlight);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.heroGraphicWrapper:hover {
+  border-color: var(--accent-border);
+  box-shadow:
+    var(--shadow-lg),
+    var(--accent-glow),
     inset 0 1px 0 var(--glass-highlight);
 }
 
@@ -33,7 +45,7 @@
 }
 
 .fallbackSvg {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .overlayFrame {
@@ -44,7 +56,7 @@
 
 .cornerMarks {
   position: absolute;
-  inset: 8px;
+  inset: 10px;
   pointer-events: none;
   border: 1px dashed var(--accent);
   opacity: 0.35;

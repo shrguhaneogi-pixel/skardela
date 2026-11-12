@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { AlertCircle, Clock, Eye, Lightbulb, RotateCcw, Share2, Sparkles } from "lucide-react";
 import { text } from "../text/en";
-import { symbols } from "../text/symbols";
 import { formatDuration, type CompletionStats } from "./completion";
 import { sharePostcard } from "./postcard";
+import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
+import { useModalA11y } from "./useModalA11y";
 import styles from "./CompletionReview.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -51,10 +54,10 @@ function CompletionHeader({ isCleanSolve }: HeaderProps) {
       <h2 id="completion-title">{text.completion.title}</h2>
       <p>{text.completion.subtitle}</p>
       {isCleanSolve && (
-        <div className={styles.cleanBadge} aria-label={text.completion.cleanSolveDesc}>
-          <span>{symbols.completion.clean}</span>
+        <Badge variant="accent" aria-label={text.completion.cleanSolveDesc}>
+          <Sparkles size={13} aria-hidden="true" />
           <span>{text.completion.cleanSolve}</span>
-        </div>
+        </Badge>
       )}
     </div>
   );
@@ -64,14 +67,17 @@ function CompletionStatsGrid({ stats }: { stats: CompletionStats }) {
   return (
     <div className={styles.statsGrid}>
       <div className={styles.statItem}>
+        <Clock size={15} className={styles.statIcon} aria-hidden="true" />
         <span className={styles.statValue}>{formatDuration(stats.timeSpentSeconds)}</span>
         <span className={styles.statLabel}>{text.completion.timeSpent}</span>
       </div>
       <div className={styles.statItem}>
+        <Lightbulb size={15} className={styles.statIcon} aria-hidden="true" />
         <span className={styles.statValue}>{stats.hintCount}</span>
         <span className={styles.statLabel}>{text.completion.hintsUsed}</span>
       </div>
       <div className={styles.statItem}>
+        <AlertCircle size={15} className={styles.statIcon} aria-hidden="true" />
         <span className={styles.statValue}>{stats.mistakes}</span>
         <span className={styles.statLabel}>{text.completion.mistakes}</span>
       </div>
@@ -90,18 +96,21 @@ function CompletionActions(props: ActionsProps) {
   return (
     <div className={styles.actions}>
       {props.hasPostcard && (
-        <button type="button" className={styles.primaryButton} onClick={props.onShare}>
+        <Button variant="primary" onClick={props.onShare}>
+          <Share2 size={15} aria-hidden="true" />
           {text.completion.sharePostcard}
-        </button>
+        </Button>
       )}
       {props.onRestart && (
-        <button type="button" className={styles.secondaryButton} onClick={props.onRestart}>
+        <Button variant="secondary" onClick={props.onRestart}>
+          <RotateCcw size={15} aria-hidden="true" />
           {text.completion.playAgain}
-        </button>
+        </Button>
       )}
-      <button type="button" className={styles.secondaryButton} onClick={props.onClose}>
+      <Button variant="secondary" onClick={props.onClose}>
+        <Eye size={15} aria-hidden="true" />
         {text.completion.reviewBoard}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -120,6 +129,7 @@ export function CompletionReview({
   onClose,
 }: CompletionReviewProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
+  const { overlayRef, panelRef } = useModalA11y(onClose);
 
   async function handleShare() {
     if (!postcardText) return;
@@ -132,8 +142,14 @@ export function CompletionReview({
   }
 
   return (
-    <dialog open className={styles.overlay} aria-labelledby="completion-title">
-      <div className={styles.dialog}>
+    <dialog
+      open
+      ref={overlayRef}
+      className={styles.overlay}
+      aria-labelledby="completion-title"
+      aria-modal="true"
+    >
+      <div ref={panelRef} tabIndex={-1} className={styles.dialog}>
         <CompletionHeader isCleanSolve={stats.isCleanSolve} />
         <CompletionStatsGrid stats={stats} />
         {feedback && <p className={styles.shareFeedback}>{feedback}</p>}

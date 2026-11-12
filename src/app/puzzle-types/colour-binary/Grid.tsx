@@ -2,6 +2,7 @@ import shared from "../../../shared/Board.module.css";
 import type { GraduatedHint } from "../../../shared/graduated-hints";
 import { gridStyle } from "../../../shared/grid";
 import type { LogicExplanation } from "../../../shared/logic-explainer";
+import { cn } from "../../../shared/utils";
 import { text } from "../../../text/en";
 import styles from "./Board.module.css";
 import type { Square } from "./puzzle";
@@ -114,7 +115,7 @@ function SquareButton(props: SquareProps) {
   return (
     <button
       type="button"
-      className={`${shared.square} ${styles.square}`}
+      className={cn(shared.square, styles.square)}
       data-colour={square}
       data-fixed={isFixed}
       data-hint={isHint}
@@ -129,7 +130,9 @@ function SquareButton(props: SquareProps) {
       }}
       onKeyDown={(e) => handleSquareKeyDown(e, index, size, isFixed, isSolved, onTap)}
     >
-      <span aria-hidden="true">{words.symbols[square]}</span>
+      <span className={styles.symbol} aria-hidden="true">
+        {words.symbols[square]}
+      </span>
     </button>
   );
 }

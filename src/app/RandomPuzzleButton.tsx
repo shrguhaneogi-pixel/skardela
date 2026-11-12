@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import shared from "../shared/Board.module.css";
+import { Shuffle } from "lucide-react";
+import { Button } from "../shared/ui/Button";
 import { pickRandomPuzzleId } from "./puzzles";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -28,13 +29,15 @@ export function RandomPuzzleButton({ excludeId, className, label }: RandomPuzzle
   }
 
   return (
-    <button
-      type="button"
-      className={className ?? `${shared.button} ${shared.boxed}`}
+    <Button
+      variant="secondary"
+      size={className ? undefined : "sm"}
+      className={className}
       disabled={picking}
       onClick={() => void handleClick()}
     >
+      <Shuffle size={15} aria-hidden="true" />
       {label}
-    </button>
+    </Button>
   );
 }

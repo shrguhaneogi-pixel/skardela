@@ -1,6 +1,9 @@
+import { BookOpen, X } from "lucide-react";
 import { text } from "../text/en";
 import styles from "./LogicExplanation.module.css";
 import type { LogicExplanation as ExplanationData, LogicPremise } from "./logic-explainer";
+import { Button } from "./ui/Button";
+import { useModalA11y } from "./useModalA11y";
 
 // ASD-STE100 Simplified Technical English comments.
 // This modal component shows structured logic deduction steps and premises.
@@ -40,14 +43,26 @@ type Props = {
 };
 
 export function LogicExplanationModal({ explanation, onClose }: Props) {
+  const { overlayRef, panelRef } = useModalA11y(onClose);
+
   return (
-    <dialog open className={styles.overlay} aria-label={text.logicExplanation.title}>
-      <div className={styles.panel}>
+    <dialog
+      open
+      ref={overlayRef}
+      className={styles.overlay}
+      aria-label={text.logicExplanation.title}
+      aria-modal="true"
+    >
+      <div ref={panelRef} tabIndex={-1} className={styles.panel}>
         <div className={styles.header}>
-          <h2>{text.logicExplanation.title}</h2>
-          <button type="button" className={styles.closeButton} onClick={onClose}>
+          <h2 className={styles.titleRow}>
+            <BookOpen size={18} className={styles.titleIcon} aria-hidden="true" />
+            {text.logicExplanation.title}
+          </h2>
+          <Button variant="secondary" size="sm" onClick={onClose}>
+            <X size={15} aria-hidden="true" />
             {text.logicExplanation.close}
-          </button>
+          </Button>
         </div>
         <div className={styles.ruleBox}>
           <h3>{explanation.ruleName}</h3>

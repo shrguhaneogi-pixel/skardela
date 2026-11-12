@@ -1,14 +1,13 @@
 import shared from "../../../shared/Board.module.css";
+import { BoardActions } from "../../../shared/BoardActions";
 import {
   CompletionReview,
   GraduatedHint,
   LogicExplanationModal,
+  type GraduatedHintData,
+  type HintTier,
+  type LogicExplanation,
 } from "../../../shared/GraduatedHint";
-import type {
-  GraduatedHint as GraduatedHintType,
-  HintTier,
-  LogicExplanation,
-} from "../../../shared/graduated-hints";
 import { generateGuzzlePostcard } from "../../../shared/postcard";
 import type { CompletionStats } from "../../../shared/puzzle-progress";
 import { text } from "../../../text/en";
@@ -21,55 +20,6 @@ import { statusText, type Game } from "./useGame";
 // This component renders the Guzzle puzzle board, grid, hints, and completion review.
 
 const words = text.guzzle;
-
-type ActionProps = {
-  hasMode: boolean;
-  isSolved: boolean;
-  onHintRequest: () => void;
-  onShowLogic: () => void;
-  onRestart: () => void;
-  onOpenReview?: () => void;
-};
-
-function BoardActions(props: ActionProps) {
-  if (!props.hasMode) return null;
-  return (
-    <div className={shared.actionsRow}>
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        disabled={props.isSolved}
-        onClick={props.onHintRequest}
-      >
-        {words.hintButton}
-      </button>
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        disabled={props.isSolved}
-        onClick={props.onShowLogic}
-      >
-        {text.logicExplanation.button}
-      </button>
-      <button
-        type="button"
-        className={`${shared.button} ${shared.boxed}`}
-        onClick={props.onRestart}
-      >
-        {text.puzzlePage.restartButton}
-      </button>
-      {props.isSolved && props.onOpenReview && (
-        <button
-          type="button"
-          className={`${shared.button} ${shared.boxed}`}
-          onClick={props.onOpenReview}
-        >
-          {text.completion.openSummary}
-        </button>
-      )}
-    </div>
-  );
-}
 
 export type GuzzleBoardActionsProps = {
   onHintRequest: () => void;
@@ -86,7 +36,7 @@ export type GuzzleBoardViewProps = {
   answer: readonly string[];
   size: number;
   game: Game;
-  hint: GraduatedHintType | null;
+  hint: GraduatedHintData | null;
   logicExplanation: LogicExplanation | null;
   completionStats: CompletionStats | null;
   showReview: boolean;
@@ -139,8 +89,32 @@ function BoardStatusOutput({ game, size }: { game: Game; size: number }) {
   );
 }
 
+function GuzzleBoardModals({
+  props,
+  postcardText,
+}: {
+  props: GuzzleBoardViewProps;
+  postcardText?: string;
+}) {
+  const { actions, completionStats, logicExplanation, showReview } = props;
+  return (
+    <>
+      {logicExplanation && (
+        <LogicExplanationModal explanation={logicExplanation} onClose={actions.onCloseLogic} />
+      )}
+      <SolvedReviewModal
+        show={showReview}
+        stats={completionStats}
+        postcardText={postcardText}
+        onRestart={actions.onRestart}
+        onClose={actions.onCloseReview}
+      />
+    </>
+  );
+}
+
 export function GuzzleBoardView(props: GuzzleBoardViewProps) {
-  const { answer, size, game, hint, logicExplanation, actions, completionStats } = props;
+  const { answer, size, game, hint, logicExplanation, actions } = props;
   const postcardText = getGuzzlePostcard(props);
 
   return (
@@ -166,24 +140,17 @@ export function GuzzleBoardView(props: GuzzleBoardViewProps) {
           onDismiss={actions.onDismissHint}
         />
       )}
-      <BoardActions
-        hasMode={game.mode !== null}
-        isSolved={game.isSolved}
-        onHintRequest={actions.onHintRequest}
-        onShowLogic={actions.onShowLogic}
-        onRestart={actions.onRestart}
-        onOpenReview={actions.onOpenReview}
-      />
-      {logicExplanation && (
-        <LogicExplanationModal explanation={logicExplanation} onClose={actions.onCloseLogic} />
+      {game.mode !== null && (
+        <BoardActions
+          hintLabel={words.hintButton}
+          isSolved={game.isSolved}
+          onHintRequest={actions.onHintRequest}
+          onShowLogic={actions.onShowLogic}
+          onRestart={actions.onRestart}
+          onOpenReview={actions.onOpenReview}
+        />
       )}
-      <SolvedReviewModal
-        show={props.showReview}
-        stats={completionStats}
-        postcardText={postcardText}
-        onRestart={actions.onRestart}
-        onClose={actions.onCloseReview}
-      />
+      <GuzzleBoardModals props={props} postcardText={postcardText} />
       <Controls answer={answer} game={game} />
     </div>
   );

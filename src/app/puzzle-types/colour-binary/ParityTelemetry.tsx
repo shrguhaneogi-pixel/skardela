@@ -2,6 +2,8 @@
 // This component displays real-time row and column balance telemetry for Colour Binary.
 
 import { useMemo } from "react";
+import { Badge } from "../../../shared/ui/Badge";
+import { cn } from "../../../shared/utils";
 import { text } from "../../../text/en";
 import { symbols } from "../../../text/symbols";
 import styles from "./ParityTelemetry.module.css";
@@ -67,15 +69,10 @@ function MeterDots({ stats }: { stats: LineStats[] }) {
   return (
     <div className={styles.meterDots}>
       {stats.map((s) => {
-        const dotClass = s.isBalanced ? styles.dotBalanced : s.isOver ? styles.dotOver : styles.dot;
+        const dotClass = s.isBalanced ? styles.dotBalanced : s.isOver ? styles.dotOver : undefined;
         const label = s.isBalanced ? t.lineBalanced : s.isOver ? t.lineOver : t.linePending;
         return (
-          <span
-            key={s.id}
-            className={`${styles.dot} ${dotClass}`}
-            title={label}
-            aria-label={label}
-          />
+          <span key={s.id} className={cn(styles.dot, dotClass)} title={label} aria-label={label} />
         );
       })}
     </div>
@@ -95,20 +92,20 @@ export function ParityTelemetry({ size, squares }: TelemetryProps) {
     <aside className={styles.telemetryStrip} aria-label={t.title}>
       <div className={styles.metricsGroup}>
         <div className={styles.metricItem}>
-          <span>{`${t.rowLabel} ${balancedRows}/${size}`}</span>
+          <span className={styles.metricCount}>{`${t.rowLabel} ${balancedRows}/${size}`}</span>
           <MeterDots stats={rowStats} />
         </div>
         <div className={styles.metricItem}>
-          <span>{`${t.colLabel} ${balancedCols}/${size}`}</span>
+          <span className={styles.metricCount}>{`${t.colLabel} ${balancedCols}/${size}`}</span>
           <MeterDots stats={colStats} />
         </div>
       </div>
       {allBalanced ? (
-        <span className={styles.badgeSuccess}>
+        <Badge variant="success">
           {symbols["colour-binary"].balanced} {t.allBalanced}
-        </span>
+        </Badge>
       ) : (
-        <span>{t.balanceStatus(balancedRows, balancedCols, size)}</span>
+        <Badge variant="muted">{t.balanceStatus(balancedRows, balancedCols, size)}</Badge>
       )}
     </aside>
   );

@@ -1,12 +1,16 @@
-/* Colours and tactile details for Colour Binary squares */
+/* ASD-STE100 Simplified Technical English comments. */
+/* Colours and tactile keycap details for Colour Binary squares. */
 
 .square {
   --on-fill: var(--on-colour);
 }
 
 .square[data-colour="."] {
-  background-color: var(--surface-muted);
+  background-color: var(--surface-elevated);
   border-color: var(--border);
+  --square-shadow:
+    inset 0 2px 4px light-dark(rgba(15, 23, 42, 0.05), rgba(0, 0, 0, 0.28)),
+    0 1px 0 var(--border-subtle);
 }
 
 .square[data-colour="R"] {
@@ -19,10 +23,18 @@
   --fill-edge: var(--blue-edge);
 }
 
-/* Player squares get a top highlight. Fixed clues preserve their inner ring. */
+/* Player squares get tactile keycap elevation. Fixed clues keep their anchored inner ring. */
 .square[data-colour="R"]:not([data-fixed="true"]),
 .square[data-colour="B"]:not([data-fixed="true"]) {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    var(--shadow-sm);
+  --square-shadow:
+    0 2px 0 var(--fill-edge), inset 0 1px 0 rgba(255, 255, 255, 0.35), var(--shadow-sm);
+}
+
+.symbol {
+  line-height: 1;
+  transition: transform var(--transition-fast);
+}
+
+.square[aria-disabled="false"]:active .symbol {
+  transform: scale(0.9);
 }
