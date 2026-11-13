@@ -1,71 +1,122 @@
 # Contributing to Skardela
 
-This guide explains how to work on Skardela and how to add a new puzzle type.
+Skardela is a UI-only puzzle site. It has no server, no accounts and no database.
+AI agents must also read [AGENTS.md](AGENTS.md).
 
-## Core Rules
+## Set up
 
-- Write all documentation, UI text, and code comments in ASD-STE100 Simplified Technical English.
-- Keep all puzzle logic browser-safe and pure.
-- Do not add server code, backend logic, or database changes. This is a UI-only project.
-- Use strict TypeScript. Do not use `any` or `@ts-ignore`.
-- Put all UI text in `src/text/en.ts` (or a slice imported there) and all symbols in `src/text/symbols.ts`.
-- Pair every colour signal with a shape, symbol, or text label for accessibility.
-- Use Conventional Commits for commit messages (for example: `feat: add new puzzle type` or `fix: repair practice links`).
-
-## Development Setup
-
-1. Install Node.js 24 and npm 11.
+1. Use the Node.js version in `.nvmrc`.
 2. Run `npm install`.
-3. Run `npm run dev` to start the local development server.
-4. Run `npm run fix && npm run check` before you finish any change.
+3. Run `npm run dev` and open `http://localhost:5173`.
 
-## Add a New Puzzle Type
+Before you open a pull request, run `npm run fix && npm run check`. CI runs the same checks.
 
-Follow these steps in order when you add a puzzle type `<name>`:
+## Scripts
 
-1. **Create the puzzle folder:**
-   Create `src/app/puzzle-types/<name>/`.
+| Script                           | What it does                                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                    | Starts the app on your computer.                                                                                          |
+| `npm run fix`                    | Formats the code and fixes lint problems that a tool can fix.                                                             |
+| `npm run check`                  | Runs the format, lint, type, build, unit test and data checks.                                                            |
+| `npm run test`                   | Runs the unit tests in `src/`.                                                                                            |
+| `npm run validate`               | Checks all puzzle files in `puzzles/` and the tools in `tools/`. See `tools/puzzles.test.ts`.                             |
+| `npm run generate:colour-binary` | Makes new Colour Binary puzzles and adds them to `puzzles/colour-binary.json`. See `tools/generate-colour-binary.gen.ts`. |
+| `npm run generate:latics`        | Makes new Latics puzzles and adds them to `puzzles/latics.json`. See `tools/generate-latics.gen.ts`.                      |
+| `npm run generate:orbital`       | Makes new Orbital puzzles and adds them to `puzzles/orbital.json`. See `tools/generate-orbital.gen.ts`.                   |
+| `npm run generate:tilt`          | Makes new Tilt puzzles and adds them to `puzzles/tilt.json`. See `tools/generate-tilt.gen.ts`.                            |
 
-2. **Write the rules:**
-   Create `src/app/puzzle-types/<name>/rules.md` to explain the rules and include a step-by-step example.
+## Project structure
 
-3. **Add an example puzzle:**
-   Create `src/app/puzzle-types/<name>/examples/<name>-0000.json` matching the example in `rules.md`.
+```text
+puzzles/                     Puzzle data. One JSON file for each puzzle type. The build ciphers the answers.
+tools/puzzles.test.ts        Checks all puzzle data.
+tools/react-compiler.test.ts Fails when React Compiler cannot compile a component or a hook in src/.
+tools/generator-script.ts    The parts that each puzzle generator shares: the plan, the search and the puzzle file.
+tools/<type>-generator.ts    Makes new puzzles of one type. "npm run generate:<type>" runs it.
+src/
+  main.tsx                   Starts the app.
+  index.css                  Global styles and colour values.
+  app/
+    routes.tsx               All pages and their URLs.
+    puzzles.ts               Loads puzzles for the home page and the puzzle page.
+    daily.ts                 Selects the puzzles of the day.
+    shell/                   The frame of each page: the header, the notices, the footer and the route error.
+      AnalyticsNotice.tsx    The notice for new players. Analytics loads only after the OK.
+      useReloadAtMidnight.ts Loads the puzzles of the new day after midnight, on each page.
+    pages/                   One file or one folder for each page.
+      home/                  The home page: today's progress, today's puzzles, the stats and the questions.
+      puzzle/                The puzzle page ("Now playing"), with the timer, Restart and Random puzzle.
+    puzzle-types/
+      registry.ts            The list of puzzle types and their puzzle files.
+      boards.ts              The board component of each puzzle type.
+      <type>/                One folder for each puzzle type. See below.
+  shared/                    Code that more than one page or puzzle type uses.
+    state/                   The saved data and the code that reads it. No React components.
+      store.ts               The Zustand store: the saved data and its actions. It saves to one localStorage item.
+      saved-data.ts          The shape of the saved data and its checks.
+      storage-format.ts      The stored text and the export file. The lists of solves are compressed.
+      playSession.ts         The game that the player plays now: the timer and the saving of a solve.
+      progress.ts            Pure functions for the stats: streaks, the calendar and personal bests.
+    share.ts                 The squares of a share text, and the copy or the share menu. See ShareButton.tsx.
+  text/
+    en/                      All UI text. "index.ts" puts the parts together. One file for each page and puzzle type.
+    es/                      Spanish text, with the same structure. The app does not use it yet.
+    symbols.ts               All emoji symbols.
+```
 
-4. **Implement pure puzzle logic:**
-   Add TypeScript files in `src/app/puzzle-types/<name>/` for the puzzle type definition, rules check, solver or hint logic, and `findPuzzleProblems`. Keep these files free of React and browser APIs.
+### A puzzle type folder
 
-5. **Add the puzzle pool:**
-   Create `puzzles/<name>.json` with at least one valid puzzle for each difficulty (`easy`, `medium`, `hard`). Each puzzle ID must match `<name>-XXXX` (4 digits) and use `"license": "CC-BY-4.0"`.
+```text
+src/app/puzzle-types/<type>/
+  rules.md                   The rules and one example, step by step.
+  examples/<type>-0000.json  The example from rules.md as puzzle data.
+  puzzle.ts                  The puzzle data type and the data check "findPuzzleProblems".
+  rules-check.ts             Pure rule logic. No React. Easy to test.
+  machine.ts                 The state machine: the game state, "transition" and the queries. Pure. No React.
+  solver.ts                  The search, for example for the fewest moves. Only when the type needs a search.
+  useGame.ts                 The hook that connects the state machine to React. It has no rules of its own.
+  status.ts                  The status text for each state of the game.
+  log.ts                     The logs, and the lifecycle hook that starts the timer and saves each solve.
+  keys.ts                    The keys that the board reads. Only when the type has its own keys.
+  Board.tsx                  The board component.
+  Board.module.css           Styles for this board only.
+  *.test.ts(x)               Tests next to the code that they test.
+```
 
-6. **Register the puzzle type:**
-   Update `src/app/puzzle-types/registry.ts`:
-   - Add `<name>` to `PuzzleMap`.
-   - Add a lazy `loadPuzzles` entry to `puzzleTypes`.
-     Then follow the TypeScript errors across the project.
+Put pure logic in `.ts` files and keep React components small. When a component file gets long, move
+parts into their own files. See `guzzle/` for an example: `useGame.ts`, `Grid.tsx`, `Controls.tsx`, `status.ts`.
 
-7. **Create the accessible board UI:**
-   Build `Board.tsx`, `BoardView.tsx`, and supporting components in `src/app/puzzle-types/<name>/`. Reuse shared styles in `src/shared/Board.module.css` and shared components in `src/shared/`. Use `<output aria-live="polite">` for status regions (which have an implicit `status` role), and support full keyboard navigation.
+## Add a new puzzle type
 
-8. **Register the lazy board component:**
-   Add a `lazy(() => ...)` entry for `<name>` in `src/app/puzzle-types/boards.ts`.
+1. Make the folder `src/app/puzzle-types/<type>/` with the files above. Start with `rules.md`.
+2. In `puzzle.ts`, make the puzzle type with `PuzzleBase & { readonly type: "<type>"; ... }`.
+3. Add your puzzles to `puzzles/<type>.json`. Add at least one puzzle for each level.
+   Put the answer in the field `answer` as readable rows. A Vite plugin in `vite.config.ts` ciphers `answer`, so the browser does not get a readable answer. In `registry.ts`, use `decipherPuzzles` to load the file. A puzzle type that checks the moves with its rules can have no `answer`, for example `latics`. Then the plugin does not change the file, and the type does not need `decipherPuzzles`.
+4. In `src/app/puzzle-types/registry.ts`, add your type to `PuzzleMap` and to `puzzleTypes`.
+5. Run `npm run typecheck`. TypeScript then shows each place that needs your type:
+   - `src/app/puzzle-types/boards.ts`: your board component.
+   - `src/text/en/index.ts`: your UI text. Put it in a new file `src/text/en/<type>.ts`, with `name`,
+     `summary`, `rules`, `rulesKey`, `moreRules`, `score` and `scoreWord`. Then add it to `index.ts` with the name of your type. `rules` has three short rules. `rulesKey` is a list of sample squares and their meaning, or an empty list. `moreRules` has a label and the other rules. `score` gives the score of a solve as text, for example "2 mistakes".
+   - `src/app/pages/home/PuzzleIcon.tsx`: the small icon of your type on the home page.
+   - `tools/puzzles.test.ts`: your example and your data check.
+6. Put emoji symbols in `src/text/symbols.ts`, not in other files.
+7. In the lifecycle hook of your board, call `useLifecycleLog` from `src/shared/` and `usePlayTracking` from `src/shared/state/`.
+   `usePlayTracking` starts the timer and saves each solve, for the stats and for "Random puzzle".
+   Give it the score to keep low as `mistakes`, for example the misses of Latics. The result card and the share text show it. See the lifecycle hook in `log.ts` of an existing type, for example `latics/log.ts`.
+8. Add tests for your rule logic and your board.
+9. Run `npm run fix && npm run check`.
 
-9. **Add UI text and symbols:**
-   - Add symbols to `src/text/symbols.ts`.
-   - Add all localized strings, rules, labels, and status messages to `src/text/en.ts`.
+## Rules for code
 
-10. **Update shared puzzle integrations:**
-    Check shared helpers that switch on `PuzzleType` or puzzle metadata, such as `src/shared/puzzle-validator.ts`, `src/shared/practice-queue.ts`, `src/shared/logic-atlas.ts`, `src/shared/postcard.ts`, `src/shared/expeditions.ts`, `src/shared/learning-pathways.ts`, and `src/shared/EditorialPuzzleDiagram.tsx`.
+- Use strict TypeScript. Do not use `any` or `@ts-ignore`.
+- Put all UI text in the `src/text/en/` folder. Put all emoji symbols in `src/text/symbols.ts`.
+- Use the shared code in `src/shared/` before you write new code. For example `RuleList`,
+  `Board.module.css`, `gridStyle` and `PuzzleBase`.
+- Make each control work with a keyboard and a screen reader. Do not use colour as the only signal.
+- Write comments and UI text in simple, clear English.
+- Do not weaken or skip tests.
 
-11. **Add validation and bundle budget checks:**
-    - Register the example and `findProblems` check for `<name>` in `tools/puzzles.test.ts`.
-    - Add the lazy chunk prefix check for `<name>` in `isPuzzleChunk` in `tools/bundle-budget.test.ts`, and ensure all CSS and JS bundle budgets pass (`< 80 kB` total CSS, `< 550 kB` main JS, `< 40 kB` per lazy puzzle chunk).
+## Pull requests
 
-12. **Add unit tests and verify everything:**
-    Add unit tests for the new puzzle logic and board interactions. Then run:
-
-    ```bash
-    npm run fix && npm run check
-    ```
-
-    A change is complete only when formatting, linting, TypeScript checks, production build, unit tests, and tool validations all pass.
+- Use a [Conventional Commits](https://www.conventionalcommits.org/) title, for example `feat: add puzzle timer`.
+- Fill in the pull request template: what changed, why, how you tested it, and which AI tool you used.
