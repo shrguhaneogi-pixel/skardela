@@ -1,22 +1,28 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
-import { loadPuzzleProgress, savePuzzleProgress } from "../../../shared/puzzle-progress";
+import { describe, expect, it } from "vitest";
+import { useAppStore } from "../../../shared/state/store";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/colour-binary-0000.json";
-import { toSquares, type ColourBinaryPuzzle } from "./puzzle";
+import type { ColourBinaryPuzzle } from "./puzzle";
 
 const words = text["colour-binary"];
 const puzzle = example as ColourBinaryPuzzle;
 
-beforeEach(() => {
-  localStorage.clear();
-});
-
 // This helper finds a square by its row and column, so the test does not depend on the label end.
 function square(row: number, column: number): HTMLElement {
-  return screen.getByRole("button", { name: new RegExp(`^Row ${row}, column ${column},`, "u") });
+  return screen.getByRole("button", { name: new RegExp(`^Row ${row}, column ${column}:`, "u") });
+}
+
+// jsdom has no "AnimationEvent". Then React listens to the event with the old name "webkitAnimationEnd".
+// This helper sends both names, as the end of an animation in a browser.
+function endAnimation(element: HTMLElement) {
+  act(() => {
+    for (const name of ["animationend", "webkitAnimationEnd"]) {
+      element.dispatchEvent(new Event(name, { bubbles: true }));
+    }
+  });
 }
 
 // This helper taps each empty square until it has the colour of the answer.
@@ -34,38 +40,117 @@ async function fillAnswer(user: ReturnType<typeof userEvent.setup>) {
   }
 }
 
-describe("colour-binary board interaction", () => {
+describe("colour-binary board", () => {
+  it("is a grid with one row for each line of squares", () => {
+    render(<Board puzzle={puzzle} />);
+    const grid = screen.getByRole("grid", { name: words.boardLabel(4) });
+    expect(within(grid).getAllByRole("row")).toHaveLength(4);
+    expect(within(grid).getAllByRole("gridcell")).toHaveLength(16);
+  });
+
   it("changes an empty square to red, to blue, and back to empty", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
     await user.click(square(1, 1));
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, red");
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1: red");
     await user.click(square(1, 1));
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, blue");
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1: blue");
     await user.click(square(1, 1));
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1: empty");
   });
 
-  it("does not change a fixed square", async () => {
+  it("does not change a given square, and shakes it", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
     await user.click(square(1, 3));
-    expect(square(1, 3)).toHaveAccessibleName("Row 1, column 3, blue, fixed");
-  });
-
-  it("restarts the board during active play", async () => {
-    const user = userEvent.setup();
-    render(<Board puzzle={puzzle} />);
-    await user.click(square(1, 1));
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, red");
-
-    await user.click(screen.getByRole("button", { name: text.puzzlePage.restartButton }));
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
-    expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
+    expect(square(1, 3)).toHaveAccessibleName("Row 1, column 3: blue, given");
+    expect(square(1, 3)).toHaveAttribute("aria-disabled", "true");
+    expect(square(1, 3)).toHaveAttribute("data-given", "true");
+    expect(square(1, 3)).toHaveAttribute("data-shake", "true");
+    // The shake stops at the end of its animation.
+    endAnimation(square(1, 3));
+    expect(square(1, 3)).toHaveAttribute("data-shake", "false");
+    // A square of the player has no dot.
+    expect(square(1, 1)).toHaveAttribute("data-given", "false");
   });
 });
 
-describe("colour-binary board hints", () => {
+describe("colour-binary board undo and keys", () => {
+  it("removes the last change with Undo", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    const undo = screen.getByRole("button", { name: words.undoButton });
+    expect(undo).toBeDisabled();
+    await user.click(square(1, 1));
+    await user.click(square(1, 1));
+    await user.click(square(1, 2));
+    await user.click(undo);
+    expect(square(1, 2)).toHaveAccessibleName("Row 1, column 2: empty");
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1: blue");
+    await user.click(undo);
+    await user.click(undo);
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1: empty");
+    expect(undo).toBeDisabled();
+  });
+
+  it("moves with the arrow keys, and sets a colour with R, B and Space", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    // Only one square is a Tab stop. The Tab key goes to it.
+    await user.tab();
+    expect(square(1, 1)).toHaveFocus();
+    await user.keyboard("r");
+    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1: red");
+
+    await user.keyboard("{ArrowRight}B");
+    expect(square(1, 2)).toHaveFocus();
+    expect(square(1, 2)).toHaveAttribute("tabindex", "0");
+    expect(square(1, 1)).toHaveAttribute("tabindex", "-1");
+    expect(square(1, 2)).toHaveAccessibleName("Row 1, column 2: blue");
+
+    // Space makes the square empty. It does not also click the square.
+    await user.keyboard(" ");
+    expect(square(1, 2)).toHaveAccessibleName("Row 1, column 2: empty");
+
+    // A given square does not change. At the edge of the board, the focus stays.
+    await user.keyboard("{ArrowRight}r");
+    expect(square(1, 3)).toHaveAccessibleName("Row 1, column 3: blue, given");
+    await user.keyboard("{ArrowUp}");
+    expect(square(1, 3)).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(square(2, 3)).toHaveFocus();
+  });
+});
+
+describe("colour-binary board messages", () => {
+  it("tells the rule that a change breaks", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    // Row 3 starts with two red squares. A third red square is more than half of the row.
+    await user.click(square(3, 3));
+    expect(screen.getByRole("status")).toHaveTextContent(
+      words.broken({ reason: "half", line: "row", number: 3, colour: "red", half: 2 }),
+    );
+    // The next change in a different square without a broken rule shows the start text again.
+    await user.click(square(4, 4));
+    expect(screen.getByRole("status")).toHaveTextContent(words.status.start);
+  });
+
+  it("tells when three squares of one colour are next to each other", async () => {
+    const user = userEvent.setup();
+    const wide: ColourBinaryPuzzle = {
+      ...puzzle,
+      difficulty: "medium",
+      start: ["RR....", "......", "......", "......", "......", "......"],
+      answer: ["RRBRBB", "BBRBRR", "RRBBRB", "BBRRBR", "RBRBRB", "BRBRBR"],
+    };
+    render(<Board puzzle={wide} />);
+    await user.click(square(1, 3));
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Row 1 has three red squares next to each other.",
+    );
+  });
+
   it("shows a hint", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
@@ -73,119 +158,21 @@ describe("colour-binary board hints", () => {
     expect(screen.getByRole("status")).toHaveTextContent(/^Row 1, column 2: Column 2/u);
     expect(square(1, 2)).toHaveAttribute("data-hint", "true");
   });
-
-  it("escalates graduated hint from nudge to explanation to solution", async () => {
-    const user = userEvent.setup();
-    render(<Board puzzle={puzzle} />);
-    const hintButton = screen.getByRole("button", { name: words.hintButton });
-    await user.click(hintButton);
-    expect(screen.getByRole("status")).toHaveTextContent("has a clue to check.");
-
-    // Advance to explanation
-    await user.click(screen.getByRole("button", { name: /explain more/iu }));
-    expect(screen.getByRole("status")).toHaveTextContent("already has half");
-
-    // Advance to solution
-    await user.click(screen.getByRole("button", { name: /show next step/iu }));
-    expect(screen.getByRole("status")).toHaveTextContent("Thus this square is blue.");
-  });
-
-  it("opens logic explanation modal with deduction steps and highlights cues", async () => {
-    const user = userEvent.setup();
-    render(<Board puzzle={puzzle} />);
-    await user.click(screen.getByRole("button", { name: text.logicExplanation.button }));
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("dialog")).toHaveTextContent(text.logicExplanation.title);
-    expect(square(1, 2)).toHaveAttribute("data-logic-target", "true");
-
-    await user.click(screen.getByRole("button", { name: text.logicExplanation.close }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
 });
 
-describe("colour-binary board completion", () => {
-  it("shows that the puzzle is solved and opens completion review", async () => {
+describe("colour-binary board solve", () => {
+  it("shows that the puzzle is solved, and saves the hints as the mistakes", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
+    expect(screen.queryByTestId("confetti")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: words.hintButton }));
     await fillAnswer(user);
     expect(screen.getByRole("status")).toHaveTextContent(words.status.solved);
     expect(screen.getByRole("button", { name: words.hintButton })).toBeDisabled();
-    expect(screen.getByRole("dialog")).toHaveTextContent(text.completion.title);
-    expect(screen.getByRole("dialog")).toHaveTextContent(text.completion.cleanSolve);
-
-    // Dismiss completion review
-    await user.click(screen.getByRole("button", { name: text.completion.reviewBoard }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-
-    // Reopen completion review from action button
-    await user.click(screen.getByRole("button", { name: text.completion.openSummary }));
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-  });
-
-  it("preserves stored time and hints when reopening an already-solved puzzle", () => {
-    savePuzzleProgress({
-      puzzleId: puzzle.id,
-      puzzleType: puzzle.type,
-      difficulty: puzzle.difficulty,
-      savedAt: Date.now(),
-      isSolved: true,
-      completedAt: Date.now(),
-      timeSpentSeconds: 75,
-      hintCount: 2,
-      mistakes: 0,
-      colourBinaryState: { squares: toSquares(puzzle.answer) },
-    });
-
-    render(<Board puzzle={puzzle} />);
-
-    const afterMount = loadPuzzleProgress(puzzle.id);
-    expect(afterMount?.timeSpentSeconds).toBe(75);
-    expect(afterMount?.hintCount).toBe(2);
-    expect(screen.getByRole("dialog")).toHaveTextContent("1m 15s");
-  });
-});
-
-describe("colour-binary mid-game reload persistence", () => {
-  it("preserves in-progress hint count across reload before completion", async () => {
-    const user = userEvent.setup();
-    const { unmount } = render(<Board puzzle={puzzle} />);
-    await user.click(screen.getByRole("button", { name: words.hintButton }));
-
-    const midGame = loadPuzzleProgress(puzzle.id);
-    expect(midGame?.isSolved).toBe(false);
-    expect(midGame?.hintCount).toBe(1);
-
-    unmount();
-    render(<Board puzzle={puzzle} />);
-    await fillAnswer(user);
-
-    const solved = loadPuzzleProgress(puzzle.id);
-    expect(solved?.isSolved).toBe(true);
-    expect(solved?.hintCount).toBe(1);
-    expect(screen.queryByText(text.completion.cleanSolve)).not.toBeInTheDocument();
-  });
-});
-
-describe("colour-binary keyboard accessibility", () => {
-  it("allows setting red, blue, and empty with keyboard keys", () => {
-    render(<Board puzzle={puzzle} />);
-    const sq = square(1, 1);
-    fireEvent.keyDown(sq, { key: "r" });
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, red");
-    fireEvent.keyDown(sq, { key: "b" });
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, blue");
-    fireEvent.keyDown(sq, { key: "Backspace" });
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
-  });
-
-  it("navigates grid squares using arrow keys", async () => {
-    const user = userEvent.setup();
-    render(<Board puzzle={puzzle} />);
-    const sq11 = square(1, 1);
-    sq11.focus();
-    await user.keyboard("{ArrowRight}");
-    expect(document.activeElement).toBe(square(1, 2));
-    await user.keyboard("{ArrowDown}");
-    expect(document.activeElement).toBe(square(2, 2));
+    expect(screen.getByRole("button", { name: words.undoButton })).toBeDisabled();
+    expect(screen.getByTestId("confetti")).toBeInTheDocument();
+    // "Random puzzle" skips a solved puzzle.
+    expect(useAppStore.getState().solved).toEqual([puzzle.id]);
+    expect(useAppStore.getState().results[0]?.mistakes).toBe(1);
   });
 });

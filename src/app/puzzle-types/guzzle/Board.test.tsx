@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
-import { loadPuzzleProgress } from "../../../shared/puzzle-progress";
+import { describe, expect, it } from "vitest";
+import { useAppStore } from "../../../shared/state/store";
 import { text } from "../../../text/en";
 import { Board } from "./Board";
 import example from "./examples/guzzle-0000.json";
@@ -9,10 +9,6 @@ import type { GuzzlePuzzle } from "./puzzle";
 
 const words = text.guzzle;
 const puzzle = example as GuzzlePuzzle;
-
-beforeEach(() => {
-  localStorage.clear();
-});
 
 // This helper finds a square by its row and column, so the test does not depend on the label end.
 function square(row: number, column: number): HTMLElement {
@@ -55,8 +51,9 @@ describe("guzzle board feedback", () => {
     expect(screen.getByText(words.mistakes(2))).toBeInTheDocument();
 
     // Step 4: N in the bottom-right square is green. The bank does not show N now.
+    // Before the move, the N key has the "inWord" hint, because N was yellow in the same word.
     await user.click(square(3, 3));
-    await user.click(screen.getByRole("button", { name: words.key("N", 1) }));
+    await user.click(screen.getByRole("button", { name: words.key("N", 1, "inWord") }));
     expect(square(3, 3)).toHaveAttribute("data-mark", "correct");
     expect(bank).toHaveTextContent("BCGMPRT");
   });
@@ -67,6 +64,7 @@ describe("guzzle board result", () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
     await user.click(screen.getByRole("button", { name: words.modes.bank }));
+    expect(screen.queryByTestId("confetti")).not.toBeInTheDocument();
 
     // Steps 2 to 5: two mistakes in the top-left square, then all correct letters.
     await typeLetters(user, [
@@ -83,103 +81,11 @@ describe("guzzle board result", () => {
     ]);
 
     expect(screen.getByText("You solved the puzzle. With bank, 2 mistakes.")).toBeInTheDocument();
+    expect(screen.getByTestId("confetti")).toBeInTheDocument();
+    // "Random puzzle" skips a solved puzzle.
+    expect(useAppStore.getState().solved).toEqual([puzzle.id]);
   });
 
-  it("restarts active play and resets mistakes and entered letters", async () => {
-    const user = userEvent.setup();
-    render(<Board puzzle={puzzle} />);
-    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
-    await user.click(square(1, 1));
-    await user.keyboard("t");
-    expect(screen.getByText(words.mistakes(1))).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: text.puzzlePage.restartButton }));
-    expect(screen.getByText(words.mistakes(0))).toBeInTheDocument();
-    expect(square(1, 1)).toHaveAccessibleName("Row 1, column 1, empty");
-    const statusRegions = screen.getAllByRole("status");
-    expect(statusRegions.length).toBeGreaterThanOrEqual(2);
-    for (const region of statusRegions) {
-      expect(region).toHaveAttribute("aria-live", "polite");
-    }
-  });
-});
-
-describe("guzzle board telemetry persistence", () => {
-  it("saves real difficulty, time, and hint count and preserves them on reopen", async () => {
-    const user = userEvent.setup();
-    const mediumPuzzle: GuzzlePuzzle = {
-      id: "guzzle-0006",
-      type: "guzzle",
-      difficulty: "medium",
-      author: "skardela",
-      license: "CC-BY-4.0",
-      answer: ["RBP", "CAT", "MGN"],
-    };
-    const solveMoves: readonly [number, number, string][] = [
-      [1, 1, "R"],
-      [1, 2, "B"],
-      [1, 3, "P"],
-      [2, 1, "C"],
-      [2, 3, "T"],
-      [3, 1, "M"],
-      [3, 2, "G"],
-      [3, 3, "N"],
-    ];
-
-    const { unmount } = render(<Board puzzle={mediumPuzzle} />);
-    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
-    await user.click(screen.getByRole("button", { name: words.hintButton }));
-    await typeLetters(user, solveMoves);
-
-    const saved = loadPuzzleProgress(mediumPuzzle.id);
-    expect(saved?.isSolved).toBe(true);
-    expect(saved?.difficulty).toBe("medium");
-    expect(saved?.hintCount).toBe(1);
-    expect(saved?.timeSpentSeconds).toBeGreaterThanOrEqual(1);
-
-    const savedTime = saved?.timeSpentSeconds;
-    unmount();
-    render(<Board puzzle={mediumPuzzle} />);
-
-    const afterReopen = loadPuzzleProgress(mediumPuzzle.id);
-    expect(afterReopen?.difficulty).toBe("medium");
-    expect(afterReopen?.hintCount).toBe(1);
-    expect(afterReopen?.timeSpentSeconds).toBe(savedTime);
-  });
-});
-
-describe("guzzle mid-game reload persistence", () => {
-  it("preserves in-progress hint count across reload before completion", async () => {
-    const user = userEvent.setup();
-    const { unmount } = render(<Board puzzle={puzzle} />);
-    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
-    await user.click(screen.getByRole("button", { name: words.hintButton }));
-    await typeLetters(user, [[1, 1, "R"]]);
-
-    const midGame = loadPuzzleProgress(puzzle.id);
-    expect(midGame?.isSolved).toBe(false);
-    expect(midGame?.hintCount).toBe(1);
-
-    unmount();
-    render(<Board puzzle={puzzle} />);
-    await typeLetters(user, [
-      [1, 2, "B"],
-      [1, 3, "P"],
-      [2, 1, "C"],
-      [2, 3, "T"],
-      [3, 1, "M"],
-      [3, 2, "G"],
-      [3, 3, "N"],
-    ]);
-
-    const solved = loadPuzzleProgress(puzzle.id);
-    expect(solved?.isSolved).toBe(true);
-    expect(solved?.hintCount).toBe(1);
-    expect(screen.queryByText(text.completion.cleanSolve)).not.toBeInTheDocument();
-  });
-});
-
-describe("guzzle duplicate mistake check", () => {
   it("does not add a mistake for the same wrong letter two times", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
@@ -194,26 +100,79 @@ describe("guzzle duplicate mistake check", () => {
   });
 });
 
+describe("guzzle board direction and clues", () => {
+  it("shows an arrow on the first square of each word", () => {
+    render(<Board puzzle={puzzle} />);
+    expect(square(1, 1)).toHaveAccessibleName(
+      `Row 1, column 1, empty, ${words.start(words.lines.diagonalDown)}`,
+    );
+    expect(square(3, 1)).toHaveTextContent(words.symbols.arrows.diagonalUp);
+    expect(square(3, 3)).toHaveAccessibleName("Row 3, column 3, empty");
+  });
+
+  it("marks the clue and the squares of the selected word", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    await user.click(square(1, 3));
+
+    // The top-right square is the last letter of MAP, the diagonal from the bottom left.
+    const clues = screen.getByRole("list", { name: words.cluesLabel });
+    const current = clues.querySelector('[aria-current="true"]');
+    expect(current).toHaveTextContent(words.clueLines.diagonalUp);
+    expect(current).toHaveTextContent(words.position(3, 3));
+    expect(current).toHaveTextContent(puzzle.clues.diagonalUp);
+    expect(square(3, 1)).toHaveAttribute("data-in-word", "true");
+    expect(square(1, 1)).toHaveAttribute("data-in-word", "false");
+  });
+});
+
+describe("guzzle board key hints", () => {
+  it("marks the keys and adds no mistake for a letter that is known to be wrong", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+
+    // T is red and N is yellow in the top-left square. Then the bottom-right square is selected.
+    await typeLetters(user, [
+      [1, 1, "T"],
+      [1, 1, "N"],
+    ]);
+    await user.click(square(3, 3));
+    expect(screen.getByRole("button", { name: words.key("T", undefined, "wrong") })).toBeVisible();
+    expect(screen.getByRole("button", { name: words.key("N", undefined, "inWord") })).toBeVisible();
+
+    // T in the bottom-right square is red, but the player already knew that. The mistakes stay at 2.
+    await user.keyboard("t");
+    expect(square(3, 3)).toHaveAttribute("data-mark", "absent");
+    expect(screen.getByText(words.mistakes(2))).toBeInTheDocument();
+  });
+});
+
 describe("guzzle board keyboard", () => {
+  it("puts a typed letter in the focused square, also when a different square is selected", async () => {
+    const user = userEvent.setup();
+    render(<Board puzzle={puzzle} />);
+    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
+    // Row 1, column 1 is selected. The Tab key moves the focus to row 1, column 2, but not the selection.
+    await user.click(square(1, 1));
+    await user.tab();
+    expect(square(1, 2)).toHaveFocus();
+    await user.keyboard("b");
+    expect(square(1, 2)).toHaveAttribute("data-mark", "correct");
+    expect(square(1, 1)).toHaveAttribute("data-mark", "none");
+    expect(screen.getByText(words.mistakes(0))).toBeInTheDocument();
+  });
+
   it("moves the focus to the next open square after a correct letter", async () => {
     const user = userEvent.setup();
     render(<Board puzzle={puzzle} />);
     await user.click(screen.getByRole("button", { name: words.modes.noBank }));
     await user.click(square(1, 1));
     await user.keyboard("r");
-    // R is correct in row 1, column 1. The next open square is row 1, column 2.
-    expect(square(1, 2)).toHaveFocus();
-    expect(square(1, 2)).toHaveAttribute("aria-pressed", "true");
-  });
-
-  it("navigates grid squares using arrow keys", async () => {
-    const user = userEvent.setup();
-    render(<Board puzzle={puzzle} />);
-    await user.click(screen.getByRole("button", { name: words.modes.noBank }));
-    await user.click(square(1, 1));
-    await user.keyboard("{ArrowRight}");
-    expect(square(1, 2)).toHaveFocus();
-    await user.keyboard("{ArrowDown}");
-    expect(square(3, 2)).toHaveFocus();
+    // R is correct in row 1, column 1, on the diagonal from the top left. The cursor follows the diagonal:
+    // the center square is fixed, thus the next open square is row 3, column 3.
+    expect(square(3, 3)).toHaveFocus();
+    expect(square(3, 3)).toHaveAttribute("aria-pressed", "true");
   });
 });

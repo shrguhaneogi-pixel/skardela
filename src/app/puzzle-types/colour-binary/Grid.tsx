@@ -1,184 +1,137 @@
-import shared from "../../../shared/Board.module.css";
-import type { GraduatedHint } from "../../../shared/graduated-hints";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { gridStyle } from "../../../shared/grid";
-import type { LogicExplanation } from "../../../shared/logic-explainer";
-import { cn } from "../../../shared/utils";
+import shared from "../../../shared/Board.module.css";
 import { text } from "../../../text/en";
 import styles from "./Board.module.css";
-import type { Square } from "./puzzle";
-
-// ASD-STE100 Simplified Technical English comments.
-// This file renders the square buttons and the grid for the Colour Binary board.
+import { colourOfKey, squareAfterKey } from "./keys";
+import type { Game } from "./useGame";
 
 const words = text["colour-binary"];
 
-type SquareProps = {
-  square: Square;
-  index: number;
-  size: number;
-  isFixed: boolean;
-  isHint: boolean;
-  isHighlighted: boolean;
-  isConflict: boolean;
-  isLogicTarget: boolean;
-  isLogicPremise: boolean;
-  isSolved: boolean;
-  onTap: (specificColour?: Square) => void;
-};
-
-function getArrowTargetIndex(key: string, index: number, size: number): number | null {
-  if (key === "ArrowRight" && index % size < size - 1) return index + 1;
-  if (key === "ArrowLeft" && index % size > 0) return index - 1;
-  if (key === "ArrowDown" && index + size < size * size) return index + size;
-  if (key === "ArrowUp" && index - size >= 0) return index - size;
-  return null;
+// The keyboard of the board, as a grid: one square has the Tab stop, the arrow keys move the focus,
+// and R, B and Space set the colour of the square with the focus.
+// A given square shakes when the player tries to change it. A solved board does not change, thus nothing shakes.
+function useBoardKeys(game: Game, size: number) {
+  const [focused, setFocused] = useState(0);
+  const [shaking, setShaking] = useState<number | null>(null);
+  const shake = (index: number) => {
+    if (!game.isSolved) setShaking(index);
+  };
+  const onKeyDown = (index: number, event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = squareAfterKey(index, event.key, size);
+    if (target !== undefined) {
+      event.preventDefault();
+      setFocused(target);
+      return;
+    }
+    const colour = colourOfKey(event.key);
+    if (colour === undefined) return;
+    event.preventDefault();
+    if (game.isGiven(index)) shake(index);
+    else game.set(index, colour);
+  };
+  return { focused, setFocused, shaking, setShaking, shake, onKeyDown };
 }
 
-function getColourBinaryLabel(
-  index: number,
-  size: number,
-  square: Square,
-  isFixed: boolean,
-  isConflict: boolean,
-  isHint: boolean,
-  isLogicTarget: boolean,
-  isLogicPremise: boolean,
-): string {
-  let label = words.square({
+// When an arrow key moves the Tab stop to a square, and the focus is on the board, the focus moves too.
+function useFocusWhenTabStop(isTabStop: boolean) {
+  const ref = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const button = ref.current;
+    if (!isTabStop || button === null) return;
+    const focused = document.activeElement;
+    const isBoardFocused =
+      focused !== button && button.closest('[role="grid"]')?.contains(focused) === true;
+    if (isBoardFocused) button.focus();
+  }, [isTabStop]);
+  return ref;
+}
+
+type SquareProps = {
+  game: Game;
+  index: number;
+  size: number;
+  keys: ReturnType<typeof useBoardKeys>;
+};
+
+// Each square is a button in a grid cell, so the user can tap a cell and cycle its colour.
+// A square that the player cannot tap has "aria-disabled", so a screen reader can still read it.
+// A tap on a given square does not change it. The square shakes a little.
+function SquareButton({ game, index, size, keys }: SquareProps) {
+  const square = game.squares[index] ?? ".";
+  const isGiven = game.isGiven(index);
+  const ref = useFocusWhenTabStop(keys.focused === index);
+  const label = words.square({
     row: Math.floor(index / size) + 1,
     column: (index % size) + 1,
     colour: words.colours[square],
-    isFixed,
+    isGiven,
   });
-  if (isConflict) label += " (Conflict)";
-  if (isHint) label += " (Hint target)";
-  if (isLogicTarget) label += " (Logic target)";
-  if (isLogicPremise) label += " (Logic premise)";
-  return label;
-}
-
-function handleSquareKeyDown(
-  e: React.KeyboardEvent<HTMLButtonElement>,
-  index: number,
-  size: number,
-  isFixed: boolean,
-  isSolved: boolean,
-  onTap: (colour?: Square) => void,
-) {
-  const target = getArrowTargetIndex(e.key, index, size);
-  if (target !== null) {
-    e.preventDefault();
-    const parent = e.currentTarget.parentElement;
-    const targetBtn = parent?.children[target] as HTMLButtonElement | undefined;
-    targetBtn?.focus();
-    return;
-  }
-  if (isFixed || isSolved) return;
-  if (e.key === "r" || e.key === "R") {
-    e.preventDefault();
-    onTap("R");
-  } else if (e.key === "b" || e.key === "B") {
-    e.preventDefault();
-    onTap("B");
-  } else if (e.key === "Backspace" || e.key === "Delete") {
-    e.preventDefault();
-    onTap(".");
-  }
-}
-
-// Each square is a button so the user can tap a cell and cycle its colour.
-function SquareButton(props: SquareProps) {
-  const {
-    square,
-    index,
-    size,
-    isFixed,
-    isHint,
-    isHighlighted,
-    isConflict,
-    isLogicTarget,
-    isLogicPremise,
-    isSolved,
-    onTap,
-  } = props;
-  const label = getColourBinaryLabel(
-    index,
-    size,
-    square,
-    isFixed,
-    isConflict,
-    isHint,
-    isLogicTarget,
-    isLogicPremise,
-  );
-
   return (
-    <button
-      type="button"
-      className={cn(shared.square, styles.square)}
-      data-colour={square}
-      data-fixed={isFixed}
-      data-hint={isHint}
-      data-highlight={isHighlighted}
-      data-conflict={isConflict}
-      data-logic-target={isLogicTarget}
-      data-logic-premise={isLogicPremise}
-      aria-label={label}
-      aria-disabled={isFixed || isSolved}
-      onClick={() => {
-        if (!isFixed && !isSolved) onTap();
-      }}
-      onKeyDown={(e) => handleSquareKeyDown(e, index, size, isFixed, isSolved, onTap)}
+    // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- a table with a CSS grid loses its table role in some browsers.
+    <div role="gridcell" className={styles.cell}>
+      <button
+        ref={ref}
+        type="button"
+        tabIndex={keys.focused === index ? 0 : -1}
+        className={`${shared.square} ${styles.square}`}
+        data-colour={square}
+        data-given={isGiven}
+        data-shake={keys.shaking === index}
+        data-hint={game.hint.status === "shown" && game.hint.hint.index === index}
+        aria-label={label}
+        aria-disabled={!game.canTap(index)}
+        onClick={() => {
+          if (isGiven) keys.shake(index);
+          else game.tap(index);
+        }}
+        onFocus={() => {
+          keys.setFocused(index);
+        }}
+        onKeyDown={(event) => {
+          keys.onKeyDown(index, event);
+        }}
+        // A button clicks on the key up of Space. Space sets the colour on the key down, thus not on the key up.
+        onKeyUp={(event) => {
+          if (event.key === " ") event.preventDefault();
+        }}
+        onAnimationEnd={() => {
+          keys.setShaking(null);
+        }}
+      >
+        <span aria-hidden="true">{words.symbols[square]}</span>
+      </button>
+    </div>
+  );
+}
+
+// The board is a grid with rows, so a screen reader can tell the row and the column of each square.
+// The rows use the columns of the board (subgrid), so the squares look the same as on the other boards.
+export function Grid({ game, size }: { game: Game; size: number }) {
+  const keys = useBoardKeys(game, size);
+  const all = Array.from({ length: size }, (_, position) => position);
+  return (
+    <div
+      role="grid"
+      aria-label={words.boardLabel(size)}
+      className={shared.grid}
+      style={gridStyle(size)}
     >
-      <span className={styles.symbol} aria-hidden="true">
-        {words.symbols[square]}
-      </span>
-    </button>
-  );
-}
-
-type GridProps = {
-  size: number;
-  squares: Square[];
-  start: Square[];
-  hint: GraduatedHint | undefined | null;
-  logicExplanation?: LogicExplanation | null;
-  isSolved: boolean;
-  onTapSquare: (square: Square, index: number, specificNext?: Square) => void;
-};
-
-// The grid shows all square buttons in rows and columns.
-export function BoardGrid({
-  size,
-  squares,
-  start,
-  hint,
-  logicExplanation,
-  isSolved,
-  onTapSquare,
-}: GridProps) {
-  return (
-    <fieldset className={shared.board}>
-      <legend className="visually-hidden">{words.boardLabel}</legend>
-      <div className={shared.grid} style={gridStyle(size)}>
-        {squares.map((square, index) => (
-          <SquareButton
-            // oxlint-disable-next-line react/no-array-index-key -- the index is the identity of a square. The squares never move.
-            key={index}
-            square={square}
-            index={index}
-            size={size}
-            isFixed={start[index] !== "."}
-            isHint={hint?.index === index}
-            isHighlighted={Boolean(hint?.highlightIndices.includes(index) && hint.index !== index)}
-            isConflict={Boolean(hint?.isConflict && hint.highlightIndices.includes(index))}
-            isLogicTarget={logicExplanation?.targetIndex === index}
-            isLogicPremise={Boolean(logicExplanation?.premises.some((p) => p.index === index))}
-            isSolved={isSolved}
-            onTap={(colour) => onTapSquare(square, index, colour)}
-          />
-        ))}
-      </div>
-    </fieldset>
+      {all.map((row) => (
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- a table with a CSS grid loses its table role in some browsers.
+        <div key={row} role="row" className={styles.row}>
+          {all.map((column) => (
+            <SquareButton
+              key={column}
+              game={game}
+              index={row * size + column}
+              size={size}
+              keys={keys}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }

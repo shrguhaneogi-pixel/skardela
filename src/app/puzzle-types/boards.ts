@@ -1,7 +1,6 @@
 import { lazy, type ComponentType } from "react";
 import type { PuzzleMap, PuzzleType } from "./registry";
 
-// ASD-STE100 Simplified Technical English comments.
 // The board component of each puzzle type.
 // A board loads only when the user opens a puzzle. This keeps the first page load small.
 export const boards: { [Type in PuzzleType]: ComponentType<{ puzzle: PuzzleMap[Type] }> } = {
