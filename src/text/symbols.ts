@@ -2,17 +2,11 @@
 // A symbol on a square has the text colour of the square, so it shows clearly on each square colour.
 // A symbol shows a colour as a shape too, so colour is not the only signal for the player.
 export const symbols = {
-  common: {
-    check: "✓",
-    time: "⏱",
-    arrowRight: "→",
-  },
   "colour-binary": {
     // A circle and a square have different shapes.
     R: "●",
     B: "■",
     ".": "",
-    balanced: "✓",
   },
   guzzle: {
     correct: "✓",
@@ -30,6 +24,26 @@ export const symbols = {
     // A red filter, a red monster and a red laser show a circle. Blue ones show a square, as in Colour Binary.
     colours: { red: "●", blue: "■" },
   },
+  // A solved level on the home page.
+  progress: {
+    solved: "✓",
+  },
+  // One square for each level in a share text: solved with no mistakes, solved with mistakes, and not solved.
+  share: {
+    clean: "🟩",
+    mistakes: "🟨",
+    unsolved: "⬜",
+  },
+  // The link that closes a puzzle and goes back to the home page, and the link to the next level.
+  puzzlePage: {
+    close: "✕",
+    next: "→",
+  },
+  theme: {
+    system: "💻",
+    light: "☀️",
+    dark: "🌙",
+  },
   numpuz: {
     // The four operators that a blank can take. Each key is the operator in the puzzle data.
     operators: { "+": "+", "-": "−", "×": "×", "÷": "÷" },
@@ -46,87 +60,5 @@ export const symbols = {
     arrows: { up: "↑", down: "↓", left: "←", right: "→" },
     // The key hint above the board starts with this mark.
     keyboard: "⌨️",
-  },
-  progress: {
-    solved: "✓",
-  },
-  share: {
-    clean: "🟩",
-    mistakes: "🟨",
-    unsolved: "⬜",
-  },
-  puzzlePage: {
-    close: "✕",
-    next: "→",
-  },
-  theme: {
-    system: "💻",
-    light: "☀️",
-    dark: "🌙",
-  },
-  completion: {
-    clean: "✨",
-    time: "⏱️",
-    hint: "💡",
-    mistake: "❌",
-  },
-  postcard: {
-    colourBinary: {
-      R: "🟥",
-      B: "🟦",
-      empty: "⬜",
-    },
-    guzzle: {
-      correct: "🟩",
-      present: "🟨",
-      absent: "⬛",
-      empty: "⬜",
-    },
-  },
-  atlas: {
-    solved: "🎯",
-    clean: "✨",
-    streak: "🔥",
-    time: "⏱️",
-    skill: "🧩",
-  },
-  practiceQueue: {
-    queue: "🎯",
-    recommend: "💡",
-  },
-  studio: {
-    studio: "🛠️",
-    validate: "🔍",
-    export: "💾",
-  },
-  duel: {
-    duel: "⚔️",
-    trophy: "🏆",
-    tie: "🤝",
-  },
-  expeditions: {
-    compass: "🧭",
-    map: "🗺️",
-    locked: "🔒",
-    completed: "✅",
-  },
-  learn: {
-    pathway: "🎓",
-    lesson: "📖",
-    step: "🔹",
-    done: "✅",
-  },
-  exchange: {
-    exchange: "📦",
-    import: "📥",
-    export: "📤",
-  },
-  cube: {
-    cube: "🧊",
-    solved: "✅",
-    active: "⚡",
-    scramble: "🔀",
-    reset: "🔄",
-    orbit: "🌐",
   },
 } as const;
