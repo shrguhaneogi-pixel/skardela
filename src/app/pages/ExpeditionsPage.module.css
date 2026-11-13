@@ -62,12 +62,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .stageInfo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .stageTitle {
@@ -77,6 +79,11 @@
 }
 
 .playBtnDisabled {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--surface);
   color: var(--text-muted);
   border: 1px solid var(--border);

@@ -129,7 +129,7 @@
 }
 
 .error {
-  color: var(--red);
+  color: light-dark(#b91c1c, #f87171);
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

@@ -58,7 +58,7 @@ function ValidationFeedback({ result }: { readonly result: PackValidationResult 
   }
   if (!result.valid) {
     return (
-      <div className="sk-validation-box sk-validation-error" role="alert">
+      <div className="sk-validation-box sk-validation-error" role="alert" aria-live="assertive">
         <ul className="sk-validation-list">
           {result.errors.map((err) => (
             <li key={err}>{err}</li>

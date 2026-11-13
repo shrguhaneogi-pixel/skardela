@@ -17,6 +17,7 @@ export function ThemeSwitcher() {
       <span className="visually-hidden">{text.theme.label}</span>
       <select
         className={styles.select}
+        aria-label={text.theme.label}
         value={theme}
         onChange={(event) => {
           const selected = event.target.value;

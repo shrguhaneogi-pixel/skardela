@@ -8,6 +8,9 @@
 
 .board {
   min-inline-size: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: 0;
   padding: 0;
   border: 0;
@@ -17,10 +20,11 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(var(--size), minmax(0, 1fr));
-  gap: clamp(0.3rem, 1.2vw, 0.5rem);
+  gap: clamp(0.25rem, 1.2vw, 0.5rem);
+  min-width: max-content;
   width: min(100%, calc(var(--size) * 4.5rem), 32rem);
   margin-inline: auto;
-  padding: clamp(0.45rem, 1.5vw, 0.75rem);
+  padding: clamp(0.35rem, 1.5vw, 0.75rem);
   border-radius: var(--radius-lg);
   background-color: var(--surface-card);
   border: 1px solid var(--border);
@@ -36,7 +40,8 @@
   display: grid;
   place-items: center;
   aspect-ratio: 1;
-  min-width: 0;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   border: 1.5px solid var(--fill-edge, var(--border));
   border-radius: var(--radius-sm);
   background-color: var(--fill, var(--surface-elevated));

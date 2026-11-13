@@ -59,7 +59,7 @@ function CbMetaControls({
         </label>
         <Input
           id="cb-id"
-          className="w-auto min-h-9 py-1.5"
+          className="w-auto min-h-11 py-2"
           value={id}
           onChange={(e) => onIdChange(e.target.value)}
         />
@@ -70,7 +70,7 @@ function CbMetaControls({
         </label>
         <Input
           id="cb-author"
-          className="w-auto min-h-9 py-1.5"
+          className="w-auto min-h-11 py-2"
           value={author}
           onChange={(e) => onAuthorChange(e.target.value)}
         />

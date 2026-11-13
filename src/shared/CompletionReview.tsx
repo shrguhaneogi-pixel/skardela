@@ -135,6 +135,15 @@ function CompletionActions(props: ActionsProps) {
   );
 }
 
+function CompletionFeedback({ feedback }: { feedback: string | null }) {
+  if (!feedback) return null;
+  return (
+    <output aria-live="polite" className={styles.shareFeedback}>
+      {feedback}
+    </output>
+  );
+}
+
 export type CompletionReviewProps = {
   stats: CompletionStats;
   postcardText?: string;
@@ -181,7 +190,7 @@ export function CompletionReview({
       >
         <CompletionHeader isCleanSolve={stats.isCleanSolve} />
         <CompletionStatsGrid stats={stats} />
-        {feedback && <p className={styles.shareFeedback}>{feedback}</p>}
+        <CompletionFeedback feedback={feedback} />
         <CompletionActions
           hasPostcard={Boolean(postcardText)}
           onRestart={onRestart}

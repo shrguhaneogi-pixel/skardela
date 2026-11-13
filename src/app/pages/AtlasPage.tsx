@@ -113,17 +113,24 @@ function AtlasSettingsSection(props: SettingsSectionProps) {
             <h3>{text.atlas.enableLabel}</h3>
             <p>{text.atlas.enableHelp}</p>
           </div>
-          <input
-            type="checkbox"
-            checked={props.isEnabled}
-            onChange={props.onToggleEnabled}
-            aria-label={text.atlas.enableLabel}
-          />
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              className={styles.checkboxInput}
+              checked={props.isEnabled}
+              onChange={props.onToggleEnabled}
+              aria-label={text.atlas.enableLabel}
+            />
+          </label>
         </div>
         <div className={styles.settingRow}>
           <div className={styles.settingInfo}>
             <h3>{text.atlas.clearHistoryBtn}</h3>
-            {props.feedback && <span className={styles.feedbackMsg}>{props.feedback}</span>}
+            {props.feedback && (
+              <output aria-live="polite" className={styles.feedbackMsg}>
+                {props.feedback}
+              </output>
+            )}
           </div>
           <Button variant="destructive" onClick={props.onClearHistory}>
             {text.atlas.clearHistoryBtn}

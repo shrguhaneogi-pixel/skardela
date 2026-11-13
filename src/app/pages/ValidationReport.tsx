@@ -16,7 +16,7 @@ export function ValidationReport({ result }: { readonly result: ValidationResult
   }
 
   return (
-    <div className="sk-validation-box sk-validation-error" role="alert">
+    <div className="sk-validation-box sk-validation-error" role="alert" aria-live="assertive">
       <strong>{text.studio.invalidHeader}</strong>
       <ul className="sk-validation-list">
         {result.errors.map((err) => (

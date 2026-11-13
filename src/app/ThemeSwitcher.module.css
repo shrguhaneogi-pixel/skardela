@@ -21,7 +21,8 @@
 }
 
 .select {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
   padding: 0.25rem 2.25rem 0.25rem 0.875rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
