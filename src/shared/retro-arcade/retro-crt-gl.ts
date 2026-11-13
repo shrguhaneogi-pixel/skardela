@@ -200,12 +200,12 @@ export function renderCrtFrame(ctx: CrtGlContext, canvas: HTMLCanvasElement, tim
 
   gl.useProgram(program);
   gl.bindVertexArray(vao);
-  gl.uniform2f(locations.resolution, canvas.width, canvas.height);
-  gl.uniform1f(locations.time, timeSec);
+  if (locations.resolution) gl.uniform2f(locations.resolution, canvas.width, canvas.height);
+  if (locations.time) gl.uniform1f(locations.time, timeSec);
 
   // Power-on snaps open over first 1.2 seconds
   const power = Math.min(1.0, timeSec / 1.2);
-  gl.uniform1f(locations.powerOn, power);
+  if (locations.powerOn) gl.uniform1f(locations.powerOn, power);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 }

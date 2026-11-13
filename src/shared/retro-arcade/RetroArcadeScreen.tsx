@@ -19,7 +19,8 @@ function useCrtLoop(canvasRef: React.RefObject<HTMLCanvasElement | null>, crtEna
     const startTime = performance.now();
 
     const loop = (now: number) => {
-      if (ctx) renderCrtFrame(ctx, canvas, (now - startTime) * 0.001);
+      if (!ctx) return;
+      renderCrtFrame(ctx, canvas, (now - startTime) * 0.001);
       animId = requestAnimationFrame(loop);
     };
 
@@ -31,12 +32,12 @@ function useCrtLoop(canvasRef: React.RefObject<HTMLCanvasElement | null>, crtEna
     };
     const handleRestored = () => {
       ctx = initCrtGl(canvas);
-      animId = requestAnimationFrame(loop);
+      if (ctx) animId = requestAnimationFrame(loop);
     };
 
     canvas.addEventListener("webglcontextlost", handleLost);
     canvas.addEventListener("webglcontextrestored", handleRestored);
-    animId = requestAnimationFrame(loop);
+    if (ctx) animId = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(animId);
@@ -66,7 +67,7 @@ function ArcadeControls(props: ControlsProps) {
         </button>
       </div>
       <button type="button" className={styles.arcadeButtonSecondary} onClick={props.onToggleCrt}>
-        {props.crtEnabled ? "Disable CRT Shader" : "Enable CRT Shader"}
+        {props.crtEnabled ? text.arcade.disableCrt : text.arcade.enableCrt}
       </button>
     </div>
   );

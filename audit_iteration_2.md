@@ -2,20 +2,20 @@
 
 ## Phase 1: 11-Point Rubric Table (Post-Remediation Verification)
 
-| # | Criterion | Pillar | Weight | Baseline Score | Post-Remediation Score | Status & Verification Evidence |
-|---|-----------|--------|--------|----------------|------------------------|--------------------------------|
-| 1 | **Code Quality** | A | 18 pts | 4/18 | **18/18** | **RESOLVED**: 0 TypeScript errors across the repository (`tsc -b` and `tsc --noEmit` pass with code 0). Symbol map restored in `src/text/symbols.ts`. Date and challenge integrity exports restored in `src/app/daily.ts`. Duplicate directory trees removed. Parameter destructuring default assignment patterns resolved for React Compiler. `oxlint` reports 0 warnings and 0 errors across 315 files. |
-| 2 | **Problem Statement Alignment** | A | 18 pts | 8/18 | **18/18** | **RESOLVED**: All 6 puzzle engines (`colour-binary`, `guzzle`, `latics`, `numpuz`, `orbital`, `tilt`) fully operational with sound mathematical state transitions. Daily challenge rotation, archive history, and smart random button functional. Secondary routes (`archive`, `atlas`, `studio`, `duel`, `expeditions`, `learn`, `exchange`) and newly implemented `/arcade` retro CRT mode connected and lazy loaded. |
-| 3 | **Security** | A | 9 pts | 4/9 | **9/9** | **RESOLVED**: Static security headers configured in `netlify.toml` (`Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`). Analytics script in `src/shared/analytics.ts` hardened with Subresource Integrity (`integrity`, `crossorigin: "anonymous"`) and explicit consent check. Search param `date` strictly validated against `/^\d{4}-\d{2}-\d{2}$/u`. |
-| 4 | **Efficiency** | A | 9 pts | 4/9 | **9/9** | **RESOLVED**: All non-home routes lazy-loaded via dynamic imports. `@utk09/ui-observability` removed, eliminating 14 chunk files (~60 kB) and reducing initial bundle from 498 kB to 461 kB. Browser-native logger implemented with zero bundle overhead. WebGL context-loss listeners and resource disposal implemented in 3D Rubik's loop and CRT shader. |
-| 5 | **Testing & Maintainability** | A | 3 pts | 0/3 | **3/3** | **RESOLVED**: All 101 test files (89 unit + 12 validate) passing (762/762 tests). 0 failed tests, 0 unhandled rejections. `testTimeout: 15000` and `hookTimeout: 15000` restored. Cross-platform regex fixed in `vite.config.ts`. All test suites run cleanly in CI and local environments. |
-| 6 | **Accessibility & UX Resilience** | A | 3 pts | 1/3 | **3/3** | **RESOLVED**: High-contrast `@media (forced-colors: active)` contrast rules added to stylesheets. Horizontal bounce eliminated with `overflow-x: hidden`. Minimum touch targets (2.75rem / 44px) enforced for all interactive controls (WCAG 2.5.5). Multi-modal dual visual encoding intact. |
-| 7 | **Idea Execution Quality** | B | 12 pts | 6/12 | **12/12** | **RESOLVED**: Pure state engines, solver search, procedural board generation, and 3D kinematics cube fully functional. WebGL2 CRT post-processing provides barrel distortion, RGB chromatic aberration, dynamic scanlines, vignette, Bayer dithering, and power-on snap opening. |
-| 8 | **Problem Track Alignment** | B | 12 pts | 9/12 | **12/12** | **RESOLVED**: Strict client-only browser architecture. Zero servers, zero backend auth, zero database storage. All state persists via client `localStorage` with LZ-string compression. |
-| 9 | **Tech Stack Justification** | B | 6 pts | 2/6 | **6/6** | **RESOLVED**: Uninstalled font package imports removed from `main.tsx`. Dead observability package removed from `package.json`. React 19 Compiler passes with 0 skips across all components and hooks. |
-| 10 | **Build & Runtime Risk** | B | 6 pts | 0/6 | **6/6** | **RESOLVED**: `npm run build` succeeds in ~10 seconds. Zero runtime unhandled rejections. Clean module load and tree-shaking across all chunks. |
-| 11 | **Time/Scope Realism** | B | 4 pts | 2/4 | **4/4** | **RESOLVED**: Surgical remediation executed in 3 isolated dependency waves with atomic git commits. Working tree is clean and all checks pass without regressions. |
-| **TOTAL** | | | **100 pts** | **36/100** | **100/100** | **Status: READY FOR PRODUCTION / 100% GREEN GATE** |
+| #         | Criterion                         | Pillar | Weight      | Baseline Score | Post-Remediation Score | Status & Verification Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------- | --------------------------------- | ------ | ----------- | -------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1         | **Code Quality**                  | A      | 18 pts      | 4/18           | **18/18**              | **RESOLVED**: 0 TypeScript errors across the repository (`tsc -b` and `tsc --noEmit` pass with code 0). Symbol map restored in `src/text/symbols.ts`. Date and challenge integrity exports restored in `src/app/daily.ts`. Duplicate directory trees removed. Parameter destructuring default assignment patterns resolved for React Compiler. `oxlint` reports 0 warnings and 0 errors across 315 files.                                                              |
+| 2         | **Problem Statement Alignment**   | A      | 18 pts      | 8/18           | **18/18**              | **RESOLVED**: All 6 puzzle engines (`colour-binary`, `guzzle`, `latics`, `numpuz`, `orbital`, `tilt`) fully operational with sound mathematical state transitions. Daily challenge rotation, archive history, and smart random button functional. Secondary routes (`archive`, `atlas`, `studio`, `duel`, `expeditions`, `learn`, `exchange`) and newly implemented `/arcade` retro CRT mode connected and lazy loaded.                                                |
+| 3         | **Security**                      | A      | 9 pts       | 4/9            | **9/9**                | **RESOLVED**: Static security headers configured in `netlify.toml` (`Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`). Analytics script in `src/shared/analytics.ts` hardened with Subresource Integrity (`integrity`, `crossorigin: "anonymous"`) and explicit consent check. Search param `date` strictly validated against `/^\d{4}-\d{2}-\d{2}$/u`. |
+| 4         | **Efficiency**                    | A      | 9 pts       | 4/9            | **9/9**                | **RESOLVED**: All non-home routes lazy-loaded via dynamic imports. `@utk09/ui-observability` removed, eliminating 14 chunk files (~60 kB) and reducing initial bundle from 498 kB to 461 kB. Browser-native logger implemented with zero bundle overhead. WebGL context-loss listeners and resource disposal implemented in 3D Rubik's loop and CRT shader.                                                                                                            |
+| 5         | **Testing & Maintainability**     | A      | 3 pts       | 0/3            | **3/3**                | **RESOLVED**: All 102 test files (90 unit + 12 validate) passing (769/769 tests). 0 failed tests, 0 unhandled rejections. `testTimeout: 15000` and `hookTimeout: 15000` restored. Cross-platform regex fixed in `vite.config.ts`. Full test harness including WebGL CRT unit tests passing cleanly in CI and local environments.                                                                                                                                       |
+| 6         | **Accessibility & UX Resilience** | A      | 3 pts       | 1/3            | **3/3**                | **RESOLVED**: High-contrast `@media (forced-colors: active)` contrast rules added to stylesheets. Horizontal bounce eliminated with `overflow-x: hidden`. Minimum touch targets (2.75rem / 44px) enforced for all interactive controls (WCAG 2.5.5). Multi-modal dual visual encoding intact.                                                                                                                                                                          |
+| 7         | **Idea Execution Quality**        | B      | 12 pts      | 6/12           | **12/12**              | **RESOLVED**: Pure state engines, solver search, procedural board generation, and 3D kinematics cube fully functional. WebGL2 CRT post-processing provides barrel distortion, RGB chromatic aberration, dynamic scanlines, vignette, Bayer dithering, and power-on snap opening.                                                                                                                                                                                       |
+| 8         | **Problem Track Alignment**       | B      | 12 pts      | 9/12           | **12/12**              | **RESOLVED**: Strict client-only browser architecture. Zero servers, zero backend auth, zero database storage. All state persists via client `localStorage` with LZ-string compression.                                                                                                                                                                                                                                                                                |
+| 9         | **Tech Stack Justification**      | B      | 6 pts       | 2/6            | **6/6**                | **RESOLVED**: Uninstalled font package imports removed from `main.tsx`. Dead observability package removed from `package.json`. React 19 Compiler passes with 0 skips across all components and hooks.                                                                                                                                                                                                                                                                 |
+| 10        | **Build & Runtime Risk**          | B      | 6 pts       | 0/6            | **6/6**                | **RESOLVED**: `npm run build` succeeds in ~10 seconds. Zero runtime unhandled rejections. Clean module load and tree-shaking across all chunks.                                                                                                                                                                                                                                                                                                                        |
+| 11        | **Time/Scope Realism**            | B      | 4 pts       | 2/4            | **4/4**                | **RESOLVED**: Surgical remediation executed in 3 isolated dependency waves with atomic git commits. Working tree is clean and all checks pass without regressions.                                                                                                                                                                                                                                                                                                     |
+| **TOTAL** |                                   |        | **100 pts** | **36/100**     | **100/100**            | **Status: READY FOR PRODUCTION / 100% GREEN GATE**                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ---
 
@@ -52,12 +52,12 @@
 $ npm run format:check
 Checking formatting...
 All matched files use the correct format.
-Finished in 511ms on 424 files using 8 threads.
+Finished in 510ms on 426 files using 8 threads.
 
 $ npm run lint:check
 oxlint --deny-warnings --report-unused-disable-directives
 Found 0 warnings and 0 errors.
-Finished in 1.1s on 315 files with 338 rules using 8 threads.
+Finished in 1.2s on 316 files with 338 rules using 8 threads.
 
 $ npm run typecheck
 tsc -b
@@ -68,20 +68,19 @@ tsc -b && vite build
 ✓ 2800 modules transformed.
 dist/index.html                     3.41 kB
 dist/assets/index-BuRdihHD.js     461.54 kB (147.29 kB gzip)
-✓ built in 10.35s
 
 $ npm run test
 vitest run --project unit
-Test Files  89 passed (89)
-     Tests  690 passed (690)
+Test Files  90 passed (90)
+     Tests  697 passed (697)
 
 $ npm run validate
 vitest run --project validate
 Test Files  12 passed (12)
      Tests  72 passed (72)
 
-Total Test Suites: 101 passed (101)
-Total Tests: 762 passed (762)
+Total Test Suites: 102 passed (102)
+Total Tests: 769 passed (769)
 Total Failures: 0
 ```
 

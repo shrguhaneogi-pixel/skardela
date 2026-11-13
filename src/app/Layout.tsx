@@ -1,6 +1,7 @@
 /* oxlint-disable import/max-dependencies */
 import { Link, NavLink, Outlet } from "react-router";
 import { text } from "../text/en";
+import { symbols } from "../text/symbols";
 import { MotionProvider } from "../shared/MotionProvider";
 import { ReactiveCursor } from "../shared/ReactiveCursor";
 import { useSmoothScroll } from "../shared/useSmoothScroll";
@@ -40,7 +41,7 @@ function StreakPill() {
       title={`${streak}${text.streak.word}`}
       aria-label={`${streak}${text.streak.word}`}
     >
-      <span aria-hidden="true">🔥</span>
+      <span aria-hidden="true">{symbols.atlas.streak}</span>
       <span>{streak}</span>
       <span className="hidden sm:inline">{text.streak.word}</span>
     </Link>

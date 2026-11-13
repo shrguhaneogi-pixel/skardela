@@ -448,6 +448,8 @@ export const text = {
     title: "Retro 3D Arcade",
     subtitle: "Hardware-accelerated CRT display with 3D kinematic puzzle execution",
     navLink: "Arcade",
+    disableCrt: "Disable CRT effect",
+    enableCrt: "Enable CRT effect",
   },
   notFound: {
     title: "Page Not Found",
