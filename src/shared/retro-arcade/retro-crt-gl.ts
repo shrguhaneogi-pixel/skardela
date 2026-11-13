@@ -115,14 +115,7 @@ function compileShader(gl: WebGL2RenderingContext, type: number, src: string): W
   return shader;
 }
 
-export function initCrtGl(canvas: HTMLCanvasElement): CrtGlContext | null {
-  const gl = canvas.getContext("webgl2", {
-    alpha: false,
-    antialias: false,
-    powerPreference: "low-power",
-  });
-  if (!gl) return null;
-
+function createCrtProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
   const vs = compileShader(gl, gl.VERTEX_SHADER, CRT_VS);
   const fs = compileShader(gl, gl.FRAGMENT_SHADER, CRT_FS);
   if (!vs || !fs) return null;
@@ -140,17 +133,18 @@ export function initCrtGl(canvas: HTMLCanvasElement): CrtGlContext | null {
     gl.deleteProgram(program);
     return null;
   }
+  return program;
+}
 
+function createCrtQuad(
+  gl: WebGL2RenderingContext,
+): { vao: WebGLVertexArrayObject; buffer: WebGLBuffer } | null {
   const vao = gl.createVertexArray();
   const buffer = gl.createBuffer();
-  if (!vao || !buffer) {
-    gl.deleteProgram(program);
-    return null;
-  }
+  if (!vao || !buffer) return null;
 
   gl.bindVertexArray(vao);
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  // Full-screen quad
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
@@ -159,11 +153,31 @@ export function initCrtGl(canvas: HTMLCanvasElement): CrtGlContext | null {
   gl.enableVertexAttribArray(0);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
+  return { vao, buffer };
+}
+
+export function initCrtGl(canvas: HTMLCanvasElement): CrtGlContext | null {
+  const gl = canvas.getContext("webgl2", {
+    alpha: false,
+    antialias: false,
+    powerPreference: "low-power",
+  });
+  if (!gl) return null;
+
+  const program = createCrtProgram(gl);
+  if (!program) return null;
+
+  const quad = createCrtQuad(gl);
+  if (!quad) {
+    gl.deleteProgram(program);
+    return null;
+  }
+
   return {
     gl,
     program,
-    buffer,
-    vao,
+    buffer: quad.buffer,
+    vao: quad.vao,
     locations: {
       resolution: gl.getUniformLocation(program, "uResolution"),
       time: gl.getUniformLocation(program, "uTime"),

@@ -173,6 +173,55 @@ function initAndRunRubiksLoop(
   };
 }
 
+function setupRubiksCanvas(
+  canvas: HTMLCanvasElement,
+  cubiesRef: React.RefObject<CubieData[]>,
+  moveHistoryRef: React.RefObject<string[]>,
+  springRef: React.RefObject<SpringState>,
+  dragRef: React.RefObject<DragState>,
+  cameraAngleRef: React.RefObject<{ yaw: number; pitch: number }>,
+  onContextUpdate?: (context: CubeLLMContext) => void,
+  autoRotateSpeed?: number,
+  orbitRef?: React.RefObject<OrbitState>,
+): () => void {
+  let cleanupCurrent: (() => void) | null = null;
+
+  const start = () => {
+    if (cleanupCurrent) cleanupCurrent();
+    const gl = canvas.getContext("webgl2", { antialias: true, alpha: false });
+    cleanupCurrent = gl
+      ? initAndRunRubiksLoop(
+          gl,
+          canvas,
+          cubiesRef,
+          moveHistoryRef,
+          springRef,
+          dragRef,
+          cameraAngleRef,
+          onContextUpdate,
+          autoRotateSpeed,
+          orbitRef,
+        )
+      : null;
+  };
+
+  const handleLost = (e: Event) => {
+    e.preventDefault();
+    if (cleanupCurrent) cleanupCurrent();
+    cleanupCurrent = null;
+  };
+
+  canvas.addEventListener("webglcontextlost", handleLost);
+  canvas.addEventListener("webglcontextrestored", start);
+  start();
+
+  return () => {
+    canvas.removeEventListener("webglcontextlost", handleLost);
+    canvas.removeEventListener("webglcontextrestored", start);
+    if (cleanupCurrent) cleanupCurrent();
+  };
+}
+
 export function useRubiksRenderLoop(
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   cubiesRef: React.RefObject<CubieData[]>,
@@ -187,22 +236,16 @@ export function useRubiksRenderLoop(
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const gl = canvas.getContext("webgl2", { antialias: true, alpha: false });
-    if (!gl) return;
-
-    return (
-      initAndRunRubiksLoop(
-        gl,
-        canvas,
-        cubiesRef,
-        moveHistoryRef,
-        springRef,
-        dragRef,
-        cameraAngleRef,
-        onContextUpdate,
-        autoRotateSpeed,
-        orbitRef,
-      ) ?? undefined
+    return setupRubiksCanvas(
+      canvas,
+      cubiesRef,
+      moveHistoryRef,
+      springRef,
+      dragRef,
+      cameraAngleRef,
+      onContextUpdate,
+      autoRotateSpeed,
+      orbitRef,
     );
   }, [
     canvasRef,

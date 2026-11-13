@@ -36,7 +36,7 @@ type HeaderProps = {
 function PuzzleDetailsHeader(props: HeaderProps) {
   const page = text.puzzlePage;
   const validDate =
-    props.dateParam && /^\d{4}-\d{2}-\d{2}$/.test(props.dateParam) ? props.dateParam : null;
+    props.dateParam && /^\d{4}-\d{2}-\d{2}$/u.test(props.dateParam) ? props.dateParam : null;
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>{props.typeName}</h1>
@@ -190,7 +190,7 @@ export function PuzzlePage() {
   const loaded = useLoaderData<typeof puzzleLoader>();
   const [searchParams] = useSearchParams();
   const rawDate = searchParams.get("date");
-  const dateParam = rawDate && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
+  const dateParam = rawDate && /^\d{4}-\d{2}-\d{2}$/u.test(rawDate) ? rawDate : null;
   const isArchive = !isTodayUtc(dateParam);
 
   useEffect(() => {

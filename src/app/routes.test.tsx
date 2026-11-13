@@ -93,7 +93,7 @@ describe("arcade route integration", () => {
   it("shows the retro 3D arcade page at /arcade", async () => {
     renderAt("/arcade");
     expect(
-      await screen.findByRole("heading", { level: 1, name: new RegExp(text.arcade.title, "i") }),
+      await screen.findByRole("heading", { level: 1, name: new RegExp(text.arcade.title, "iu") }),
     ).toBeInTheDocument();
   });
 });

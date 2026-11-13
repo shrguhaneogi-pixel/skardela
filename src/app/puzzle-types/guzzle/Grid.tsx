@@ -78,27 +78,11 @@ function handleGuzzleKeyDown(
 }
 
 // Each square on a word is a button. The player selects a square and then types a letter.
-function SquareButton({
-  label,
-  letter,
-  guess,
-  isFixed,
-  isSelected,
-  isHint,
-  isHighlighted,
-  isLogicTarget,
-  isLogicPremise,
-  isLocked,
-  onSelect,
-  onLetter,
-  onNavigate,
-}: SquareProps) {
+function SquareButton(props: SquareProps) {
+  const { label, letter, guess, isFixed, isSelected, isLocked, onSelect, onLetter, onNavigate } =
+    props;
   const fixed = Boolean(isFixed);
   const selected = Boolean(isSelected);
-  const hint = Boolean(isHint);
-  const highlighted = Boolean(isHighlighted);
-  const logicTarget = Boolean(isLogicTarget);
-  const logicPremise = Boolean(isLogicPremise);
   const ref = useFocusWhenSelected(selected);
 
   return (
@@ -109,10 +93,10 @@ function SquareButton({
       data-mark={guess?.mark ?? "none"}
       data-fixed={fixed}
       data-selected={selected}
-      data-hint={hint}
-      data-highlight={highlighted}
-      data-logic-target={logicTarget}
-      data-logic-premise={logicPremise}
+      data-hint={Boolean(props.isHint)}
+      data-highlight={Boolean(props.isHighlighted)}
+      data-logic-target={Boolean(props.isLogicTarget)}
+      data-logic-premise={Boolean(props.isLogicPremise)}
       aria-label={label}
       aria-pressed={fixed ? undefined : selected}
       aria-disabled={isLocked}

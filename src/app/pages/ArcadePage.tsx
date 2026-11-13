@@ -11,7 +11,9 @@ const RetroArcadeScreen = lazy(() => import("../../shared/retro-arcade/RetroArca
 export function ArcadePage() {
   return (
     <section className="sk-hero">
-      <title>{text.arcade.title} | {text.siteName}</title>
+      <title>
+        {text.arcade.title} | {text.siteName}
+      </title>
       <h1>
         <span aria-hidden="true">{symbols.cube.cube} </span>
         {text.arcade.title}

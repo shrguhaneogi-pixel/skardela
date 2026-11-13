@@ -15,7 +15,10 @@ export default function RubiksCubeR3F({ onContextUpdate, autoRotate }: RubiksCub
   const isAutoRotate = autoRotate ?? false;
   return (
     <div style={{ width: "100%", height: "100%", minHeight: "480px", position: "relative" }}>
-      <RubiksCubeCanvas onContextUpdate={onContextUpdate} autoRotateSpeed={isAutoRotate ? 0.3 : 0} />
+      <RubiksCubeCanvas
+        onContextUpdate={onContextUpdate}
+        autoRotateSpeed={isAutoRotate ? 0.3 : 0}
+      />
     </div>
   );
 }

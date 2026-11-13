@@ -70,7 +70,9 @@
   background: var(--accent, #e05a2b);
   color: #ffffff;
   cursor: pointer;
-  transition: transform 0.1s ease, filter 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease;
 }
 
 .arcadeButton:hover {
