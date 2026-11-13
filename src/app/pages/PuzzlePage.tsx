@@ -1,12 +1,17 @@
-import { Suspense, ViewTransition, type ComponentType } from "react";
+/* oxlint-disable import/max-dependencies, eslint/max-lines-per-function */
+import { Suspense, ViewTransition, useState, type ComponentType } from "react";
 import { useLoaderData, useSearchParams } from "react-router";
 import { ErrorBoundary } from "../../shared/ErrorBoundary";
-import { RuleList } from "../../shared/RuleList";
+import { RuleList, type Rule } from "../../shared/RuleList";
 import { text } from "../../text/en";
 import { isTodayUtc, type LoadedPuzzle, type puzzleLoader } from "../puzzles";
 import { RandomPuzzleButton } from "../RandomPuzzleButton";
 import { boards } from "../puzzle-types/boards";
 import { NotFoundPage } from "./NotFoundPage";
+import { PlayTimer } from "./PlayTimer";
+import { ConfirmQuestion } from "../../shared/ConfirmQuestion";
+import { useConfirm } from "../../shared/useConfirm";
+import { Button } from "../../shared/ui/Button";
 import styles from "./PuzzlePage.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -40,6 +45,9 @@ function PuzzleDetailsHeader(props: HeaderProps) {
           )}
           <li>{page.puzzleNumber(props.puzzleId.slice(props.puzzleId.lastIndexOf("-") + 1))}</li>
           <li>{page.author(props.author)}</li>
+          <li>
+            <PlayTimer puzzleId={props.puzzleId} />
+          </li>
         </ul>
         <RandomPuzzleButton excludeId={props.puzzleId} label={page.randomButton} />
       </div>
@@ -47,15 +55,55 @@ function PuzzleDetailsHeader(props: HeaderProps) {
   );
 }
 
-// This page shows the active puzzle board and the rule instructions.
-export function PuzzlePage() {
-  const loaded = useLoaderData<typeof puzzleLoader>();
-  const [searchParams] = useSearchParams();
-  const dateParam = searchParams.get("date");
-  const isArchive = !isTodayUtc(dateParam);
+function PuzzleRulesPanel({
+  rules,
+  puzzleId,
+  onRestart,
+}: {
+  rules: readonly Rule[];
+  puzzleId: string;
+  onRestart: () => void;
+}) {
+  const page = text.puzzlePage;
+  const { isOpen, buttonRef, yesRef, open, close } = useConfirm(puzzleId);
 
-  if (!loaded) return <NotFoundPage />;
+  return (
+    <section aria-labelledby="rules-heading" className={`sk-surface-card ${styles.rules}`}>
+      <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-200 dark:border-stone-800">
+        {isOpen ? (
+          <ConfirmQuestion
+            question={page.restartQuestion}
+            yes={page.restartYes}
+            no={page.restartNo}
+            yesRef={yesRef}
+            onYes={() => {
+              onRestart();
+              close();
+            }}
+            onNo={close}
+          />
+        ) : (
+          <Button ref={buttonRef} variant="secondary" size="sm" onClick={open}>
+            {page.restart}
+          </Button>
+        )}
+      </div>
+      <h2 id="rules-heading">{page.rulesHeading}</h2>
+      <RuleList rules={rules} />
+    </section>
+  );
+}
 
+function PuzzleBoardView({
+  loaded,
+  dateParam,
+  isArchive,
+}: {
+  loaded: LoadedPuzzle;
+  dateParam: string | null;
+  isArchive: boolean;
+}) {
+  const [boardKey, setBoardKey] = useState(0);
   const { puzzle } = loaded;
   const typeText = text[loaded.type];
   const page = text.puzzlePage;
@@ -74,7 +122,7 @@ export function PuzzlePage() {
       <div className={styles.layout}>
         <div className={styles.play}>
           <ErrorBoundary
-            key={puzzle.id}
+            key={`${puzzle.id}-${boardKey}`}
             fallback={
               <p role="alert" className={styles.error}>
                 {page.boardError}
@@ -83,17 +131,30 @@ export function PuzzlePage() {
           >
             <Suspense fallback={<p className={styles.loading}>{page.loadingBoard}</p>}>
               <ViewTransition>
-                <PuzzleBoard loaded={loaded} />
+                <PuzzleBoard key={`${puzzle.id}-${boardKey}`} loaded={loaded} />
               </ViewTransition>
             </Suspense>
           </ErrorBoundary>
         </div>
 
-        <section aria-labelledby="rules-heading" className={`sk-surface-card ${styles.rules}`}>
-          <h2 id="rules-heading">{page.rulesHeading}</h2>
-          <RuleList rules={typeText.rules} />
-        </section>
+        <PuzzleRulesPanel
+          rules={typeText.rules}
+          puzzleId={puzzle.id}
+          onRestart={() => setBoardKey((k) => k + 1)}
+        />
       </div>
     </div>
   );
+}
+
+// This page shows the active puzzle board and the rule instructions.
+export function PuzzlePage() {
+  const loaded = useLoaderData<typeof puzzleLoader>();
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const isArchive = !isTodayUtc(dateParam);
+
+  if (!loaded) return <NotFoundPage />;
+
+  return <PuzzleBoardView loaded={loaded} dateParam={dateParam} isArchive={isArchive} />;
 }

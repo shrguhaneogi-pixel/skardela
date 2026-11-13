@@ -8,11 +8,17 @@ import {
   type PuzzleMap,
   type PuzzleType,
 } from "./puzzle-types/registry";
+import { useAppStore } from "../shared/state/store";
+import { randomPuzzleId } from "./randomPuzzle";
+import type { Difficulty } from "../shared/difficulty";
 
 // One puzzle with the name of its type. The type tells the page which board to show.
 export type LoadedPuzzle = {
   [Type in PuzzleType]: { type: Type; puzzle: PuzzleMap[Type] };
-}[PuzzleType];
+}[PuzzleType] & {
+  others?: readonly string[];
+  today?: readonly { id: string; difficulty: Difficulty }[];
+};
 
 // Find a puzzle inside imported custom packs. If packId is given, search only that pack.
 function findPackPuzzle(id: string, type: PuzzleType, packId?: string | null): LoadedPuzzle | null {
@@ -39,7 +45,13 @@ export async function loadPuzzle(id: string, packId?: string | null): Promise<Lo
 
   const puzzles: readonly PuzzleMap[PuzzleType][] = await puzzleTypes[type].loadPuzzles();
   const puzzle = puzzles.find((item) => item.id === id);
-  if (puzzle) return { type, puzzle } as LoadedPuzzle;
+  if (puzzle) {
+    const others = puzzles
+      .filter((item) => item.difficulty === puzzle.difficulty && item.id !== puzzle.id)
+      .map((item) => item.id);
+    const today = puzzlesForDay(puzzles, dayNumber(utcDate()));
+    return { type, puzzle, others, today } as LoadedPuzzle;
+  }
 
   return findPackPuzzle(id, type);
 }
@@ -53,6 +65,7 @@ export function puzzleLoader({
 }
 
 // Select one random puzzle ID from the registered puzzle pools.
+// Prefers unplayed/unsolved puzzles first.
 export async function pickRandomPuzzleId(options?: {
   excludeId?: string;
   type?: PuzzleType;
@@ -63,12 +76,13 @@ export async function pickRandomPuzzleId(options?: {
   const ids = pools.flatMap((list) => list.map((item) => item.id));
   if (ids.length === 0) return null;
 
+  const solved = useAppStore.getState().solved;
   const filtered =
     options?.excludeId && ids.length > 1 ? ids.filter((id) => id !== options.excludeId) : ids;
   const candidates = filtered.length > 0 ? filtered : ids;
-  const roll = (options?.random ?? Math.random)();
-  const index = Math.min(candidates.length - 1, Math.max(0, Math.floor(roll * candidates.length)));
-  return candidates[index] ?? null;
+
+  const chosen = randomPuzzleId(candidates, solved, options?.random);
+  return chosen ?? candidates[0] ?? null;
 }
 
 // The home page shows one recommended puzzle for each type and difficulty for the current UTC day.

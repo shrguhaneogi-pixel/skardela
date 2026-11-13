@@ -1,3 +1,4 @@
+/* oxlint-disable import/max-dependencies, eslint/max-lines-per-function */
 import { useLoaderData } from "react-router";
 import { text } from "../../text/en";
 import { formatDateString, utcDate } from "../daily";
@@ -5,6 +6,12 @@ import type { homeLoader } from "../puzzles";
 import { PracticeQueue } from "../../shared/PracticeQueue";
 import { EditorialHeroCanvas } from "../../shared/EditorialHeroCanvas";
 import { HomeActionsRow, PuzzleCard, QuickPlayBanner } from "./HomePuzzleCard";
+import { TodayProgress, type Segment } from "./TodayProgress";
+import { HowItWorks } from "./HowItWorks";
+import { Faq } from "./Faq";
+import { useAppStore } from "../../shared/state/store";
+import { useNow } from "../../shared/useNow";
+import { getPuzzleProgressStatus } from "../../shared/puzzle-progress";
 import styles from "./HomePage.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -12,6 +19,17 @@ import styles from "./HomePage.module.css";
 export function HomePage() {
   const cards = useLoaderData<typeof homeLoader>();
   const todayUtc = formatDateString(utcDate());
+  const solvedList = useAppStore((state) => state.solved);
+  const now = useNow(60_000);
+
+  const segments: Segment[] = cards.flatMap(({ type, levels }) =>
+    levels.map(({ id, difficulty }) => ({
+      id,
+      typeName: text[type].name,
+      level: text.levels[difficulty],
+      isSolved: solvedList.includes(id) || getPuzzleProgressStatus(id) === "solved",
+    })),
+  );
 
   return (
     <>
@@ -25,6 +43,7 @@ export function HomePage() {
         <h1 data-testid="home-page-title">{text.home.title}</h1>
         <p className="sk-intro">{text.home.intro}</p>
         <QuickPlayBanner cards={cards} />
+        <TodayProgress segments={segments} now={now} />
       </div>
 
       <section
@@ -43,6 +62,8 @@ export function HomePage() {
         <HomeActionsRow />
       </section>
       <PracticeQueue />
+      <HowItWorks />
+      <Faq />
     </>
   );
 }

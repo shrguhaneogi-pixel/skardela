@@ -1,9 +1,14 @@
+/* oxlint-disable import/max-dependencies */
 import { Link, NavLink, Outlet } from "react-router";
 import { text } from "../text/en";
 import { MotionProvider } from "../shared/MotionProvider";
 import { ReactiveCursor } from "../shared/ReactiveCursor";
 import { useSmoothScroll } from "../shared/useSmoothScroll";
 import { cn } from "../shared/utils";
+import { currentStreak } from "../shared/state/progress";
+import { useAppStore } from "../shared/state/store";
+import { useToday } from "../shared/useNow";
+import { useReloadAtMidnight } from "./useReloadAtMidnight";
 import styles from "./Layout.module.css";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
@@ -21,6 +26,25 @@ const NAV_ITEMS = [
   { to: "/learn", label: text.learn.navLink },
   { to: "/exchange", label: text.exchange.navLink },
 ];
+
+function StreakPill() {
+  const results = useAppStore((state) => state.results);
+  const today = useToday();
+  const streak = currentStreak(results, today);
+  if (streak === 0) return null;
+  return (
+    <Link
+      to="/atlas"
+      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 hover:bg-orange-500/20 transition-colors"
+      title={`${streak}${text.streak.word}`}
+      aria-label={`${streak}${text.streak.word}`}
+    >
+      <span aria-hidden="true">🔥</span>
+      <span>{streak}</span>
+      <span className="hidden sm:inline">{text.streak.word}</span>
+    </Link>
+  );
+}
 
 function BrandLogo() {
   return (
@@ -41,6 +65,7 @@ function BrandLogo() {
 // This component provides the top navigation bar, smooth scrolling, motion context, and page footer.
 export function Layout() {
   useSmoothScroll();
+  useReloadAtMidnight();
 
   return (
     <MotionProvider>
@@ -62,7 +87,10 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
-        <ThemeSwitcher />
+        <div className="flex items-center gap-2">
+          <StreakPill />
+          <ThemeSwitcher />
+        </div>
       </header>
       <main id="main" className={styles.main} tabIndex={-1}>
         <Outlet />
