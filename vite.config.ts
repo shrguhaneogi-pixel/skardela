@@ -16,7 +16,7 @@ function cipherPuzzleAnswers(): Plugin {
     name: "skardela:cipher-puzzle-answers",
     enforce: "pre",
     transform(code, id) {
-      if (!/[\\/]puzzles[\\/][a-z-]+\.json$/u.test(id)) return null;
+      if (!/\/puzzles\/[a-z-]+\.json$/u.test(id)) return null;
       const puzzles = JSON.parse(code) as { id: string; answer?: string[] }[];
       const ciphered = puzzles.map(({ answer, ...puzzle }) =>
         answer === undefined ? puzzle : cipherAnswer({ ...puzzle, answer }),
@@ -34,8 +34,6 @@ export default defineConfig({
   },
   test: {
     restoreMocks: true,
-    testTimeout: 15000,
-    hookTimeout: 15000,
     projects: [
       {
         extends: true,
