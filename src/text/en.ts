@@ -444,6 +444,11 @@ export const text = {
   expeditions: expeditionsText,
   learn: learnText,
   exchange: exchangeText,
+  arcade: {
+    title: "Retro 3D Arcade",
+    subtitle: "Hardware-accelerated CRT display with 3D kinematic puzzle execution",
+    navLink: "Arcade",
+  },
   notFound: {
     title: "Page Not Found",
     body: "The page you are looking for does not exist.",

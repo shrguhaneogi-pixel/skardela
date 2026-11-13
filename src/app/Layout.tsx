@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { to: "/expeditions", label: text.expeditions.navLink },
   { to: "/learn", label: text.learn.navLink },
   { to: "/exchange", label: text.exchange.navLink },
+  { to: "/arcade", label: text.arcade.navLink },
 ];
 
 function StreakPill() {

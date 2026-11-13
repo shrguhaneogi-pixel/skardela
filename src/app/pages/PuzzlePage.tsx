@@ -35,14 +35,16 @@ type HeaderProps = {
 
 function PuzzleDetailsHeader(props: HeaderProps) {
   const page = text.puzzlePage;
+  const validDate =
+    props.dateParam && /^\d{4}-\d{2}-\d{2}$/.test(props.dateParam) ? props.dateParam : null;
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>{props.typeName}</h1>
       <div className={styles.details}>
         <ul className={styles.details} aria-label={page.detailsLabel}>
           <li className={styles.level}>{text.levels[props.difficulty]}</li>
-          {props.isArchive && props.dateParam && (
-            <li className={styles.archiveBadge}>{text.archive.archiveBadge(props.dateParam)}</li>
+          {props.isArchive && validDate && (
+            <li className={styles.archiveBadge}>{text.archive.archiveBadge(validDate)}</li>
           )}
           <li>{page.puzzleNumber(props.puzzleId.slice(props.puzzleId.lastIndexOf("-") + 1))}</li>
           <li>{page.author(props.author)}</li>
@@ -187,7 +189,8 @@ function PuzzleBoardView({
 export function PuzzlePage() {
   const loaded = useLoaderData<typeof puzzleLoader>();
   const [searchParams] = useSearchParams();
-  const dateParam = searchParams.get("date");
+  const rawDate = searchParams.get("date");
+  const dateParam = rawDate && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
   const isArchive = !isTodayUtc(dateParam);
 
   useEffect(() => {

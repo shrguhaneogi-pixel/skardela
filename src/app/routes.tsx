@@ -66,6 +66,11 @@ export const routes: RouteObject[] = [
         hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
       },
       {
+        path: "arcade",
+        lazy: async () => ({ Component: (await import("./pages/ArcadePage")).ArcadePage }),
+        hydrateFallbackElement: <p>{text.puzzlePage.loading}</p>,
+      },
+      {
         path: "puzzles/:puzzleId",
         loader: puzzleLoader,
         lazy: async () => ({ Component: (await import("./pages/PuzzlePage")).PuzzlePage }),

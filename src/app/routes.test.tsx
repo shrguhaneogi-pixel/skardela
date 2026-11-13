@@ -89,6 +89,15 @@ describe("atlas route integration", () => {
   });
 });
 
+describe("arcade route integration", () => {
+  it("shows the retro 3D arcade page at /arcade", async () => {
+    renderAt("/arcade");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: new RegExp(text.arcade.title, "i") }),
+    ).toBeInTheDocument();
+  });
+});
+
 describe("random puzzle and custom pack route integration", () => {
   it("opens a random puzzle from the home page", async () => {
     const router = renderAt("/");
