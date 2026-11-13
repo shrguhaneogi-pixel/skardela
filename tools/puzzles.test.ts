@@ -1,3 +1,5 @@
+// This file checks each puzzle type, thus it imports from each type folder. The import count grows with each type.
+/* oxlint-disable import/max-dependencies */
 import { describe, expect, it } from "vitest";
 import colourBinaryExample from "../src/app/puzzle-types/colour-binary/examples/colour-binary-0000.json";
 import { findPuzzleProblems as findColourBinaryProblems } from "../src/app/puzzle-types/colour-binary/puzzle";
@@ -6,8 +8,19 @@ import { countSolutions } from "../src/app/puzzle-types/colour-binary/solver";
 import { toSquares } from "../src/app/puzzle-types/colour-binary/puzzle";
 import guzzleExample from "../src/app/puzzle-types/guzzle/examples/guzzle-0000.json";
 import { findPuzzleProblems as findGuzzleProblems } from "../src/app/puzzle-types/guzzle/puzzle";
+import laticsExample from "../src/app/puzzle-types/latics/examples/latics-0000.json";
+import { findPuzzleProblems as findLaticsProblems } from "../src/app/puzzle-types/latics/puzzle";
+import { findSolutionProblems as findLaticsSolutionProblems } from "../src/app/puzzle-types/latics/solver";
 import { puzzleTypes, type PuzzleMap, type PuzzleType } from "../src/app/puzzle-types/registry";
 import { levels } from "../src/shared/difficulty";
+import numpuzExample from "../src/app/puzzle-types/numpuz/examples/numpuz-0000.json";
+import { findPuzzleProblems as findNumpuzProblems } from "../src/app/puzzle-types/numpuz/puzzle";
+import orbitalExample from "../src/app/puzzle-types/orbital/examples/orbital-0000.json";
+import { findPuzzleProblems as findOrbitalProblems } from "../src/app/puzzle-types/orbital/puzzle";
+import { findSolutionProblems as findOrbitalSolutionProblems } from "../src/app/puzzle-types/orbital/solver";
+import tiltExample from "../src/app/puzzle-types/tilt/examples/tilt-0000.json";
+import { findPuzzleProblems as findTiltProblems } from "../src/app/puzzle-types/tilt/puzzle";
+import { findSolutionProblems as findTiltSolutionProblems } from "../src/app/puzzle-types/tilt/solver";
 
 // These checks run on each puzzle file in CI.
 // They stop broken puzzle data before it gets to a player.
@@ -31,6 +44,34 @@ const checks: {
     ],
   },
   guzzle: { example: guzzleExample, findProblems: findGuzzleProblems },
+  latics: {
+    example: laticsExample,
+    // A latics puzzle must also have a solution that needs each mirror in the tray.
+    // The solver needs valid data, thus it runs only when the data has no problems.
+    findProblems: (puzzle) => {
+      const problems = findLaticsProblems(puzzle);
+      return problems.length > 0 ? problems : findLaticsSolutionProblems(puzzle);
+    },
+  },
+  numpuz: { example: numpuzExample, findProblems: findNumpuzProblems },
+  orbital: {
+    example: orbitalExample,
+    // An orbital puzzle must also have enough good launches, and the straight launch and the start launch must miss.
+    // The flights need valid data, thus they run only when the data has no problems.
+    findProblems: (puzzle) => {
+      const problems = findOrbitalProblems(puzzle);
+      return problems.length > 0 ? problems : findOrbitalSolutionProblems(puzzle);
+    },
+  },
+  tilt: {
+    example: tiltExample,
+    // A tilt puzzle must also have a solution with the fewest tilts of its level. On hard, it must need the grey ball.
+    // The search needs valid data, thus it runs only when the data has no problems.
+    findProblems: (puzzle) => {
+      const problems = findTiltProblems(puzzle);
+      return problems.length > 0 ? problems : findTiltSolutionProblems(puzzle);
+    },
+  },
 };
 
 // This check finds problems that are the same for all puzzle types.
@@ -53,7 +94,9 @@ describe.each(Object.keys(puzzleTypes) as PuzzleType[])("%s puzzle file", (type)
   const findProblems = checks[type].findProblems as (puzzle: AnyPuzzle) => string[];
   const load = async () => [...(await puzzleTypes[type].loadPuzzles())] as AnyPuzzle[];
 
-  it("has no broken puzzles", async () => {
+  // The data check of some types searches or flies each puzzle, for example 3,600 launches for each Orbital puzzle.
+  // On a slow computer, this can take more time than the default limit of 5 s.
+  it("has no broken puzzles", { timeout: 30_000 }, async () => {
     for (const puzzle of [checks[type].example as AnyPuzzle, ...(await load())]) {
       const problems = [...findCommonProblems(puzzle, type), ...findProblems(puzzle)];
       expect({ id: puzzle.id, problems }).toEqual({ id: puzzle.id, problems: [] });
@@ -63,6 +106,12 @@ describe.each(Object.keys(puzzleTypes) as PuzzleType[])("%s puzzle file", (type)
   it("has a different ID for each puzzle", async () => {
     const ids = (await load()).map((puzzle) => puzzle.id);
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
+  });
+
+  // A copy of a puzzle with a different ID gives the player the same puzzle two times.
+  it("has different content for each puzzle", async () => {
+    const contents = (await load()).map((puzzle) => JSON.stringify({ ...puzzle, id: undefined }));
+    expect(contents.filter((content, index) => contents.indexOf(content) !== index)).toEqual([]);
   });
 
   it("has at least one puzzle for each level", async () => {

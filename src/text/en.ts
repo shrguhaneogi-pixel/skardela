@@ -1,3 +1,4 @@
+/* oxlint-disable import/max-dependencies, eslint/max-lines */
 import type { Rule } from "../shared/RuleList";
 import { symbols } from "./symbols";
 import { studioText } from "./studio";
@@ -7,9 +8,23 @@ import { learnText } from "./learn";
 import { exchangeText } from "./exchange";
 import { practiceQueueText } from "./practice";
 import { contextHelpText, hintsText, logicExplanationText } from "./logicExplanation";
+import { latics } from "./latics";
+import { numpuz } from "./numpuz";
+import { orbital } from "./orbital";
+import { tilt } from "./tilt";
 
 // "1 mistake", "2 mistakes". More than one text uses it.
 const mistakeCount = (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"}`;
+
+const longDate = (date: Date, timeZone?: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone,
+  }).format(date);
+
+const puzzleCount = (count: number) => `${count} ${count === 1 ? "puzzle" : "puzzles"}`;
 
 export const text = {
   siteName: "Skardela",
@@ -17,6 +32,7 @@ export const text = {
   nav: {
     label: "Main",
   },
+  streak: { word: "-day streak" },
   // The name of each level. The home page and the puzzle page both use it.
   levels: { easy: "Easy", medium: "Medium", hard: "Hard" },
   theme: {
@@ -45,6 +61,111 @@ export const text = {
     resume: "Resume",
     diagramLabel: (puzzleTypeName: string) => `Interactive diagram for ${puzzleTypeName}`,
     canvasAria: "Interactive editorial visual canvas",
+    date: (now: Date) => longDate(now),
+    hero: {
+      title: "A new set of puzzles every day",
+      intro:
+        "Skardela has new kinds of logic and word puzzles. Each puzzle type has an easy, a medium and a hard puzzle each day. Play in your browser. You do not need an account or a download.",
+      play: "Play today's puzzles",
+      howItWorks: "How it works",
+      solvedSome: (solved: number, total: number) =>
+        `${solved} down. ${puzzleCount(total - solved)} left today.`,
+      solvedAll: "All of today's puzzles are solved. See you tomorrow.",
+      pickUp: "Pick up where you left off.",
+      continueLabel: "Continue",
+      puzzleName: (typeName: string, level: string) => `${typeName} · ${level}`,
+      progressLabel: "Today's puzzles",
+      segment: (typeName: string, level: string, isSolved: boolean) =>
+        `${typeName} ${level}: ${isSolved ? "solved" : "not solved"}`,
+      progress: (solved: number, total: number) => `${solved} of ${total} solved`,
+      newPuzzlesIn: "new puzzles in",
+      timeShort: ({ hours, minutes }: { hours: number; minutes: number }) =>
+        [hours > 0 ? `${hours} h` : "", minutes > 0 || hours === 0 ? `${minutes} min` : ""]
+          .filter((part) => part !== "")
+          .join(" "),
+      timeLong: ({ hours, minutes }: { hours: number; minutes: number }) =>
+        [
+          hours > 0 ? `${hours} ${hours === 1 ? "hour" : "hours"}` : "",
+          minutes > 0 || hours === 0 ? `${minutes} ${minutes === 1 ? "minute" : "minutes"}` : "",
+        ]
+          .filter((part) => part !== "")
+          .join(" "),
+    },
+    today: {
+      heading: "Today's puzzles",
+      intro:
+        "The puzzles change at midnight, your local time. All players get the same puzzles on the same date.",
+      levelsLabel: (puzzleTypeName: string) => `Today's ${puzzleTypeName}`,
+      notSolved: "not solved",
+      solvedMark: symbols.progress.solved,
+      solvedNoTime: "solved",
+      levelLink: (level: string, result?: { time?: string; score?: string }) =>
+        result === undefined
+          ? `${level}, not solved`
+          : [
+              `${level}, solved`,
+              result.time === undefined ? "" : ` in ${result.time}`,
+              result.score === undefined ? "" : ` with ${result.score}`,
+            ].join(""),
+      play: (level: string) => `Play ${level}`,
+      allSolved: (total: string | undefined) =>
+        total === undefined ? "All solved today" : `All solved · ${total} total`,
+      share: "Share",
+      shareLabel: (puzzleTypeName: string) => `Share your ${puzzleTypeName} results of today`,
+    },
+    steps: {
+      heading: "How it works",
+      items: [
+        {
+          title: "Select a puzzle",
+          body: "Each puzzle type has an easy, a medium and a hard puzzle for today. Start with easy to learn the rules.",
+        },
+        {
+          title: "Play in your browser",
+          body: "The rules are next to the board. Restart at any time, or get a random puzzle of the same level.",
+        },
+        {
+          title: "Come back tomorrow",
+          body: "New puzzles come each day at midnight, your local time.",
+        },
+      ],
+    },
+    faq: {
+      heading: "Questions",
+      items: [
+        { question: "Is Skardela free?", answer: "Yes. All puzzles are free to play." },
+        {
+          question: "Do I need an account?",
+          answer: "No. Skardela has no accounts. Open a puzzle and play.",
+        },
+        {
+          question: "Does Skardela keep my progress?",
+          answer:
+            'Partly. Skardela saves the puzzles that you solve, your times and your streak. "Random puzzle" gives you puzzles that you did not solve. A puzzle that you did not finish starts again when you reload the page. Skardela also saves your theme and your OK for the analytics notice. All of this stays in your browser.',
+        },
+        {
+          question: "Can I move my progress to a different browser?",
+          answer:
+            'Yes. Select "Export my data" under "Your stats" to save a backup file. In the other browser, select "Import" and select the file. The solves of the file are added to the solves of that browser.',
+        },
+        {
+          question: "Something does not work. What can I do?",
+          answer:
+            'Reload the page first. If the problem stays, select "Clear my data" under "Your stats" on the home page. This deletes all your Skardela data from this browser: your stats, your solved puzzles, your theme and your OK for the analytics notice. Then the page loads again, as for a new player.',
+        },
+        {
+          question: "What data does Skardela collect?",
+          answer:
+            "Skardela uses analytics to count visits and to see which puzzles people play. The analytics tool does not use cookies, and it does not follow you to other websites.",
+        },
+        {
+          question: "Can I help to make Skardela?",
+          answer:
+            "Yes. Skardela is open source. You can add puzzles, fix problems or add a new puzzle type.",
+          link: { label: "Skardela on GitHub", href: "https://github.com/utk09-NCL/skardela" },
+        },
+      ],
+    },
   },
   archive: {
     title: "Puzzle Archive",
@@ -87,9 +208,35 @@ export const text = {
     // The details under the title have no labels. The words "#" and "by" are enough.
     puzzleNumber: (number: string) => `#${number}`,
     author: (author: string) => `by ${author}`,
+    nowPlaying: "Now playing",
+    timerLabel: "Time",
+    close: "Close the puzzle and go to today's puzzles",
+    result: {
+      title: "Solved",
+      puzzle: (typeName: string, level: string, number: string) =>
+        `${typeName}, ${level}, #${number}`,
+      numbersLabel: "Your result",
+      time: "time",
+      faster: "faster than average",
+      slower: "slower than average",
+      same: "same as average",
+      first: "First",
+      firstLabel: (level: string) => `${level} solve`,
+      shareHeading: "Share text",
+      copy: "Copy result",
+      share: "Share result",
+      next: (level: string) => `Next: ${level} ${symbols.puzzlePage.next}`,
+      nextLabel: (typeName: string, level: string) => `Next puzzle: ${typeName} ${level}`,
+    },
     rulesHeading: "Rules",
+    keyLabel: "Key",
     restartButton: "Restart",
+    restart: "Restart",
+    restartQuestion: "Restart the puzzle?",
+    restartYes: { text: "Yes", label: "Yes, restart the puzzle" },
+    restartNo: { text: "No", label: "No, keep playing" },
     randomButton: "Random puzzle",
+    random: "Random puzzle",
     loading: "The puzzle is loading...",
     loadingBoard: "The board is loading...",
     boardError: "An error stopped the board. Reload the page to try again.",
@@ -293,4 +440,8 @@ export const text = {
     moveAnnounce: (lastMove: string, moveCount: number) =>
       `Moved slice ${lastMove}. Current move count: ${moveCount}.`,
   },
+  latics,
+  numpuz,
+  orbital,
+  tilt,
 };

@@ -1,6 +1,12 @@
 import type { ColourBinaryPuzzle } from "./colour-binary/puzzle";
 import type { GuzzlePuzzle } from "./guzzle/puzzle";
+import type { LaticsPuzzle } from "./latics/puzzle";
+import { decipherPuzzles } from "../../shared/cipher";
+import type { NumpuzPuzzle } from "./numpuz/puzzle";
+import type { OrbitalPuzzle } from "./orbital/puzzle";
+import type { TiltPuzzle } from "./tilt/puzzle";
 
+// ASD-STE100 Simplified Technical English comments.
 // This file is the list of all puzzle types and their puzzle files.
 // To add a puzzle type, add its puzzle type to "PuzzleMap" and add one entry to "puzzleTypes".
 // TypeScript then shows an error in each place that needs more work:
@@ -11,21 +17,46 @@ import type { GuzzlePuzzle } from "./guzzle/puzzle";
 export type PuzzleMap = {
   "colour-binary": ColourBinaryPuzzle;
   guzzle: GuzzlePuzzle;
+  latics: LaticsPuzzle;
+  numpuz: NumpuzPuzzle;
+  orbital: OrbitalPuzzle;
+  tilt: TiltPuzzle;
 };
 
 export type PuzzleType = keyof PuzzleMap;
 
 // This loads all puzzles of the type. The file loads only when the app needs it.
+// The answers in the file are ciphered by the Vite plugin in "vite.config.ts". "decipherPuzzles" decodes them.
+// A puzzle type without an "answer" field, such as Latics, does not need "decipherPuzzles".
 type PuzzleTypeEntry<Puzzle> = { loadPuzzles: () => Promise<readonly Puzzle[]> };
 
 export const puzzleTypes: { [Type in PuzzleType]: PuzzleTypeEntry<PuzzleMap[Type]> } = {
   "colour-binary": {
     loadPuzzles: async () =>
-      (await import("../../../puzzles/colour-binary.json")).default as ColourBinaryPuzzle[],
+      decipherPuzzles<ColourBinaryPuzzle>(
+        (await import("../../../puzzles/colour-binary.json")).default,
+      ),
   },
   guzzle: {
     loadPuzzles: async () =>
-      (await import("../../../puzzles/guzzle.json")).default as GuzzlePuzzle[],
+      decipherPuzzles<GuzzlePuzzle>((await import("../../../puzzles/guzzle.json")).default),
+  },
+  latics: {
+    loadPuzzles: async () =>
+      (await import("../../../puzzles/latics.json")).default as LaticsPuzzle[],
+  },
+  numpuz: {
+    loadPuzzles: async () =>
+      decipherPuzzles<NumpuzPuzzle>((await import("../../../puzzles/numpuz.json")).default),
+  },
+  // An Orbital puzzle has no "answer": the game checks each launch with the rules. Thus it does not need "decipherPuzzles".
+  orbital: {
+    loadPuzzles: async () =>
+      (await import("../../../puzzles/orbital.json")).default as OrbitalPuzzle[],
+  },
+  // A Tilt puzzle has no "answer": the game checks each tilt with the rules. Thus it does not need "decipherPuzzles".
+  tilt: {
+    loadPuzzles: async () => (await import("../../../puzzles/tilt.json")).default as TiltPuzzle[],
   },
 };
 
