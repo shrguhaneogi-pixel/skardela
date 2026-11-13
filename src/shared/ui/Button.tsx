@@ -16,15 +16,16 @@ export function Button({
   className,
   variant,
   size,
-  type = "button",
+  type,
   disabled,
   whileTap,
   transition,
   ...props
 }: ButtonProps) {
+  const buttonType = type ?? "button";
   return (
     <m.button
-      type={type}
+      type={buttonType}
       disabled={disabled}
       className={cn(buttonVariants({ variant, size }), className)}
       whileTap={disabled ? undefined : (whileTap ?? TAP_PRESS)}

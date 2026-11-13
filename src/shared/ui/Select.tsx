@@ -33,13 +33,14 @@ export function SelectTrigger({
 export function SelectContent({
   className,
   children,
-  position = "popper",
+  position,
   ...props
 }: ComponentProps<typeof SelectPrimitive.Content>) {
+  const contentPosition = position ?? "popper";
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
-        position={position}
+        position={contentPosition}
         className={cn(
           "z-50 min-w-[8rem] overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-elevated)] p-1 text-[var(--text-h)] shadow-[var(--shadow-lg)]",
           className,

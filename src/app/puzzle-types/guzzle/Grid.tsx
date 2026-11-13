@@ -82,18 +82,24 @@ function SquareButton({
   label,
   letter,
   guess,
-  isFixed = false,
-  isSelected = false,
-  isHint = false,
-  isHighlighted = false,
-  isLogicTarget = false,
-  isLogicPremise = false,
+  isFixed,
+  isSelected,
+  isHint,
+  isHighlighted,
+  isLogicTarget,
+  isLogicPremise,
   isLocked,
   onSelect,
   onLetter,
   onNavigate,
 }: SquareProps) {
-  const ref = useFocusWhenSelected(isSelected);
+  const fixed = Boolean(isFixed);
+  const selected = Boolean(isSelected);
+  const hint = Boolean(isHint);
+  const highlighted = Boolean(isHighlighted);
+  const logicTarget = Boolean(isLogicTarget);
+  const logicPremise = Boolean(isLogicPremise);
+  const ref = useFocusWhenSelected(selected);
 
   return (
     <button
@@ -101,14 +107,14 @@ function SquareButton({
       type="button"
       className={cn(shared.square, styles.square)}
       data-mark={guess?.mark ?? "none"}
-      data-fixed={isFixed}
-      data-selected={isSelected}
-      data-hint={isHint}
-      data-highlight={isHighlighted}
-      data-logic-target={isLogicTarget}
-      data-logic-premise={isLogicPremise}
+      data-fixed={fixed}
+      data-selected={selected}
+      data-hint={hint}
+      data-highlight={highlighted}
+      data-logic-target={logicTarget}
+      data-logic-premise={logicPremise}
       aria-label={label}
-      aria-pressed={isFixed ? undefined : isSelected}
+      aria-pressed={fixed ? undefined : selected}
       aria-disabled={isLocked}
       onClick={() => {
         if (!isLocked) onSelect?.();
@@ -118,7 +124,7 @@ function SquareButton({
       <span className={styles.letter} aria-hidden="true">
         {letter}
       </span>
-      {guess?.mark && !isFixed && (
+      {guess?.mark && !fixed && (
         <span className={styles.symbol} aria-hidden="true">
           {words.symbols[guess.mark]}
         </span>

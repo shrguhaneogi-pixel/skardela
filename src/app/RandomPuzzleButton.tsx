@@ -24,9 +24,10 @@ export function RandomPuzzleButton({ excludeId, className, label }: RandomPuzzle
     try {
       const nextId = await pickRandomPuzzleId({ excludeId });
       if (nextId) void navigate(`/puzzles/${nextId}`, getViewTransitionNavigateOptions());
-    } finally {
-      setPicking(false);
+    } catch {
+      // Ignore navigation error.
     }
+    setPicking(false);
   }
 
   return (

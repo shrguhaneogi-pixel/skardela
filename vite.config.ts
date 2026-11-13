@@ -1,5 +1,4 @@
 /// <reference types="vitest/config" />
-import tailwindcss from "@tailwindcss/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import { defineConfig, type Plugin } from "vite";
@@ -29,15 +28,9 @@ function cipherPuzzleAnswers(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    cipherPuzzleAnswers(),
-    tailwindcss(),
-    react(),
-    babel({ presets: [reactCompilerPreset()] }),
-  ],
+  plugins: [cipherPuzzleAnswers(), react(), babel({ presets: [reactCompilerPreset()] })],
   build: {
     sourcemap: false,
-    cssMinify: "lightningcss",
   },
   test: {
     restoreMocks: true,
@@ -59,6 +52,16 @@ export default defineConfig({
           name: "validate",
           environment: "node",
           include: ["tools/**/*.test.ts"],
+        },
+      },
+      // The puzzle generators. They change the puzzle files, thus only the "generate:<type>" scripts run them.
+      // Each script gives the file of its generator, so one script does not run the generators of other types.
+      {
+        extends: true,
+        test: {
+          name: "generate",
+          environment: "node",
+          include: ["tools/**/*.gen.ts"],
         },
       },
     ],

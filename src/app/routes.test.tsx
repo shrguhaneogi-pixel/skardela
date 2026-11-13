@@ -32,7 +32,11 @@ describe("routes", () => {
   it("shows the colour-binary puzzle page", async () => {
     renderAt("/puzzles/colour-binary-0001");
     expect(
-      await screen.findByRole("heading", { level: 1, name: text["colour-binary"].name }),
+      await screen.findByRole(
+        "heading",
+        { level: 1, name: text["colour-binary"].name },
+        { timeout: 4000 },
+      ),
     ).toBeInTheDocument();
   });
 

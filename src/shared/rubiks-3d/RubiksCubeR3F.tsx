@@ -11,10 +11,11 @@ export interface RubiksCubeR3FProps {
   autoRotate?: boolean;
 }
 
-export default function RubiksCubeR3F({ onContextUpdate, autoRotate = false }: RubiksCubeR3FProps) {
+export default function RubiksCubeR3F({ onContextUpdate, autoRotate }: RubiksCubeR3FProps) {
+  const isAutoRotate = autoRotate ?? false;
   return (
     <div style={{ width: "100%", height: "100%", minHeight: "480px", position: "relative" }}>
-      <RubiksCubeCanvas onContextUpdate={onContextUpdate} autoRotateSpeed={autoRotate ? 0.3 : 0} />
+      <RubiksCubeCanvas onContextUpdate={onContextUpdate} autoRotateSpeed={isAutoRotate ? 0.3 : 0} />
     </div>
   );
 }
