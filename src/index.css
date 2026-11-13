@@ -101,7 +101,6 @@ html {
 
 body {
   min-height: 100dvh;
-  overflow-x: hidden;
   font-family: var(--sans);
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   line-height: 1.55;

@@ -1,23 +1,17 @@
 import { Link } from "react-router";
-import { buttonVariants } from "../../shared/ui/button-variants";
 import { text } from "../../text/en";
-import styles from "../RouteError.module.css";
 
-// ASD-STE100 Simplified Technical English comments.
-// This page tells the user that the requested path does not exist.
+// This page tells the user that the path does not exist.
+// It gives a direct route back to the start page.
 export function NotFoundPage() {
   return (
-    <div className={`sk-surface-card ${styles.card}`}>
+    <>
       <title>{`${text.notFound.title} | ${text.siteName}`}</title>
-      <h1 data-testid="not-found-page-title" className={styles.title}>
-        {text.notFound.title}
-      </h1>
-      <p className={styles.body}>{text.notFound.body}</p>
+      <h1 data-testid="not-found-page-title">{text.notFound.title}</h1>
+      <p>{text.notFound.body}</p>
       <p>
-        <Link className={buttonVariants({ variant: "primary", size: "lg" })} to="/" viewTransition>
-          {text.notFound.homeLink}
-        </Link>
+        <Link to="/">{text.notFound.homeLink}</Link>
       </p>
-    </div>
+    </>
   );
 }

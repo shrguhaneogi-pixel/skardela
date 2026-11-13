@@ -1,6 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
+// The fonts are in the app, thus the page sends no request to a font service before the analytics notice.
+// Funnel Display and Ubuntu Sans Mono are variable fonts. Each one has all its weights in one file.
+import "@fontsource-variable/funnel-display/index.css";
+import "@fontsource-variable/ubuntu-sans-mono/index.css";
 import "./index.css";
 import { router } from "./app/router.ts";
 
