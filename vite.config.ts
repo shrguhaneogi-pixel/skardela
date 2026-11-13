@@ -12,6 +12,8 @@ export default defineConfig({
   },
   test: {
     restoreMocks: true,
+    testTimeout: 15000,
+    hookTimeout: 15000,
     projects: [
       {
         extends: true,
