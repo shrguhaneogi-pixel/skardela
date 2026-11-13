@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultSavedData, maxResults, savedDataKey, type SolveResult } from "./saved-data";
 import { parseStoredText } from "./storage-format";
 import { useAppStore, useStorageStatus } from "./store";
+import { loadPuzzleProgress, savePuzzleProgress } from "../puzzle-progress";
 
 const result: SolveResult = {
   puzzleId: "latics-0001",
@@ -160,5 +161,40 @@ describe("app store import", () => {
     expect(added).toBe(1);
     expect(useAppStore.getState().solved).toEqual(["latics-0001", "guzzle-0005"]);
     expect(useAppStore.getState().results).toHaveLength(2);
+  });
+
+  it("bridges solve events from savePuzzleProgress into the reactive app store", () => {
+    useAppStore.getState().clearData();
+    savePuzzleProgress({
+      puzzleId: "colour-binary-0001",
+      puzzleType: "colour-binary",
+      difficulty: "easy",
+      savedAt: Date.now(),
+      completedAt: Date.now(),
+      isSolved: true,
+      timeSpentSeconds: 45,
+      hintCount: 0,
+      mistakes: 0,
+    });
+    expect(useAppStore.getState().solved).toContain("colour-binary-0001");
+    expect(useAppStore.getState().results.some((r) => r.puzzleId === "colour-binary-0001")).toBe(
+      true,
+    );
+  });
+
+  it("clears both app store and puzzle progress records when clearData is called", () => {
+    savePuzzleProgress({
+      puzzleId: "guzzle-0002",
+      puzzleType: "guzzle",
+      difficulty: "easy",
+      savedAt: Date.now(),
+      isSolved: true,
+      timeSpentSeconds: 50,
+      hintCount: 0,
+      mistakes: 0,
+    });
+    useAppStore.getState().clearData();
+    expect(useAppStore.getState().solved).toEqual([]);
+    expect(loadPuzzleProgress("guzzle-0002")).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* oxlint-disable import/max-dependencies, eslint/max-lines-per-function */
+import { useState, type ChangeEvent } from "react";
 import { formatDuration } from "../../shared/completion";
 import {
   clearAtlasData,
@@ -12,10 +13,20 @@ import { symbols } from "../../text/symbols";
 import { AtlasConstellationChart } from "../../shared/AtlasConstellationChart";
 import { Badge } from "../../shared/ui/Badge";
 import { Button } from "../../shared/ui/Button";
+import { saveFile } from "../../shared/save-file";
+import { parseImportText, toExportText } from "../../shared/state/storage-format";
+import { pickSavedData } from "../../shared/state/saved-data";
+import { useAppStore } from "../../shared/state/store";
 import styles from "./AtlasPage.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
 // This component renders the Personal Logic Atlas page.
+
+function exportAtlasBackup(): void {
+  const data = pickSavedData(useAppStore.getState());
+  const exportText = toExportText(data, new Date());
+  saveFile("skardela-backup.json", exportText);
+}
 
 type MetricsGridProps = {
   stats: LogicAtlasStats;
@@ -98,6 +109,8 @@ type SettingsSectionProps = {
   isEnabled: boolean;
   onToggleEnabled: () => void;
   onClearHistory: () => void;
+  onExportData: () => void;
+  onImportFile: (event: ChangeEvent<HTMLInputElement>) => void;
   feedback: string | null;
 };
 
@@ -120,6 +133,30 @@ function AtlasSettingsSection(props: SettingsSectionProps) {
               checked={props.isEnabled}
               onChange={props.onToggleEnabled}
               aria-label={text.atlas.enableLabel}
+            />
+          </label>
+        </div>
+        <div className={styles.settingRow}>
+          <div className={styles.settingInfo}>
+            <h3>{text.atlas.exportDataBtn}</h3>
+            <p>Download a backup file of your solved puzzles and stats.</p>
+          </div>
+          <Button variant="secondary" onClick={props.onExportData}>
+            {text.atlas.exportDataBtn}
+          </Button>
+        </div>
+        <div className={styles.settingRow}>
+          <div className={styles.settingInfo}>
+            <h3>{text.atlas.importDataBtn}</h3>
+            <p>Restore your solves from a backup file or a different browser.</p>
+          </div>
+          <label className="inline-flex items-center">
+            <span className="visually-hidden">{text.atlas.importDataBtn}</span>
+            <input
+              type="file"
+              accept=".json,.skardela"
+              onChange={props.onImportFile}
+              className="text-xs text-stone-600 dark:text-stone-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-500/10 file:text-orange-600 hover:file:bg-orange-500/20 cursor-pointer"
             />
           </label>
         </div>
@@ -159,6 +196,25 @@ export function AtlasPage() {
     }
   };
 
+  const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const content = await file.text();
+      const parsed = parseImportText(content);
+      if (parsed) {
+        const added = useAppStore.getState().importData(parsed);
+        setStats(loadCurrentAtlasStats());
+        setFeedback(text.atlas.importSuccess(added));
+      } else {
+        setFeedback(text.atlas.importFailed);
+      }
+    } catch {
+      setFeedback(text.atlas.importFailed);
+    }
+    event.target.value = "";
+  };
+
   return (
     <>
       <title>{`${text.atlas.title} | ${text.siteName}`}</title>
@@ -183,6 +239,8 @@ export function AtlasPage() {
         isEnabled={stats.isEnabled}
         onToggleEnabled={handleToggle}
         onClearHistory={handleClear}
+        onExportData={exportAtlasBackup}
+        onImportFile={handleImport}
         feedback={feedback}
       />
     </>

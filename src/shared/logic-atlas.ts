@@ -5,6 +5,7 @@ import {
   type PuzzleProgressRecord,
 } from "./puzzle-progress";
 import { getStoredItem, setStoredItem } from "./storage";
+import { useAppStore } from "./state/store";
 
 // ASD-STE100 Simplified Technical English comments.
 // This module computes local logic skill metrics and practice summaries.
@@ -56,6 +57,11 @@ export function setAtlasEnabled(enabled: boolean): void {
 
 export function clearAtlasData(): void {
   clearAllPuzzleProgress();
+  try {
+    useAppStore.getState().clearData();
+  } catch {
+    // Ignore store clear errors.
+  }
 }
 
 export function calculateDailyStreak(

@@ -87,12 +87,12 @@ describe("bundle size budgets", () => {
     expect(size).toBeLessThan(maxMainBytes);
   });
 
-  it("enforces total css budget under 110 kB", () => {
+  it("enforces total css budget under 100 kB", () => {
     const files = ensureDistAssets();
     const totalCss = getTotalCssBytes(files);
     expect(totalCss).toBeGreaterThan(0);
 
-    const maxCssBytes = 110 * 1024;
+    const maxCssBytes = 100 * 1024;
     expect(totalCss).toBeLessThan(maxCssBytes);
   });
 

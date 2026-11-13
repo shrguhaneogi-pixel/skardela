@@ -1,5 +1,5 @@
-/* oxlint-disable import/max-dependencies, eslint/max-lines */
-import type { Rule } from "../shared/RuleList";
+/* oxlint-disable eslint/max-lines */
+import type { KeyItem, Rule } from "../shared/RuleList";
 import { symbols } from "./symbols";
 import { studioText } from "./studio";
 import { duelText } from "./duel";
@@ -8,13 +8,47 @@ import { learnText } from "./learn";
 import { exchangeText } from "./exchange";
 import { practiceQueueText } from "./practice";
 import { contextHelpText, hintsText, logicExplanationText } from "./logicExplanation";
-import { latics } from "./latics";
-import { numpuz } from "./numpuz";
-import { orbital } from "./orbital";
-import { tilt } from "./tilt";
 
 // "1 mistake", "2 mistakes". More than one text uses it.
 const mistakeCount = (count: number) => `${count} ${count === 1 ? "mistake" : "mistakes"}`;
+
+// "miss", "misses". The misses are the score of Latics and Orbital.
+const missWord = (count: number) => (count === 1 ? "miss" : "misses");
+const missCount = (count: number) => `${count} ${missWord(count)}`;
+
+// "a", "a and b", "a, b and c".
+const listOf = (items: readonly string[]) =>
+  items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+
+// The colour of a beam in words. A white beam is only "beam", so a board with one white laser reads as before.
+const beamName = (colour: "white" | "red" | "blue") =>
+  colour === "white" ? "beam" : `${colour} beam`;
+
+const { red: laticsRed, blue: laticsBlue } = symbols.latics.colours;
+const redMark = { symbol: laticsRed, colour: "red" } as const;
+const blueMark = { symbol: laticsBlue, colour: "blue" } as const;
+
+const {
+  "+": numpuzAdd,
+  "-": numpuzSubtract,
+  "\u00D7": numpuzMultiply,
+  "\u00F7": numpuzDivide,
+} = symbols.numpuz.operators;
+
+// "1 unit", "8 units".
+const unitCount = (count: number) => `${count} ${count === 1 ? "unit" : "units"}`;
+
+// "Big" from "big", for the start of a sentence.
+const capital = (word: string) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+
+const { red: tiltRed, blue: tiltBlue, yellow: tiltYellow } = symbols.tilt.colours;
+
+// "extra tilt", "extra tilts". The extra tilts are the score of Tilt.
+const extraWord = (count: number) => (count === 1 ? "extra tilt" : "extra tilts");
+const extraCount = (count: number) => `${count} ${extraWord(count)}`;
+
+// "1 square", "3 squares".
+const squareCount = (count: number) => `${count} ${count === 1 ? "square" : "squares"}`;
 
 const longDate = (date: Date, timeZone?: string) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -197,6 +231,10 @@ export const text = {
     clearHistoryBtn: "Clear Atlas History",
     clearConfirm: "Are you sure you want to clear your local puzzle history?",
     historyCleared: "Atlas history cleared.",
+    exportDataBtn: "Export my data",
+    importDataBtn: "Import data",
+    importSuccess: (count: number) => `Imported ${count} ${count === 1 ? "solve" : "solves"}.`,
+    importFailed: "Could not read the backup file.",
     navLink: "Atlas",
     constellationAria: "Reasoning skills constellation chart",
     disabledMessage: "Personal Logic Atlas is disabled.",
@@ -440,8 +478,315 @@ export const text = {
     moveAnnounce: (lastMove: string, moveCount: number) =>
       `Moved slice ${lastMove}. Current move count: ${moveCount}.`,
   },
-  latics,
-  numpuz,
-  orbital,
-  tilt,
+  latics: {
+    name: "Latics",
+    tag: "Optics puzzle",
+    summary: "Turn the mirrors and send the laser beam to the monster.",
+    rules: [
+      `Hit each monster ${symbols.latics.monster} with a laser beam.`,
+      "Select a mirror to turn it. Walls stop the beam.",
+      "Medium and hard: plan the path, then fire the laser. Each miss counts.",
+    ] satisfies Rule[],
+    rulesKey: [
+      { text: "water bends the beam", sample: { fill: "water", symbol: "" } },
+      {
+        text: "a prism splits white light",
+        sample: { fill: "empty", symbol: symbols.latics.prism },
+      },
+      { text: "a filter lets only its colour through", sample: { fill: "red", symbol: laticsRed } },
+    ] satisfies KeyItem[],
+    moreRules: {
+      label: "More rules: the tray, the lasers, water, prisms and filters",
+      rules: [
+        "The beam goes in a straight line: across, up and down, or diagonally.",
+        "A mirror turns the beam. The angle in is the same as the angle out. A beam that goes along a mirror does not change.",
+        "The beam also stops when it goes off the board or back into a laser.",
+        "Each select turns a mirror 45° clockwise.",
+        "Easy: the beam shows at all times.",
+        "Medium and hard: a shot that does not hit all monsters is a miss. Make the fewest misses.",
+        "Medium and hard: select an empty square to put a mirror from the tray there. A tray mirror goes back to the tray after four turns. You cannot put a tray mirror on water.",
+        "Hard: select a laser to turn it 45° clockwise.",
+        "Water: a diagonal beam that goes into water turns straight, square to the edge of the water. When it leaves the water, it turns back to its first direction. A straight beam does not change.",
+        "Critical angle: a diagonal beam from a laser in water cannot get out. At the edge of the water, it reflects back in.",
+        "Prism: red light turns 45° to the right, and blue light turns 45° to the left. Thus a white beam splits into a red beam and a blue beam.",
+        {
+          parts: [
+            "Filter: a red filter ",
+            redMark,
+            " lets only red light through, and a blue filter ",
+            blueMark,
+            " lets only blue light through. A white beam goes through and gets the colour of the filter.",
+          ],
+        },
+        {
+          parts: [
+            "A red monster ",
+            redMark,
+            " needs a red beam, and a blue monster ",
+            blueMark,
+            ` needs a blue beam. The monster ${symbols.latics.monster} with no colour needs a beam of any colour.`,
+          ],
+        },
+        '"Path of the beam" under the board tells the path of the beam in words.',
+      ] satisfies Rule[],
+    },
+    score: missCount,
+    scoreWord: missWord,
+    boardLabel: "Latics board",
+    symbols: symbols.latics,
+    directions: {
+      E: "right",
+      NE: "up and right",
+      N: "up",
+      NW: "up and left",
+      W: "left",
+      SW: "down and left",
+      S: "down",
+      SE: "down and right",
+    },
+    colours: { white: "white", red: "red", blue: "blue" },
+    pieces: {
+      ".": "empty",
+      "#": "wall",
+      L: "laser",
+      M: "monster",
+      R: "red monster",
+      B: "blue monster",
+      "^": "prism",
+      r: "red filter",
+      b: "blue filter",
+      "-": "horizontal mirror",
+      "/": "mirror from bottom left to top right",
+      "|": "vertical mirror",
+      "\\": "mirror from top left to bottom right",
+    },
+    laserName: (colour: "white" | "red" | "blue") =>
+      colour === "white" ? "laser" : `${colour} laser`,
+    square: (square: {
+      row: number;
+      column: number;
+      piece: string;
+      laser: string;
+      isFromTray: boolean;
+      isHit: boolean;
+      isInWater: boolean;
+    }) =>
+      [
+        `Row ${square.row}, column ${square.column}`,
+        square.isFromTray ? `${square.piece} from the tray` : square.piece,
+        square.laser === "" ? "" : `points ${square.laser}`,
+        square.isInWater ? "in water" : "",
+        square.isHit ? "hit" : "",
+      ]
+        .filter((part) => part !== "")
+        .join(", "),
+    controlsLabel: "Laser controls",
+    tray: (count: number) => `Mirrors in the tray: ${count}`,
+    fire: "Fire the laser",
+    misses: missCount,
+    pathLabel: "Path of the beam",
+    path: {
+      start: (colour: "white" | "red" | "blue", from: string, at: string) =>
+        `The ${beamName(colour)} starts at the ${from} at ${at}.`,
+      move: (direction: string, squares: number, colour: "white" | "red" | "blue" = "white") =>
+        `The ${beamName(colour)} goes ${direction} ${squares} ${squares === 1 ? "square" : "squares"}.`,
+      turns: {
+        mirror: (at: string, direction: string) => `The mirror at ${at} turns it ${direction}.`,
+        prism: (at: string, direction: string) => `The prism at ${at} turns it ${direction}.`,
+        waterIn: (at: string, direction: string) => `The water at ${at} turns it ${direction}.`,
+        waterOut: (at: string, direction: string) =>
+          `It leaves the water after ${at} and turns ${direction}.`,
+        edge: (at: string, direction: string) =>
+          `The edge of the water at ${at} reflects it ${direction}.`,
+      },
+    },
+    ends: {
+      monster: () => "The beam hits the monster.",
+      otherMonster: (at: string) =>
+        `The monster at ${at} needs a beam of a different colour. It stops the beam.`,
+      wall: (at: string) => `A wall at ${at} stops the beam.`,
+      laser: () => "The beam comes back to the laser.",
+      edge: (at: string) => `The beam goes off the board after ${at}.`,
+      loop: () => "The beam goes around in a loop.",
+      join: () => "From here, the beam goes along the path of a different beam.",
+      filter: (at: string) => `The filter at ${at} has a different colour. It stops the beam.`,
+      split: (at: string) => `The prism at ${at} splits the beam into a red beam and a blue beam.`,
+      colour: (at: string) => `The filter at ${at} lets only light of its colour through.`,
+    },
+    at: (row: number, column: number) => `row ${row}, column ${column}`,
+    status: {
+      plan: (can: { tray: boolean; aim: boolean }) =>
+        `Plan the path: ${listOf([
+          "turn the mirrors",
+          ...(can.tray ? ["put mirrors from the tray on empty squares"] : []),
+          ...(can.aim ? ["turn the lasers"] : []),
+        ])}. Then fire the laser.`,
+      hits: (hit: number, total: number) =>
+        `The beams hit ${hit} of ${total} ${total === 1 ? "monster" : "monsters"}.`,
+      solved: "You solved the puzzle. The beam hits the monster.",
+      solvedAll: "You solved the puzzle. The beams hit all monsters.",
+      solvedWithMisses: (count: number) => `You solved the puzzle with ${missCount(count)}.`,
+    },
+  },
+  numpuz: {
+    name: "Numpuz",
+    tag: "Arithmetic puzzle",
+    summary: `Fill each blank with ${numpuzAdd} ${numpuzSubtract} ${numpuzMultiply} or ${numpuzDivide} to reach the target number.`,
+    rules: [
+      `Fill each blank between the numbers with ${numpuzAdd} ${numpuzSubtract} ${numpuzMultiply} or ${numpuzDivide}.`,
+      "The equation must be equal to the target number.",
+      `${numpuzMultiply} and ${numpuzDivide} are worked out before ${numpuzAdd} and ${numpuzSubtract}.`,
+    ] satisfies Rule[],
+    rulesKey: [] satisfies KeyItem[],
+    moreRules: {
+      label: "More rules: blanks and checking",
+      rules: [
+        "Each blank takes one operator.",
+        "Select a blank. Then choose an operator to put in it.",
+        "Fill every blank. Then select Check.",
+        "A check with a wrong answer is one mistake. Change an operator before you check again.",
+        `With a keyboard: type +, -, * or / on a blank. * gives ${numpuzMultiply} and / gives ${numpuzDivide}.`,
+      ] satisfies Rule[],
+    },
+    score: mistakeCount,
+    scoreWord: (count: number) => (count === 1 ? "mistake" : "mistakes"),
+    boardLabel: "Numpuz board",
+    target: (target: number) => `Target: ${target}`,
+    symbols: symbols.numpuz,
+    operatorNames: { "+": "plus", "-": "minus", "\u00D7": "times", "\u00F7": "divided by" },
+    blank: (blank: { position: number; operator: string }) =>
+      `Blank ${blank.position}, ${blank.operator === "" ? "empty" : blank.operator}`,
+    keysLabel: "Operators",
+    key: (name: string) => `Put ${name} in the selected blank`,
+    checkButton: "Check",
+    status: {
+      start: "Select a blank. Then type an operator or select an operator.",
+      incomplete: "Fill every blank before you check.",
+      wrong: (count: number) =>
+        `Not yet. The equation is not equal to the target. Change an operator and check again. Mistakes: ${count}.`,
+      solved: (count: number) =>
+        `You solved the puzzle with ${mistakeCount(count)}. The equation is equal to the target.`,
+    },
+  },
+  orbital: {
+    name: "Orbital",
+    tag: "Gravity simulation",
+    summary: "Launch the probe past the planets and into the ring.",
+    rules: [
+      "Set the angle and the power, then launch the probe.",
+      "The planets pull the probe. A bigger planet pulls more.",
+      "Get the probe into the ring. Make the fewest misses.",
+    ] satisfies Rule[],
+    rulesKey: [] satisfies KeyItem[],
+    moreRules: {
+      label: "More rules: the flight, the misses and the controls",
+      rules: [
+        "0° points right, 90° points up, 180° points left and 270° points down.",
+        "The flight stops when the probe reaches the ring, hits a planet, goes off the board or flies for 4 s.",
+        "Each launch starts from the launch point. A launch that does not reach the ring is a miss.",
+        "The same angle and power always give the same path. The board keeps the paths of your earlier launches.",
+        "A launch straight at the ring never gets there. Use the pull of the planets.",
+        "Keyboard: the arrow keys change the angle and the power. Then press Enter or Space on Launch.",
+        "Mouse and touch: drag back from the probe to aim, as with a slingshot. Let go to launch.",
+        "Your score is the misses. 0 is a perfect solve.",
+      ] satisfies Rule[],
+    },
+    score: missCount,
+    scoreWord: missWord,
+    boardLabel: "Orbital board",
+    itemsLabel: "Items on the board",
+    items: {
+      probe: (at: string) => `Probe at ${at}.`,
+      ring: (at: string) => `Ring at ${at}.`,
+      planet: (size: string, at: string) => `${capital(size)} planet at ${at}.`,
+    },
+    at: (x: number, y: number) => `x ${x}, y ${y}`,
+    sizes: { small: "small", medium: "medium", big: "big" },
+    misses: (count: number) => `Misses: ${count}.`,
+    controlsLabel: "Aim and launch",
+    angle: "Angle",
+    power: "Power",
+    degrees: (angle: number) => `${angle}°`,
+    launch: "Launch",
+    status: {
+      start: "Set the angle and the power, then select Launch. Or drag back from the probe.",
+      aim: (angle: number, power: number) => `Angle ${angle}°, power ${power}.`,
+      ends: {
+        ring: "The probe reached the ring.",
+        planet: (size: string, at: string) => `The probe hit the ${size} planet at ${at}.`,
+        edge: "The probe went off the board.",
+        time: (seconds: number) => `The probe flew for ${seconds} s and stopped.`,
+      },
+      closest: (units: number) => `Closest to the ring: ${unitCount(units)}.`,
+      solved: (count: number) => `You solved the puzzle with ${missCount(count)}.`,
+    },
+  },
+  tilt: {
+    name: "Tilt",
+    tag: "Kinetic puzzle",
+    summary: "Tilt the board to roll each ball into the hole of its colour.",
+    rules: [
+      "Tilt the board up, down, left or right. All balls roll until something stops them.",
+      "A coloured ball that rolls over the hole of its colour falls in and stays there.",
+      "Get all coloured balls into their holes with the fewest tilts.",
+    ] satisfies Rule[],
+    rulesKey: [
+      { text: "red ball and hole", sample: { fill: "red", symbol: tiltRed } },
+      { text: "blue ball and hole", sample: { fill: "blue", symbol: tiltBlue } },
+      { text: "yellow ball and hole", sample: { fill: "yellow", symbol: tiltYellow } },
+      { text: "ball in its hole", sample: { fill: "empty", symbol: symbols.tilt.full } },
+    ] satisfies KeyItem[],
+    moreRules: {
+      label: "More rules: walls, holes, the grey ball and the controls",
+      rules: [
+        "A ball stops at a wall, at the edge of the board, at another ball or at a full hole.",
+        "A ball in its hole does not move again. A full hole stops the other balls, as a wall does.",
+        "A ball rolls over an empty hole of a different colour. It can also stop on it. Then it stops the other balls.",
+        "When two balls are in one line, the front ball moves first. The ball behind it stops next to it.",
+        "Hard: the grey ball has no hole. It only stops the other balls. You need it to solve the puzzle.",
+        "A tilt that moves no ball does not count.",
+        "Your score is the extra tilts: your tilts minus the fewest tilts. 0 is a perfect solve.",
+        "Keyboard: the arrow keys tilt the board. Mouse and touch: use the arrow buttons, or swipe on the board.",
+        "There is no undo. Restart puts the balls back at the start.",
+      ] satisfies Rule[],
+    },
+    score: extraCount,
+    scoreWord: extraWord,
+    symbols: symbols.tilt,
+    colours: { red: "red", blue: "blue", yellow: "yellow", grey: "grey" },
+    directions: { up: "up", down: "down", left: "left", right: "right" },
+    boardLabel: (size: number) => `Tilt board, ${size} by ${size}`,
+    boardHelp: "Use the arrow keys to tilt the board.",
+    keyHint: {
+      idle: "Click the board to use the arrow keys.",
+      active: "The arrow keys tilt the board.",
+    },
+    square: (row: number, column: number, content: string) =>
+      `Row ${row}, column ${column}, ${content}`,
+    squares: {
+      empty: "empty",
+      wall: "wall",
+      ball: (colour: string) => `${colour} ball`,
+      hole: (colour: string) => `${colour} hole`,
+      inHole: (colour: string) => `${colour} ball in its hole`,
+      onHole: (ball: string, hole: string) => `${ball} ball on the ${hole} hole`,
+    },
+    counts: (tilts: number, fewest: number | null) =>
+      `Tilts: ${tilts}. Fewest: ${fewest === null ? "unknown" : fewest}.`,
+    controlsLabel: "Tilt the board",
+    tiltButton: (direction: string) => `Tilt ${direction}`,
+    status: {
+      start: "Tilt the board with the arrow keys, the arrow buttons or a swipe.",
+      tilt: (direction: string) => `Tilt ${direction}.`,
+      rolls: (colour: string, squares: number) =>
+        `The ${colour} ball rolls ${squareCount(squares)}.`,
+      fallsIn: (colour: string) => `The ${colour} ball falls into its hole.`,
+      tilts: (count: number) => `Tilts: ${count}.`,
+      noMove: (direction: string) => `No ball can move ${direction}.`,
+      solved: (extra: number) =>
+        extra === 0
+          ? "You solved the puzzle with 0 extra tilts. This is a perfect solve."
+          : `You solved the puzzle with ${extraCount(extra)}.`,
+    },
+  },
 };

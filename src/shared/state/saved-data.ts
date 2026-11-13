@@ -62,7 +62,7 @@ export const isRecord = (value: unknown): value is Fields =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
 const isDayKey = (value: unknown): value is string =>
-  typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/u.test(value);
+  typeof value === "string" && /^\d{4}-\d{2}-\d{2}/u.test(value);
 
 function isPuzzleRef(value: unknown): value is PuzzleRef {
   if (!isRecord(value)) return false;
@@ -106,7 +106,13 @@ const readers: { [Name in keyof SavedData]: (value: unknown) => SavedData[Name] 
   solved: readTexts,
   results: (value) =>
     Array.isArray(value)
-      ? value.filter((item) => isSolveResult(item)).slice(-maxResults)
+      ? value
+          .filter((item) => isSolveResult(item))
+          .map((item) => {
+            if (item.day.length <= 10) return item;
+            return Object.assign({}, item, { day: item.day.slice(0, 10) });
+          })
+          .slice(-maxResults)
       : undefined,
   lastOpened: (value) => (isPuzzleRef(value) || value === null ? value : undefined),
   seenRules: readTexts,

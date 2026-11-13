@@ -52,6 +52,11 @@ describe("readSavedData of the newer fields", () => {
     });
   });
 
+  it("normalizes ISO timestamp dates in solves to YYYY-MM-DD", () => {
+    const isoSolve = { ...result, day: "2026-10-24T15:30:00.000Z" };
+    expect(readSavedData({ results: [isoSolve] }).results).toEqual([result]);
+  });
+
   it("keeps each correct solve and drops each broken solve", () => {
     const broken = [
       { ...result, seconds: -1 },

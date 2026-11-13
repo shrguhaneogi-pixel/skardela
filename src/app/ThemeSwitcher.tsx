@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { applyTheme, isTheme, readTheme, saveTheme, themes } from "../shared/theme";
 import { getLogger } from "../shared/logger";
 import { text } from "../text/en";
+import { useAppStore } from "../shared/state/store";
 import styles from "./ThemeSwitcher.module.css";
 
 // ASD-STE100 Simplified Technical English comments.
@@ -27,6 +28,7 @@ export function ThemeSwitcher() {
           setTheme(selected);
           applyTheme(selected);
           saveTheme(selected);
+          useAppStore.getState().setTheme(selected);
         }}
       >
         {themes.map((option) => (

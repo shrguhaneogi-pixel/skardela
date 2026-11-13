@@ -56,6 +56,16 @@ function makeOptions(puzzleId: string) {
   };
 }
 
+let onRecordSolved: ((record: PuzzleProgressRecord) => void) | null = null;
+
+// ASD-STE100 Simplified Technical English comments.
+// Register a callback when a puzzle is marked as solved.
+export function setSolvedSyncListener(
+  listener: ((record: PuzzleProgressRecord) => void) | null,
+): void {
+  onRecordSolved = listener;
+}
+
 // Load saved progress for a puzzle if present.
 export function loadPuzzleProgress(puzzleId: string): PuzzleProgressRecord | null {
   return getStoredItem(makeOptions(puzzleId));
@@ -63,10 +73,18 @@ export function loadPuzzleProgress(puzzleId: string): PuzzleProgressRecord | nul
 
 // Save or update progress for a puzzle.
 export function savePuzzleProgress(record: PuzzleProgressRecord): boolean {
-  return setStoredItem(makeOptions(record.puzzleId), {
+  const ok = setStoredItem(makeOptions(record.puzzleId), {
     ...record,
     savedAt: Date.now(),
   });
+  if (ok && record.isSolved) {
+    try {
+      onRecordSolved?.(record);
+    } catch {
+      // Ignore sync listener errors.
+    }
+  }
+  return ok;
 }
 
 // Get the current progress status of a puzzle.
