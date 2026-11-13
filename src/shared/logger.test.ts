@@ -1,5 +1,6 @@
+import { flush } from "@utk09/ui-observability";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { flush, getLogger } from "./logger";
+import { getLogger } from "./logger";
 
 // Vitest reports an "error" event on the window as a failure when no listener handles it.
 // This listener handles it, as the browser does when it prints the error.

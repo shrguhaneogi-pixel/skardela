@@ -12,14 +12,6 @@ import {
 } from "./saved-data";
 import { isNewerText, parseStoredText, toStoredText } from "./storage-format";
 import type { Theme } from "./theme";
-import {
-  clearAllPuzzleProgress,
-  getAllProgressRecords,
-  loadPuzzleProgress,
-  savePuzzleProgress,
-  setSolvedSyncListener,
-} from "../puzzle-progress";
-import { applyTheme, saveTheme } from "../theme";
 
 // The store of the app. It holds the saved data and the actions that change it.
 // Read a value with a selector, for example: const theme = useAppStore((state) => state.theme).
@@ -95,19 +87,12 @@ const savedDataStorage: PersistStorage<SavedData> = {
   },
 };
 
-/* oxlint-disable eslint/max-lines-per-function */
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       ...defaultSavedData,
       setTheme: (theme) => {
         set({ theme });
-        try {
-          saveTheme(theme);
-          applyTheme(theme);
-        } catch {
-          // Ignore theme errors.
-        }
       },
       acknowledgeNotice: () => {
         set({ cookieBanner: true });
@@ -128,60 +113,15 @@ export const useAppStore = create<AppState>()(
             : [...state.solved, result.puzzleId],
           results: [...state.results, result].slice(-maxResults),
         }));
-        try {
-          const existing = loadPuzzleProgress(result.puzzleId);
-          if (!existing || !existing.isSolved) {
-            savePuzzleProgress({
-              ...existing,
-              puzzleId: result.puzzleId,
-              puzzleType: result.type,
-              difficulty: result.difficulty,
-              isSolved: true,
-              savedAt: Date.now(),
-              completedAt: Date.now(),
-              timeSpentSeconds: result.seconds,
-              hintCount: existing?.hintCount ?? 0,
-              mistakes: result.mistakes ?? 0,
-            });
-          }
-        } catch {
-          // Ignore storage errors.
-        }
       },
       importData: (imported) => {
         const { data, added } = mergeProgress(pickSavedData(get()), imported);
         set(data);
-        for (const r of imported.results) {
-          try {
-            const existing = loadPuzzleProgress(r.puzzleId);
-            if (!existing || !existing.isSolved) {
-              savePuzzleProgress({
-                ...existing,
-                puzzleId: r.puzzleId,
-                puzzleType: r.type,
-                difficulty: r.difficulty,
-                isSolved: true,
-                savedAt: Date.now(),
-                completedAt: Date.now(),
-                timeSpentSeconds: r.seconds,
-                hintCount: existing?.hintCount ?? 0,
-                mistakes: r.mistakes ?? 0,
-              });
-            }
-          } catch {
-            // Ignore storage errors.
-          }
-        }
         return added;
       },
       clearData: () => {
         set(defaultSavedData);
         void useAppStore.persist.clearStorage();
-        try {
-          clearAllPuzzleProgress();
-        } catch {
-          // Ignore storage errors.
-        }
       },
     }),
     {
@@ -192,52 +132,6 @@ export const useAppStore = create<AppState>()(
     },
   ),
 );
-
-// Synchronize in-progress solve records with the reactive store.
-setSolvedSyncListener((record) => {
-  const store = useAppStore.getState();
-  if (!store.solved.includes(record.puzzleId)) {
-    const day = new Date(record.completedAt ?? record.savedAt ?? Date.now())
-      .toISOString()
-      .slice(0, 10);
-    store.recordSolve({
-      puzzleId: record.puzzleId,
-      type: record.puzzleType,
-      difficulty: record.difficulty,
-      seconds: record.timeSpentSeconds,
-      day,
-      mistakes: record.mistakes,
-    });
-  }
-});
-
-// Import any existing stored progress records into the app store.
-export function syncExistingProgressRecords(): void {
-  try {
-    const records = getAllProgressRecords().filter((r) => r.isSolved);
-    if (records.length === 0) return;
-    const store = useAppStore.getState();
-    for (const r of records) {
-      if (!store.solved.includes(r.puzzleId)) {
-        const day = new Date(r.completedAt ?? r.savedAt ?? Date.now()).toISOString().slice(0, 10);
-        store.recordSolve({
-          puzzleId: r.puzzleId,
-          type: r.puzzleType,
-          difficulty: r.difficulty,
-          seconds: r.timeSpentSeconds,
-          day,
-          mistakes: r.mistakes,
-        });
-      }
-    }
-  } catch {
-    // Ignore initial sync errors.
-  }
-}
-
-if (typeof window !== "undefined") {
-  syncExistingProgressRecords();
-}
 
 // A change in a different tab of the same site reads the saved data again. Thus all tabs show the same data.
 // "key" is null when a tab clears all storage. "newValue" is null when a tab removes the saved data,
