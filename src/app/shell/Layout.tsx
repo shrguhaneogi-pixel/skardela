@@ -49,7 +49,7 @@ export function Layout() {
             className={styles.footerLink}
             href={text.footer.source.href}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             {text.footer.source.label}
           </a>

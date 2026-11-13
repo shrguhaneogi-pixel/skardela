@@ -21,6 +21,10 @@ describe("routes", () => {
       await screen.findByRole("heading", { level: 1, name: text.home.hero.title }),
     ).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: text.nav.label })).toBeInTheDocument();
+    const footerLink = screen.getByRole("link", { name: text.footer.source.label });
+    expect(footerLink).toHaveAttribute("href", "https://github.com/shrguhaneogi-pixel/skardela");
+    expect(footerLink).toHaveAttribute("target", "_blank");
+    expect(footerLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("shows the colour-binary puzzle page", async () => {

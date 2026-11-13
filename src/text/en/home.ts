@@ -24,7 +24,6 @@ export const home = {
     intro:
       "Skardela has new kinds of logic and word puzzles. Each puzzle type has an easy, a medium and a hard puzzle each day. Play in your browser. You do not need an account or a download.",
     play: "Play today's puzzles",
-    howItWorks: "How it works",
     // A returning player sees the progress of today.
     solvedSome: (solved: number, total: number) =>
       `${solved} down. ${puzzleCount(total - solved)} left today.`,
@@ -130,58 +129,5 @@ export const home = {
       no: { text: "No", label: "No, keep my data" },
       note: '"Clear my data" deletes your stats, your solved puzzles, your theme and your OK for the analytics notice from this browser.',
     },
-  },
-  steps: {
-    heading: "How it works",
-    items: [
-      {
-        title: "Select a puzzle",
-        body: "Each puzzle type has an easy, a medium and a hard puzzle for today. Start with easy to learn the rules.",
-      },
-      {
-        title: "Play in your browser",
-        body: "The rules are next to the board. Restart at any time, or get a random puzzle of the same level.",
-      },
-      {
-        title: "Come back tomorrow",
-        body: "New puzzles come each day at midnight, your local time.",
-      },
-    ],
-  },
-  faq: {
-    heading: "Questions",
-    items: [
-      { question: "Is Skardela free?", answer: "Yes. All puzzles are free to play." },
-      {
-        question: "Do I need an account?",
-        answer: "No. Skardela has no accounts. Open a puzzle and play.",
-      },
-      {
-        question: "Does Skardela keep my progress?",
-        answer:
-          'Partly. Skardela saves the puzzles that you solve, your times and your streak. "Random puzzle" gives you puzzles that you did not solve. A puzzle that you did not finish starts again when you reload the page. Skardela also saves your theme and your OK for the analytics notice. All of this stays in your browser.',
-      },
-      {
-        question: "Can I move my progress to a different browser?",
-        answer:
-          'Yes. Select "Export my data" under "Your stats" to save a backup file. In the other browser, select "Import" and select the file. The solves of the file are added to the solves of that browser.',
-      },
-      {
-        question: "Something does not work. What can I do?",
-        answer:
-          'Reload the page first. If the problem stays, select "Clear my data" under "Your stats" on the home page. This deletes all your Skardela data from this browser: your stats, your solved puzzles, your theme and your OK for the analytics notice. Then the page loads again, as for a new player.',
-      },
-      {
-        question: "What data does Skardela collect?",
-        answer:
-          "Skardela uses analytics to count visits and to see which puzzles people play. The analytics tool does not use cookies, and it does not follow you to other websites.",
-      },
-      {
-        question: "Can I help to make Skardela?",
-        answer:
-          "Yes. Skardela is open source. You can add puzzles, fix problems or add a new puzzle type.",
-        link: { label: "Skardela on GitHub", href: "https://github.com/utk09-NCL/skardela" },
-      },
-    ],
   },
 };

@@ -66,9 +66,6 @@ export function DailyHero({ cards }: { cards: readonly TodayCard[] }) {
               <a className={styles.primary} href="#today">
                 {words.play}
               </a>
-              <a className={styles.secondary} href="#how-it-works">
-                {words.howItWorks}
-              </a>
             </div>
           </>
         )}

@@ -117,10 +117,4 @@ describe("home page clear data", () => {
     expect(useAppStore.getState().results).toHaveLength(4);
     expect(screen.getByRole("button", { name: stats.clear.button })).toHaveFocus();
   });
-
-  it("explains Clear data in the questions", async () => {
-    await renderHome();
-    const item = text.home.faq.items.find(({ answer }) => answer.includes(stats.clear.button));
-    expect(screen.getByText(String(item?.question))).toBeInTheDocument();
-  });
 });

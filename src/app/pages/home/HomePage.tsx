@@ -3,12 +3,10 @@ import { text } from "../../../text/en";
 import type { homeLoader } from "../../puzzles";
 import { useScrollToHash } from "./useScrollToHash";
 import { DailyHero } from "./DailyHero";
-import { Faq } from "./Faq";
-import { HowItWorks } from "./HowItWorks";
 import { Stats } from "./Stats";
 import { TodayPuzzles } from "./TodayPuzzles";
 
-// The home page: the progress of today, today's puzzles, the stats of the player, how it works and the questions.
+// The home page: the progress of today, today's puzzles, and the stats of the player.
 // Each section is in its own file in this folder. All sections use "HomePage.module.css",
 // except the icons of the puzzle types, which use "PuzzleIcon.module.css".
 // The progress and the stats come from the saved data in the store. See "src/shared/state/store.ts".
@@ -22,8 +20,6 @@ export function HomePage() {
       <DailyHero cards={cards} />
       <TodayPuzzles cards={cards} />
       <Stats cards={cards} />
-      <HowItWorks />
-      <Faq />
     </>
   );
 }

@@ -107,17 +107,41 @@ describe("home page cards", () => {
   });
 });
 
-describe("home page sections", () => {
-  it("explains how it works and answers the questions", async () => {
+describe("home page removed sections", () => {
+  it("does not render How it works or Questions sections", async () => {
     await renderHome();
-    const steps = screen.getByRole("region", { name: home.steps.heading });
-    expect(within(steps).getAllByRole("listitem")).toHaveLength(home.steps.items.length);
-    const faq = screen.getByRole("region", { name: home.faq.heading });
-    expect(within(faq).getAllByRole("group")).toHaveLength(home.faq.items.length);
-    expect(within(faq).getByRole("link", { name: /GitHub/u })).toHaveAttribute(
-      "href",
-      text.footer.source.href,
-    );
+
+    // Headings are absent
+    expect(screen.queryByRole("heading", { name: "How it works" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Questions" })).toBeNull();
+
+    // Instructional cards are absent
+    expect(screen.queryByText("Select a puzzle")).toBeNull();
+    expect(screen.queryByText("Play in your browser")).toBeNull();
+    expect(screen.queryByText("Come back tomorrow")).toBeNull();
+
+    // FAQ entries are absent
+    expect(screen.queryByText("Is Skardela free?")).toBeNull();
+    expect(screen.queryByText("Do I need an account?")).toBeNull();
+    expect(screen.queryByText("Does Skardela keep my progress?")).toBeNull();
+    expect(screen.queryByText("Can I move my progress to a different browser?")).toBeNull();
+    expect(screen.queryByText("Something does not work. What can I do?")).toBeNull();
+    expect(screen.queryByText("What data does Skardela collect?")).toBeNull();
+    expect(screen.queryByText("Can I help to make Skardela?")).toBeNull();
+
+    // No anchor targets #how-it-works
+    const links = screen.getAllByRole("link");
+    const howItWorksLink = links.find((link) => link.getAttribute("href") === "#how-it-works");
+    expect(howItWorksLink).toBeUndefined();
+
+    // Primary CTA remains present
+    expect(screen.getByRole("link", { name: home.hero.play })).toHaveAttribute("href", "#today");
+
+    // Footer link has exact requested destination and attributes
+    const footerLink = screen.getByRole("link", { name: text.footer.source.label });
+    expect(footerLink).toHaveAttribute("href", "https://github.com/shrguhaneogi-pixel/skardela");
+    expect(footerLink).toHaveAttribute("target", "_blank");
+    expect(footerLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 });
 
