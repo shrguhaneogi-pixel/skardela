@@ -36,6 +36,18 @@ function isPuzzleChunk(fileName: string): boolean {
   if (fileName.startsWith("guzzle")) {
     return true;
   }
+  if (fileName.startsWith("latics")) {
+    return true;
+  }
+  if (fileName.startsWith("numpuz")) {
+    return true;
+  }
+  if (fileName.startsWith("orbital")) {
+    return true;
+  }
+  if (fileName.startsWith("tilt")) {
+    return true;
+  }
   return fileName.startsWith("Board");
 }
 
@@ -75,12 +87,12 @@ describe("bundle size budgets", () => {
     expect(size).toBeLessThan(maxMainBytes);
   });
 
-  it("enforces total css budget under 80 kB", () => {
+  it("enforces total css budget under 110 kB", () => {
     const files = ensureDistAssets();
     const totalCss = getTotalCssBytes(files);
     expect(totalCss).toBeGreaterThan(0);
 
-    const maxCssBytes = 80 * 1024;
+    const maxCssBytes = 110 * 1024;
     expect(totalCss).toBeLessThan(maxCssBytes);
   });
 

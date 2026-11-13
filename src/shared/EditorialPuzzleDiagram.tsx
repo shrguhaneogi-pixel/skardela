@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/max-lines */
 // ASD-STE100 Simplified Technical English comments.
 // This component renders an editorial vector diagram that responds to puzzle progress.
 
@@ -5,6 +6,7 @@ import { useMemo } from "react";
 import type { Difficulty } from "./difficulty";
 import { loadPuzzleProgress } from "./puzzle-progress";
 import { text } from "../text/en";
+import type { PuzzleType } from "../app/puzzle-types/registry";
 import styles from "./EditorialPuzzleDiagram.module.css";
 
 type LevelRef = {
@@ -13,7 +15,7 @@ type LevelRef = {
 };
 
 type DiagramProps = {
-  type: "colour-binary" | "guzzle";
+  type: PuzzleType;
   levels: LevelRef[];
 };
 
@@ -254,13 +256,140 @@ function GuzzleSvg({ state }: { state: BoardState }) {
   );
 }
 
+function LaticsSvg({ state }: { state: BoardState }) {
+  const label = text.home.diagramLabel(text.latics.name);
+  return (
+    <svg className={styles.svgRoot} viewBox="0 0 56 56" aria-label={label}>
+      <title>{label}</title>
+      <DiagramFrame isSolved={state.isSolved} />
+      <line x1="8" y1="28" x2="28" y2="28" stroke="var(--red)" strokeWidth="2" />
+      <line x1="28" y1="28" x2="28" y2="48" stroke="var(--blue)" strokeWidth="2" />
+      <line
+        x1="23"
+        y1="23"
+        x2="33"
+        y2="33"
+        stroke="var(--line, #888)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <circle cx="8" cy="28" r="3" fill="var(--red)" />
+      <circle cx="28" cy="48" r="3.5" fill="var(--blue)" />
+      <rect
+        x="23"
+        y="43"
+        width="10"
+        height="10"
+        rx="2"
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth="1"
+      />
+    </svg>
+  );
+}
+
+function NumpuzSvg({ state }: { state: BoardState }) {
+  const label = text.home.diagramLabel(text.numpuz.name);
+  return (
+    <svg className={styles.svgRoot} viewBox="0 0 56 56" aria-label={label}>
+      <title>{label}</title>
+      <DiagramFrame isSolved={state.isSolved} />
+      <rect x="10" y="10" width="14" height="14" rx="3" className={styles.centerCell} />
+      <rect x="32" y="10" width="14" height="14" rx="3" className={styles.centerCell} />
+      <rect x="10" y="32" width="14" height="14" rx="3" className={styles.centerCell} />
+      <rect x="32" y="32" width="14" height="14" rx="3" className={styles.centerCell} />
+      <text x="17" y="21" className={styles.centerText} fill="var(--accent)">
+        +
+      </text>
+      <text x="39" y="21" className={styles.centerText} fill="var(--accent)">
+        ×
+      </text>
+      <text x="17" y="43" className={styles.centerText} fill="var(--accent)">
+        −
+      </text>
+      <text x="39" y="43" className={styles.centerText} fill="var(--accent)">
+        =
+      </text>
+    </svg>
+  );
+}
+
+function OrbitalSvg({ state }: { state: BoardState }) {
+  const label = text.home.diagramLabel(text.orbital.name);
+  return (
+    <svg className={styles.svgRoot} viewBox="0 0 56 56" aria-label={label}>
+      <title>{label}</title>
+      <DiagramFrame isSolved={state.isSolved} />
+      <circle
+        cx="28"
+        cy="28"
+        r="16"
+        fill="none"
+        stroke="var(--line, #888)"
+        strokeWidth="1"
+        strokeDasharray="3 3"
+      />
+      <circle cx="28" cy="28" r="5" fill="var(--accent)" />
+      <circle cx="44" cy="28" r="3" fill="var(--blue)" />
+      <circle cx="16" cy="18" r="2" fill="var(--yellow)" />
+      <circle cx="36" cy="40" r="4" fill="none" stroke="var(--green)" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function TiltSvg({ state }: { state: BoardState }) {
+  const label = text.home.diagramLabel(text.tilt.name);
+  return (
+    <svg className={styles.svgRoot} viewBox="0 0 56 56" aria-label={label}>
+      <title>{label}</title>
+      <DiagramFrame isSolved={state.isSolved} />
+      <line
+        x1="12"
+        y1="20"
+        x2="36"
+        y2="20"
+        stroke="var(--line, #888)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="24"
+        y1="20"
+        x2="24"
+        y2="44"
+        stroke="var(--line, #888)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <circle cx="16" cy="14" r="3.5" fill="var(--red)" />
+      <circle cx="38" cy="38" r="3.5" fill="var(--blue)" />
+      <circle cx="16" cy="38" r="4.5" fill="none" stroke="var(--red)" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+const tagMap: Record<PuzzleType, string> = {
+  "colour-binary": "CB",
+  guzzle: "GZ",
+  latics: "LT",
+  numpuz: "NP",
+  orbital: "OR",
+  tilt: "TL",
+};
+
 export function EditorialPuzzleDiagram({ type, levels }: DiagramProps) {
   const state = useMemo(() => readPuzzleState(levels), [levels]);
-  const tag = type === "colour-binary" ? "CB" : "GZ";
+  const tag = tagMap[type] ?? "PZ";
 
   return (
     <div className={styles.diagramContainer} data-type={type} data-solved={state.isSolved}>
-      {type === "colour-binary" ? <ColourBinarySvg state={state} /> : <GuzzleSvg state={state} />}
+      {type === "colour-binary" && <ColourBinarySvg state={state} />}
+      {type === "guzzle" && <GuzzleSvg state={state} />}
+      {type === "latics" && <LaticsSvg state={state} />}
+      {type === "numpuz" && <NumpuzSvg state={state} />}
+      {type === "orbital" && <OrbitalSvg state={state} />}
+      {type === "tilt" && <TiltSvg state={state} />}
       <span className={styles.telemetryTag} aria-hidden="true">
         {tag}
       </span>

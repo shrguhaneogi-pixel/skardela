@@ -1,5 +1,3 @@
-import colourBinaryPuzzles from "../../puzzles/colour-binary.json";
-import guzzlePuzzles from "../../puzzles/guzzle.json";
 import { getRecentArchiveDates } from "../app/archive";
 import { dayNumber, formatDateString, puzzlesForDay, utcDate, type LocalDate } from "../app/daily";
 import type { Difficulty } from "./difficulty";
@@ -10,6 +8,7 @@ import {
 } from "./puzzle-progress";
 import { getStoredItem, setStoredItem } from "./storage";
 import { text } from "../text/en";
+import { practicePuzzlePools as puzzlePools } from "./practice-manifest";
 
 // ASD-STE100 Simplified Technical English comments.
 // This module provides deterministic, local practice recommendations.
@@ -22,14 +21,6 @@ const queueEnabledOptions = {
   version: 1,
   defaultValue: true,
   validate: (v: unknown): v is boolean => typeof v === "boolean",
-};
-
-const puzzlePools: Record<
-  "colour-binary" | "guzzle",
-  readonly { id: string; difficulty: Difficulty }[]
-> = {
-  "colour-binary": colourBinaryPuzzles as readonly { id: string; difficulty: Difficulty }[],
-  guzzle: guzzlePuzzles as readonly { id: string; difficulty: Difficulty }[],
 };
 
 // Resolve a valid 4-digit puzzle ID for the given type, difficulty, and UTC date.

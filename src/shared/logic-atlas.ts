@@ -38,6 +38,10 @@ export type LogicAtlasStats = {
   byType: {
     "colour-binary": number;
     guzzle: number;
+    latics: number;
+    numpuz: number;
+    orbital: number;
+    tilt: number;
   };
   skills: LogicSkill[];
 };
@@ -121,6 +125,38 @@ function buildSkills(cbSolved: number, guzzleSolved: number): LogicSkill[] {
   ];
 }
 
+function emptyTypeCounts(): LogicAtlasStats["byType"] {
+  return {
+    "colour-binary": 0,
+    guzzle: 0,
+    latics: 0,
+    numpuz: 0,
+    orbital: 0,
+    tilt: 0,
+  };
+}
+
+function tallySolvedRecords(records: PuzzleProgressRecord[]) {
+  const byType: LogicAtlasStats["byType"] = emptyTypeCounts();
+  let totalSolved = 0;
+  let cleanSolves = 0;
+  let totalTimeSeconds = 0;
+
+  for (const record of records) {
+    if (!record.isSolved) continue;
+    totalSolved += 1;
+    totalTimeSeconds += record.timeSpentSeconds;
+    if (record.hintCount === 0 && record.mistakes === 0) {
+      cleanSolves += 1;
+    }
+    if (record.puzzleType in byType) {
+      byType[record.puzzleType as keyof LogicAtlasStats["byType"]] += 1;
+    }
+  }
+
+  return { totalSolved, cleanSolves, totalTimeSeconds, byType };
+}
+
 export function calculateAtlasStats(
   records: PuzzleProgressRecord[],
   enabled: boolean = true,
@@ -133,28 +169,12 @@ export function calculateAtlasStats(
       cleanSolves: 0,
       currentStreak: 0,
       totalTimeSeconds: 0,
-      byType: { "colour-binary": 0, guzzle: 0 },
+      byType: emptyTypeCounts(),
       skills: buildSkills(0, 0),
     };
   }
 
-  let totalSolved = 0;
-  let cleanSolves = 0;
-  let totalTimeSeconds = 0;
-  let cbSolved = 0;
-  let guzzleSolved = 0;
-
-  for (const record of records) {
-    if (record.isSolved) {
-      totalSolved += 1;
-      totalTimeSeconds += record.timeSpentSeconds;
-      if (record.hintCount === 0 && record.mistakes === 0) {
-        cleanSolves += 1;
-      }
-      if (record.puzzleType === "colour-binary") cbSolved += 1;
-      if (record.puzzleType === "guzzle") guzzleSolved += 1;
-    }
-  }
+  const { totalSolved, cleanSolves, totalTimeSeconds, byType } = tallySolvedRecords(records);
 
   return {
     isEnabled: true,
@@ -162,11 +182,8 @@ export function calculateAtlasStats(
     cleanSolves,
     currentStreak: calculateDailyStreak(records, refDate),
     totalTimeSeconds,
-    byType: {
-      "colour-binary": cbSolved,
-      guzzle: guzzleSolved,
-    },
-    skills: buildSkills(cbSolved, guzzleSolved),
+    byType,
+    skills: buildSkills(byType["colour-binary"], byType.guzzle),
   };
 }
 
