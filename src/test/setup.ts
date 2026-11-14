@@ -1,8 +1,13 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterEach } from "vitest";
 import { emptySession, usePlaySession } from "../shared/state/playSession";
 import { useAppStore } from "../shared/state/store";
+
+// Testing Library defaults to a 1000ms timeout for findBy* and waitFor.
+// Under concurrent test runs, asynchronous chunk imports (React.lazy) and router loaders
+// can take slightly longer than 1000ms. We set asyncUtilTimeout to 5000ms to eliminate flakiness.
+configure({ asyncUtilTimeout: 5000 });
 
 // jsdom has no "showModal" and no "close" for <dialog>. These small versions set "open",
 // and "close" sends the "close" event as a browser does. They do not make the rest of the page inert.
