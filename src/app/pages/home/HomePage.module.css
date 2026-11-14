@@ -14,10 +14,22 @@
 
 .heroText {
   display: flex;
+  flex: 1 1 24rem;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
   max-width: 44rem;
+}
+
+/* The visual column of the hero: the interactive puzzle sculpture and the progress of today. */
+.heroVisual {
+  display: flex;
+  flex: 0 1 24rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 16rem;
+  width: 100%;
 }
 
 .date {
@@ -164,7 +176,7 @@
 /* The progress of today: one segment for each puzzle, then the count and the time to new puzzles. */
 .progress {
   display: flex;
-  flex: 0 1 22rem;
+  width: 100%;
   flex-direction: column;
   gap: 0.75rem;
   min-width: 16rem;

@@ -50,6 +50,15 @@ export const home = {
       ]
         .filter((part) => part !== "")
         .join(" "),
+    // The interactive 3D puzzle sculpture in the hero.
+    sculpture: {
+      label: "Interactive puzzle cube. Drag to rotate or select a puzzle.",
+      hint: "Drag to rotate",
+      selectFace: (name: string) => `Rotate cube to ${name}`,
+      activeFace: (name: string) => `Current puzzle: ${name}`,
+      playPuzzle: (name: string) => `Play ${name}`,
+      resetView: "Reset view",
+    },
   },
   today: {
     heading: "Today's puzzles",

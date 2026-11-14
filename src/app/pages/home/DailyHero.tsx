@@ -6,6 +6,7 @@ import { text } from "../../../text/en";
 import { isPuzzleType } from "../../puzzle-types/registry";
 import type { TodayCard } from "../../puzzles";
 import styles from "./HomePage.module.css";
+import { PuzzleSculpture } from "./PuzzleSculpture";
 import { TodayProgress, type Segment } from "./TodayProgress";
 
 const words = text.home.hero;
@@ -70,7 +71,10 @@ export function DailyHero({ cards }: { cards: readonly TodayCard[] }) {
           </>
         )}
       </div>
-      <TodayProgress segments={segments} now={now} />
+      <div className={styles.heroVisual}>
+        <PuzzleSculpture cards={cards} solved={solved} />
+        <TodayProgress segments={segments} now={now} />
+      </div>
     </section>
   );
 }
