@@ -21,6 +21,25 @@
   --text-h: light-dark(#1c1915, #f6f1ea);
   --text: light-dark(#4d473f, #c9c1b6);
   --text-muted: light-dark(#6b645b, #aba396);
+  /* An editorial kicker colour for datelines and category tags.
+     It has 5.3:1 contrast on the light background and 8.3:1 on the dark background (WCAG AA). */
+  --editorial-kicker: light-dark(#8f5032, #f59e6c);
+  /* A subtle top highlight for buttons with a solid fill. */
+  --btn-highlight: light-dark(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.15));
+  /* A hover highlight for buttons with a solid fill. */
+  --btn-highlight-hover: light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.22));
+  /* Shadows for accent buttons and prominent calls to action. */
+  --shadow-btn-accent: 0 2px 8px light-dark(rgba(194, 65, 12, 0.25), rgba(251, 146, 60, 0.25));
+  --shadow-btn-accent-hover: 0 4px 14px
+    light-dark(rgba(194, 65, 12, 0.35), rgba(251, 146, 60, 0.35));
+  --shadow-btn-accent-active: 0 1px 4px
+    light-dark(rgba(194, 65, 12, 0.18), rgba(251, 146, 60, 0.18));
+  /* A soft glow for brand elements, such as solved segments. */
+  --glow-brand: light-dark(rgba(224, 90, 43, 0.35), rgba(240, 122, 74, 0.35));
+  /* An elevated shadow for cards on hover. */
+  --shadow-card-hover:
+    0 8px 24px -4px light-dark(rgba(35, 25, 15, 0.08), rgba(0, 0, 0, 0.5)),
+    0 2px 6px -1px light-dark(rgba(35, 25, 15, 0.04), rgba(0, 0, 0, 0.3));
   /* An elevated surface for cards and panels. */
   --surface-elevated: light-dark(#ffffff, #231f1c);
   /* A subtle hairline highlight for top edges of cards. */
@@ -186,21 +205,21 @@ h2,
 h3,
 h4 {
   color: var(--text-h);
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 700;
+  line-height: 1.15;
   text-wrap: balance;
 }
 
 h1 {
   font-size: clamp(2rem, 4vw + 1rem, 3.25rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-weight: 800;
+  letter-spacing: -0.035em;
   margin-block: clamp(1.25rem, 3vw, 2rem);
 }
 
 h2 {
-  font-size: clamp(1.25rem, 2vw + 0.75rem, 1.5rem);
-  letter-spacing: -0.015em;
+  font-size: clamp(1.25rem, 2vw + 0.75rem, 1.625rem);
+  letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
 }
 
