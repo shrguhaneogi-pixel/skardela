@@ -115,6 +115,10 @@ describe("home page removed sections", () => {
     expect(screen.queryByRole("heading", { name: "How it works" })).toBeNull();
     expect(screen.queryByRole("heading", { name: "Questions" })).toBeNull();
 
+    // Section IDs are absent from the document
+    expect(document.querySelector("#how-it-works")).toBeNull();
+    expect(document.querySelector("#questions")).toBeNull();
+
     // Instructional cards are absent
     expect(screen.queryByText("Select a puzzle")).toBeNull();
     expect(screen.queryByText("Play in your browser")).toBeNull();
@@ -134,11 +138,14 @@ describe("home page removed sections", () => {
     const howItWorksLink = links.find((link) => link.getAttribute("href") === "#how-it-works");
     expect(howItWorksLink).toBeUndefined();
 
-    // Primary CTA remains present
+    // Primary CTA and remaining sections remain present
     expect(screen.getByRole("link", { name: home.hero.play })).toHaveAttribute("href", "#today");
+    expect(screen.getByRole("heading", { name: home.today.heading })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: home.stats.heading })).toBeInTheDocument();
 
-    // Footer link has exact requested destination and attributes
+    // Footer link has exact label, destination, and security attributes
     const footerLink = screen.getByRole("link", { name: text.footer.source.label });
+    expect(footerLink).toHaveTextContent("Source on GitHub");
     expect(footerLink).toHaveAttribute("href", "https://github.com/shrguhaneogi-pixel/skardela");
     expect(footerLink).toHaveAttribute("target", "_blank");
     expect(footerLink).toHaveAttribute("rel", "noopener noreferrer");
