@@ -23,11 +23,8 @@ export function useCubeRotation(onSelectPuzzle?: (type: PuzzleType) => void) {
     }
   };
 
-  const { handlePointerDown, handlePointerMove, handlePointerUp } = useCubePointer(
-    cubeRef,
-    rotRef,
-    selectFace,
-  );
+  const { handlePointerDown, handlePointerMove, handlePointerUp, handleLostPointerCapture } =
+    useCubePointer(cubeRef, rotRef, selectFace);
 
   return {
     activeType,
@@ -36,5 +33,6 @@ export function useCubeRotation(onSelectPuzzle?: (type: PuzzleType) => void) {
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
+    handleLostPointerCapture,
   };
 }

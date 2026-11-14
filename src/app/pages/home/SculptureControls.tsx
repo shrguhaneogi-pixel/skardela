@@ -20,7 +20,12 @@ export function SculptureActiveBar({
     <div className={styles.activeBar}>
       <div className={styles.activeInfo}>
         <span className={styles.activeKicker}>{words.hint}</span>
-        <span className={styles.activeName} data-testid="active-sculpture-name">
+        <span
+          className={styles.activeName}
+          data-testid="active-sculpture-name"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {activeFace.name}
         </span>
       </div>
@@ -50,6 +55,10 @@ export function SculpturePills({
       nextIndex = (currentIndex + 1) % cubeFaces.length;
     } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
       nextIndex = (currentIndex - 1 + cubeFaces.length) % cubeFaces.length;
+    } else if (e.key === "Home") {
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      nextIndex = cubeFaces.length - 1;
     } else {
       return;
     }
@@ -57,6 +66,8 @@ export function SculpturePills({
     const target = cubeFaces[nextIndex];
     if (target) {
       onSelect(target.type);
+      const buttons = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("button");
+      buttons?.[nextIndex]?.focus();
     }
   };
 

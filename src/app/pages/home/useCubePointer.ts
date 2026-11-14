@@ -32,18 +32,26 @@ const initialDragState = (): DragState => ({
 });
 
 function setPointerCaptureSafe(target: HTMLDivElement, pointerId: number) {
-  if (typeof target.setPointerCapture === "function") {
-    target.setPointerCapture(pointerId);
+  try {
+    if (typeof target.setPointerCapture === "function") {
+      target.setPointerCapture(pointerId);
+    }
+  } catch {
+    // Ignore environments where pointer capture fails.
   }
 }
 
 function releasePointerCaptureSafe(target: HTMLDivElement, pointerId: number) {
-  if (
-    typeof target.hasPointerCapture === "function" &&
-    target.hasPointerCapture(pointerId) &&
-    typeof target.releasePointerCapture === "function"
-  ) {
-    target.releasePointerCapture(pointerId);
+  try {
+    if (
+      typeof target.hasPointerCapture === "function" &&
+      target.hasPointerCapture(pointerId) &&
+      typeof target.releasePointerCapture === "function"
+    ) {
+      target.releasePointerCapture(pointerId);
+    }
+  } catch {
+    // Ignore environments where pointer capture fails.
   }
 }
 
@@ -84,6 +92,48 @@ function computeSnapFace(drag: DragState, rotX: number, rotY: number): PuzzleTyp
   return getNearestFace(projectedX, projectedY);
 }
 
+function startDrag(
+  dragRef: { current: DragState },
+  cube: HTMLDivElement | null,
+  rotX: number,
+  rotY: number,
+  e: PointerEvent<HTMLDivElement>,
+) {
+  setPointerCaptureSafe(e.currentTarget, e.pointerId);
+  const faceEl = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-face-type]");
+  dragRef.current = {
+    ...initialDragState(),
+    isDragging: true,
+    targetFace: faceEl?.dataset.faceType as PuzzleType | undefined,
+    startX: e.clientX,
+    startY: e.clientY,
+    lastX: e.clientX,
+    lastY: e.clientY,
+    lastTime: performance.now(),
+    startRotX: rotX,
+    startRotY: rotY,
+  };
+  if (cube !== null) cube.dataset.dragging = "true";
+}
+
+function stopDrag(
+  drag: DragState,
+  cube: HTMLDivElement | null,
+  rotRef: RefObject<{ x: number; y: number }>,
+  e: PointerEvent<HTMLDivElement>,
+  onFaceSelect: (type: PuzzleType) => void,
+) {
+  releasePointerCaptureSafe(e.currentTarget, e.pointerId);
+  drag.isDragging = false;
+  if (cube !== null) delete cube.dataset.dragging;
+
+  if (!drag.hasMoved && drag.targetFace) {
+    onFaceSelect(drag.targetFace);
+    return;
+  }
+  onFaceSelect(computeSnapFace(drag, rotRef.current.x, rotRef.current.y));
+}
+
 // Handles pointer drag and tap interactions on the 3D sculpture.
 export function useCubePointer(
   cubeRef: RefObject<HTMLDivElement | null>,
@@ -94,21 +144,7 @@ export function useCubePointer(
 
   const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
-    setPointerCaptureSafe(e.currentTarget, e.pointerId);
-    const faceEl = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-face-type]");
-    dragRef.current = {
-      ...initialDragState(),
-      isDragging: true,
-      targetFace: faceEl?.dataset.faceType as PuzzleType | undefined,
-      startX: e.clientX,
-      startY: e.clientY,
-      lastX: e.clientX,
-      lastY: e.clientY,
-      lastTime: performance.now(),
-      startRotX: rotRef.current.x,
-      startRotY: rotRef.current.y,
-    };
-    if (cubeRef.current !== null) cubeRef.current.dataset.dragging = "true";
+    startDrag(dragRef, cubeRef.current, rotRef.current.x, rotRef.current.y, e);
   };
 
   const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -118,16 +154,14 @@ export function useCubePointer(
 
   const handlePointerUp = (e: PointerEvent<HTMLDivElement>) => {
     if (!dragRef.current.isDragging) return;
-    releasePointerCaptureSafe(e.currentTarget, e.pointerId);
-    dragRef.current.isDragging = false;
-    if (cubeRef.current !== null) delete cubeRef.current.dataset.dragging;
-
-    if (!dragRef.current.hasMoved && dragRef.current.targetFace) {
-      onFaceSelect(dragRef.current.targetFace);
-      return;
-    }
-    onFaceSelect(computeSnapFace(dragRef.current, rotRef.current.x, rotRef.current.y));
+    stopDrag(dragRef.current, cubeRef.current, rotRef, e, onFaceSelect);
   };
 
-  return { handlePointerDown, handlePointerMove, handlePointerUp };
+  const handleLostPointerCapture = (e: PointerEvent<HTMLDivElement>) => {
+    if (dragRef.current.isDragging) {
+      handlePointerUp(e);
+    }
+  };
+
+  return { handlePointerDown, handlePointerMove, handlePointerUp, handleLostPointerCapture };
 }

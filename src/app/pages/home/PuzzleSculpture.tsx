@@ -25,6 +25,32 @@ function getPuzzleHref(
   return `/puzzles/${next.id}`;
 }
 
+// Renders the 3D cube with each of the 6 puzzle faces.
+function SculptureCube({
+  cubeRef,
+  activeType,
+}: {
+  cubeRef: React.RefObject<HTMLDivElement | null>;
+  activeType: PuzzleType;
+}) {
+  return (
+    <div
+      ref={cubeRef}
+      className={styles.cube}
+      style={{ transform: `rotateX(${INITIAL_ROT_X}deg) rotateY(${INITIAL_ROT_Y}deg)` }}
+      data-testid="sculpture-cube"
+    >
+      {cubeFaces.map((face: FaceDescriptor) => (
+        <PuzzleSculptureFace
+          key={face.type}
+          descriptor={face}
+          isActive={activeType === face.type}
+        />
+      ))}
+    </div>
+  );
+}
+
 // The signature interactive 3D puzzle sculpture (Logic Cube).
 // Shows Skardela's 6 puzzles on rotating faces with pointer and keyboard controls.
 export function PuzzleSculpture({
@@ -36,8 +62,15 @@ export function PuzzleSculpture({
   solved?: readonly string[];
   onSelectPuzzle?: (type: PuzzleType) => void;
 }) {
-  const { activeType, cubeRef, selectFace, handlePointerDown, handlePointerMove, handlePointerUp } =
-    useCubeRotation(onSelectPuzzle);
+  const {
+    activeType,
+    cubeRef,
+    selectFace,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handleLostPointerCapture,
+  } = useCubeRotation(onSelectPuzzle);
 
   const activeFace = cubeFaces.find((f) => f.type === activeType) ?? fallbackFace;
   const playHref = getPuzzleHref(activeType, cards, solved ?? emptySolved);
@@ -54,22 +87,10 @@ export function PuzzleSculpture({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onLostPointerCapture={handleLostPointerCapture}
         data-testid="sculpture-viewport"
       >
-        <div
-          ref={cubeRef}
-          className={styles.cube}
-          style={{ transform: `rotateX(${INITIAL_ROT_X}deg) rotateY(${INITIAL_ROT_Y}deg)` }}
-          data-testid="sculpture-cube"
-        >
-          {cubeFaces.map((face: FaceDescriptor) => (
-            <PuzzleSculptureFace
-              key={face.type}
-              descriptor={face}
-              isActive={activeType === face.type}
-            />
-          ))}
-        </div>
+        <SculptureCube cubeRef={cubeRef} activeType={activeType} />
       </div>
 
       <SculptureActiveBar activeFace={activeFace} playHref={playHref} />

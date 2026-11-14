@@ -84,7 +84,7 @@ describe("PuzzleSculpture rendering", () => {
   });
 });
 
-describe("PuzzleSculpture pill interactions", () => {
+describe("PuzzleSculpture pill click interactions", () => {
   it("changes active puzzle face and snaps 3D perspective when clicking a face pill", () => {
     const onSelect = vi.fn<(type: PuzzleType) => void>();
     render(
@@ -111,8 +111,10 @@ describe("PuzzleSculpture pill interactions", () => {
     expect(cube.style.transform).toContain("rotateX(-14deg)");
     expect(cube.style.transform).toContain("rotateY(-112deg)");
   });
+});
 
-  it("handles keyboard navigation across pills with arrow keys", () => {
+describe("PuzzleSculpture pill keyboard navigation", () => {
+  it("handles keyboard navigation across pills with arrow keys and shifts focus", () => {
     const onSelect = vi.fn<(type: PuzzleType) => void>();
     render(
       <MemoryRouter>
@@ -126,10 +128,35 @@ describe("PuzzleSculpture pill interactions", () => {
     fireEvent.keyDown(pill, { key: "ArrowRight" });
 
     expect(onSelect).toHaveBeenCalledWith("colour-binary");
+    const nextPill = screen.getByRole("button", {
+      name: text.home.hero.sculpture.selectFace(text["colour-binary"].name),
+    });
+    expect(nextPill).toHaveFocus();
+  });
+
+  it("navigates to first and last pills with Home and End keys", () => {
+    const onSelect = vi.fn<(type: PuzzleType) => void>();
+    render(
+      <MemoryRouter>
+        <PuzzleSculpture onSelectPuzzle={onSelect} />
+      </MemoryRouter>,
+    );
+
+    const firstPill = screen.getByRole("button", {
+      name: text.home.hero.sculpture.selectFace(text.latics.name),
+    });
+    fireEvent.keyDown(firstPill, { key: "End" });
+    expect(onSelect).toHaveBeenCalledWith("numpuz");
+
+    const lastPill = screen.getByRole("button", {
+      name: text.home.hero.sculpture.selectFace(text.numpuz.name),
+    });
+    fireEvent.keyDown(lastPill, { key: "Home" });
+    expect(onSelect).toHaveBeenCalledWith("latics");
   });
 });
 
-describe("PuzzleSculpture drag interactions", () => {
+describe("PuzzleSculpture pointer drag", () => {
   it("handles pointer drag interaction on viewport and snaps to nearest face", () => {
     render(
       <MemoryRouter>
@@ -167,6 +194,32 @@ describe("PuzzleSculpture drag interactions", () => {
     expect(screen.getByTestId("active-sculpture-name")).toHaveTextContent(text.tilt.name);
     expect(cube.style.transform).toContain("rotateX(-14deg)");
     expect(cube.style.transform).toContain("rotateY(68deg)");
+  });
+});
+
+describe("PuzzleSculpture pointer capture loss", () => {
+  it("safely cleans up and snaps when pointer capture is lost", () => {
+    render(
+      <MemoryRouter>
+        <PuzzleSculpture />
+      </MemoryRouter>,
+    );
+
+    const viewport = screen.getByTestId("sculpture-viewport");
+    const cube = screen.getByTestId("sculpture-cube");
+
+    fireEvent.pointerDown(viewport, {
+      button: 0,
+      clientX: 200,
+      clientY: 200,
+      pointerId: 2,
+    });
+    expect(cube).toHaveAttribute("data-dragging", "true");
+
+    fireEvent.lostPointerCapture(viewport, {
+      pointerId: 2,
+    });
+    expect(cube).not.toHaveAttribute("data-dragging");
   });
 });
 

@@ -57,7 +57,6 @@ export const home = {
       selectFace: (name: string) => `Rotate cube to ${name}`,
       activeFace: (name: string) => `Current puzzle: ${name}`,
       playPuzzle: (name: string) => `Play ${name}`,
-      resetView: "Reset view",
     },
   },
   today: {

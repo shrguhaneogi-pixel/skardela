@@ -82,7 +82,7 @@ function NumpuzFaceGraphic() {
     <div className={styles.numpuzGrid} aria-hidden="true">
       <span className={styles.numpuzTile}>8</span>
       <span className={styles.numpuzTile} data-operator="true">
-        {symbols.numpuz.operators["\u00F7"]}
+        {symbols.numpuz.operators["÷"]}
       </span>
       <span className={styles.numpuzTile}>2</span>
       <span className={styles.numpuzEquals}>= 4</span>
