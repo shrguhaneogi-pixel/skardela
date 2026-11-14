@@ -21,18 +21,32 @@
 .select {
   min-height: 2.25rem;
   padding: 0.25rem 2.25rem 0.25rem 0.75rem;
-  border: 0;
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background-color: var(--surface-muted);
+  background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
   color: var(--text-h);
   cursor: pointer;
   appearance: none;
-  transition: background-color 150ms ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 /* The same soft fill and hover as a secondary button. */
 .select:hover {
-  background-color: var(--surface-muted-hover);
+  border-color: var(--line);
+  background-color: var(--surface-muted);
+  transform: translateY(-1px);
+}
+
+.select:active {
+  transform: translateY(0);
 }
 
 /* A small screen has little space in the header, thus the list is smaller. */

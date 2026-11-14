@@ -2,12 +2,15 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
   width: 100%;
-  padding: clamp(1rem, 3vw, 1.75rem);
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 28px;
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-sm);
 }
 
 /* The title is on the left. The timer and the close link are on the right. */
@@ -28,8 +31,9 @@
 .eyebrow {
   color: var(--accent-text);
   font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -42,13 +46,15 @@
 
 .title {
   margin: 0;
-  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
-  letter-spacing: -0.015em;
+  font-size: clamp(1.75rem, 2.5vw + 1rem, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
 .level {
-  padding: 0.125rem 0.625rem;
+  padding: 0.2rem 0.75rem;
   border-radius: 999px;
+  border: 1px solid var(--accent-border);
   background-color: var(--accent-bg);
   color: var(--accent-text);
   font-size: 0.875rem;
@@ -94,11 +100,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 4.25rem;
+  min-width: 4.5rem;
   height: 2.75rem;
-  padding-inline: 0.75rem;
+  padding-inline: 0.875rem;
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background-color: var(--surface-muted);
+  background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
   color: var(--text-h);
   font-family: var(--mono);
   font-size: 0.9375rem;
@@ -114,13 +124,26 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
   color: var(--text-h);
   font-size: 1.125rem;
   text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .close:hover {
   background-color: var(--surface-muted);
+  border-color: var(--line);
+  transform: translateY(-1px);
+}
+
+.close:active {
+  transform: translateY(0);
 }
 
 .layout {
@@ -156,11 +179,14 @@
 /* The result card. It has an orange edge, so the solve stands out. The numbers are in soft tiles. */
 .solved {
   display: grid;
-  gap: 1rem;
-  padding: 1.25rem;
+  gap: 1.25rem;
+  padding: 1.5rem;
   border: 1px solid var(--accent-border);
-  border-radius: 18px;
+  border-radius: 20px;
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    0 8px 24px -4px var(--glow-accent);
 }
 
 .solvedHead {
@@ -197,10 +223,14 @@
   display: flex;
   flex-direction: column-reverse;
   justify-content: flex-end;
-  gap: 2px;
-  padding: 0.625rem 0.75rem;
+  gap: 3px;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--surface-muted);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
 }
 
 .solvedNumber dd {
@@ -275,10 +305,21 @@
 .copy {
   background-color: var(--accent);
   color: var(--on-accent);
+  box-shadow: 0 2px 8px light-dark(rgba(194, 65, 12, 0.25), rgba(251, 146, 60, 0.25));
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .copy:hover:enabled {
   background-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px light-dark(rgba(194, 65, 12, 0.35), rgba(251, 146, 60, 0.35));
+}
+
+.copy:active:enabled {
+  transform: translateY(0);
 }
 
 .nextLink {
@@ -292,8 +333,12 @@
   display: grid;
   gap: 0.875rem;
   padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background-color: var(--surface-muted);
+  background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
 }
 
 .rules h2 {

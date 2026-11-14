@@ -1,4 +1,4 @@
-/* The home page. The cards and panels have a thin border and no shadow, as in the redesign. */
+/* The home page. The cards and panels have refined 1px borders, subtle elevation and tactile micro-interactions. */
 
 /* ---------- Hero ---------- */
 
@@ -8,34 +8,39 @@
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .heroText {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.75rem;
-  max-width: 40rem;
+  gap: 0.875rem;
+  max-width: 42rem;
 }
 
 .date {
   color: var(--text-muted);
   font-family: var(--mono);
   font-size: 0.75rem;
-  letter-spacing: 0.06em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .heroTitle {
   margin: 0;
-  font-size: clamp(1.875rem, 5vw, 3rem);
+  font-size: clamp(2rem, 5.5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
   line-height: 1.05;
   text-wrap: pretty;
 }
 
 .intro {
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  max-width: 52ch;
 }
 
 /* The link to the puzzle that the player did not finish. It shows only the name of the puzzle. */
@@ -44,24 +49,39 @@
   align-items: center;
   gap: 0.625rem;
   min-height: 2.75rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border);
+  padding: 0.5rem 1.125rem;
+  border: 1px solid var(--accent-border);
   border-radius: var(--radius-lg);
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
   color: var(--text-h);
   font-weight: 600;
   text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .continue:hover {
-  border-color: var(--accent-border);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-sm);
+}
+
+.continue:active {
+  transform: translateY(0);
 }
 
 .continueLabel {
   color: var(--accent-text);
   font-family: var(--mono);
   font-size: 0.6875rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -77,56 +97,101 @@
   display: inline-flex;
   align-items: center;
   min-height: 3rem;
-  padding: 0.625rem 1.25rem;
+  padding: 0.625rem 1.375rem;
   border-radius: 14px;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 150ms ease;
 }
 
 .primary {
   background-color: var(--accent);
   color: var(--on-accent);
+  box-shadow: 0 2px 8px light-dark(rgba(194, 65, 12, 0.25), rgba(251, 146, 60, 0.25));
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .primary:hover {
   background-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px light-dark(rgba(194, 65, 12, 0.35), rgba(251, 146, 60, 0.35));
+}
+
+.primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px light-dark(rgba(194, 65, 12, 0.2), rgba(251, 146, 60, 0.2));
 }
 
 .secondary {
   border: 1px solid var(--border);
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
   color: var(--text-h);
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .secondary:hover {
   background-color: var(--surface-muted);
+  border-color: var(--line);
+  transform: translateY(-1px);
+}
+
+.secondary:active {
+  transform: translateY(0);
 }
 
 /* The progress of today: one segment for each puzzle, then the count and the time to new puzzles. */
 .progress {
   display: flex;
-  flex: 0 1 20rem;
+  flex: 0 1 21rem;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.625rem;
   min-width: 15rem;
+  padding: 1.125rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad);
+}
+
+.progress:hover {
+  border-color: var(--line);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-sm);
 }
 
 .segments {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   padding: 0;
   list-style: none;
 }
 
 .segment {
-  height: 8px;
-  border-radius: 4px;
-  background-color: var(--border);
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--surface-muted);
+  transition:
+    background-color var(--duration-normal) var(--ease-out-quad),
+    box-shadow var(--duration-normal) var(--ease-out-quad);
 }
 
 .segment[data-solved="true"] {
   background-color: var(--brand);
+  box-shadow: 0 0 6px light-dark(rgba(224, 90, 43, 0.4), rgba(240, 122, 74, 0.4));
 }
 
 .progressLine {
@@ -168,7 +233,7 @@
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
-  gap: 0.875rem;
+  gap: 1rem;
   padding: 0;
   list-style: none;
 }
@@ -180,11 +245,26 @@
   display: grid;
   grid-row: span 3;
   grid-template-rows: subgrid;
-  row-gap: 1rem;
-  padding: 1.25rem;
+  row-gap: 1.125rem;
+  padding: 1.375rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-sm);
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
+}
+
+.card:hover {
+  border-color: var(--line);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .cardHead {
@@ -202,13 +282,13 @@
 .cardTitle {
   font-size: 1.3125rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .summary {
   color: var(--text);
   font-size: 0.875rem;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 /* The three levels have the same width and stay in one row. */
@@ -223,23 +303,35 @@
 .level {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   height: 100%;
-  padding: 0.5625rem 0.625rem;
+  padding: 0.625rem 0.6875rem;
   border-radius: 12px;
+  border: 1px solid transparent;
   background-color: var(--surface-muted);
   color: var(--text-h);
   text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .level:hover {
   background-color: var(--surface-muted-hover);
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+
+.level:active {
+  transform: translateY(0);
 }
 
 /* The next level to play has a ring, as in the redesign. */
 .level[data-next="true"] {
   box-shadow: inset 0 0 0 2px var(--brand);
   background-color: var(--surface);
+  border-color: transparent;
 }
 
 /* A solved level has a soft green fill and edge, and a check mark. The next level keeps its ring. */
@@ -299,25 +391,46 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   background-color: var(--surface);
+  box-shadow: var(--shadow-xs);
   color: var(--text-h);
   font-size: 0.9375rem;
   font-weight: 600;
   white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .share:hover {
   border-color: var(--line);
   background-color: var(--surface-muted);
+  transform: translateY(-1px);
+}
+
+.share:active {
+  transform: translateY(0);
 }
 
 .cta {
   background-color: var(--text-h);
   color: var(--bg);
   text-decoration: none;
+  box-shadow: var(--shadow-xs);
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .cta:hover {
-  background-color: color-mix(in srgb, var(--text-h) 85%, var(--bg));
+  background-color: color-mix(in srgb, var(--text-h) 88%, var(--bg));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.cta:active {
+  transform: translateY(0);
 }
 
 .allSolved {
@@ -346,11 +459,26 @@
 .kpi {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 1rem;
+  gap: 3px;
+  padding: 1.125rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
+}
+
+.kpi:hover {
+  border-color: var(--line);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-sm);
 }
 
 .kpiValue {
@@ -378,11 +506,14 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.25rem;
+  gap: 0.875rem;
+  padding: 1.375rem;
   border: 1px solid var(--border);
   border-radius: 20px;
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
 }
 
 .panelTitle {
@@ -415,8 +546,17 @@
 .day {
   display: block;
   aspect-ratio: 1.6;
-  border-radius: 4px;
+  border-radius: 5px;
   background-color: var(--surface-muted);
+  transition:
+    transform var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad);
+}
+
+.day:hover {
+  transform: scale(1.15);
+  z-index: 1;
+  box-shadow: var(--shadow-xs);
 }
 
 /* The colour steps of the calendar: more solves give a stronger orange. */
@@ -569,14 +709,19 @@
   padding: 0.5rem 1rem;
   border-radius: 12px;
   background-color: var(--text-h);
+  box-shadow: var(--shadow-xs);
   color: var(--bg);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .noSolvesLink:hover {
-  background-color: color-mix(in srgb, var(--text-h) 85%, var(--bg));
+  background-color: color-mix(in srgb, var(--text-h) 88%, var(--bg));
+  transform: translateY(-1px);
 }
 
 /* Export, import and clear, in one row. The message and the note are under the buttons. */
@@ -589,7 +734,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
 }
 
 .dataMessage {

@@ -20,7 +20,19 @@
   --surface-muted-hover: light-dark(#e9e2d7, #312c27);
   --text-h: light-dark(#1c1915, #f6f1ea);
   --text: light-dark(#4d473f, #c9c1b6);
-  --text-muted: light-dark(#6b645b, #a0978b);
+  --text-muted: light-dark(#6b645b, #aba396);
+  /* An elevated surface for cards and panels. */
+  --surface-elevated: light-dark(#ffffff, #231f1c);
+  /* A subtle hairline highlight for top edges of cards. */
+  --card-highlight: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.05));
+  /* A subtle 1px border for delicate surface division. */
+  --border-subtle: light-dark(rgba(60, 45, 30, 0.08), rgba(255, 255, 255, 0.07));
+  /* An atmospheric ambient glow for cards and focus accents. */
+  --glow-accent: light-dark(rgba(224, 90, 43, 0.14), rgba(251, 146, 60, 0.12));
+  /* Motion tokens for tactile micro-interactions. */
+  --ease-out-quad: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
   /* The orange of the logo, the progress bar and the calendar. It is decoration, not text. */
   --brand: light-dark(#e05a2b, #f07a4a);
   /* A filled button with white text needs a darker orange: #c2410c has 5.2:1 with white (WCAG AA). */
@@ -43,13 +55,16 @@
   /* The soft fill and the edge of a solved level. The text on the fill has the colour "--success". */
   --success-bg: light-dark(rgba(47, 111, 74, 0.08), rgba(124, 194, 154, 0.1));
   --success-border: light-dark(rgba(47, 111, 74, 0.4), rgba(124, 194, 154, 0.35));
-  --shadow-sm: 0 1px 2px light-dark(rgba(45, 30, 15, 0.05), rgba(0, 0, 0, 0.3));
+  --shadow-xs: 0 1px 2px light-dark(rgba(35, 25, 15, 0.04), rgba(0, 0, 0, 0.25));
+  --shadow-sm:
+    0 2px 4px light-dark(rgba(35, 25, 15, 0.05), rgba(0, 0, 0, 0.3)),
+    0 1px 2px light-dark(rgba(35, 25, 15, 0.03), rgba(0, 0, 0, 0.2));
   --shadow-md:
-    0 4px 6px -1px light-dark(rgba(45, 30, 15, 0.07), rgba(0, 0, 0, 0.4)),
-    0 2px 4px -2px light-dark(rgba(45, 30, 15, 0.05), rgba(0, 0, 0, 0.3));
+    0 6px 16px -2px light-dark(rgba(35, 25, 15, 0.06), rgba(0, 0, 0, 0.45)),
+    0 2px 6px -1px light-dark(rgba(35, 25, 15, 0.04), rgba(0, 0, 0, 0.3));
   --shadow-lg:
-    0 10px 15px -3px light-dark(rgba(45, 30, 15, 0.08), rgba(0, 0, 0, 0.5)),
-    0 4px 6px -4px light-dark(rgba(45, 30, 15, 0.04), rgba(0, 0, 0, 0.3));
+    0 16px 32px -4px light-dark(rgba(35, 25, 15, 0.08), rgba(0, 0, 0, 0.55)),
+    0 4px 12px -2px light-dark(rgba(35, 25, 15, 0.04), rgba(0, 0, 0, 0.35));
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
@@ -106,6 +121,17 @@ body {
   line-height: 1.55;
   color: var(--text);
   background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 45% at 50% -15%, var(--glow-accent), transparent 70%),
+    radial-gradient(
+      circle at 100% 100%,
+      light-dark(rgba(224, 90, 43, 0.04), rgba(251, 146, 60, 0.03)),
+      transparent 40%
+    );
+  background-attachment: fixed;
+  transition:
+    background-color var(--duration-normal) var(--ease-out-quad),
+    color var(--duration-normal) var(--ease-out-quad);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -9,10 +9,12 @@
   margin: auto auto clamp(1rem, 4vw, 2rem);
   padding: 1.25rem 1.5rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   background-color: var(--surface);
   color: var(--text);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-lg);
 }
 
 /* The dialog is hidden until it opens. "display: flex" above must not show a closed dialog. */
@@ -22,7 +24,9 @@
 
 /* The backdrop dims the page, so the player sees that the page waits for the OK. */
 .notice::backdrop {
-  background-color: rgb(0 0 0 / 0.45);
+  background-color: rgb(0 0 0 / 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .text {
@@ -44,10 +48,20 @@
   border-radius: var(--radius-md);
   background-color: var(--accent);
   color: var(--on-accent);
+  box-shadow: 0 2px 8px light-dark(rgba(194, 65, 12, 0.25), rgba(251, 146, 60, 0.25));
   font-weight: 600;
-  transition: background-color 150ms ease;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad);
 }
 
 .ok:hover {
   background-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px light-dark(rgba(194, 65, 12, 0.35), rgba(251, 146, 60, 0.35));
+}
+
+.ok:active {
+  transform: translateY(0);
 }

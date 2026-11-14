@@ -1,14 +1,15 @@
 /* The question and its two answers, in one line. In a row of buttons, the question fills the row. */
 .question {
   display: flex;
-  flex: 1;
+  flex: 1 1 100%;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
 }
 
 .question > button {
-  padding-inline: 1rem;
+  padding-inline: 1.125rem;
+  white-space: nowrap;
 }
 
 /* A fast double click on the button lands on this text. The text must not be selected then.

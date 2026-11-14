@@ -33,12 +33,15 @@
   border: 2px solid var(--fill-edge, var(--line));
   border-radius: var(--radius-md);
   background-color: var(--fill, var(--surface));
+  box-shadow: var(--shadow-xs);
   color: var(--on-fill, var(--text-h));
   font-size: clamp(0.9rem, calc(40cqi / var(--size)), 1.75rem);
   font-weight: 600;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad);
 }
 
 /* A fixed square has a thin light line inside its edge, so the player can see that it does not change.
@@ -64,6 +67,12 @@
 
 .square[aria-disabled="false"]:hover {
   border-color: var(--ring);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.square[aria-disabled="false"]:active {
+  transform: translateY(0);
 }
 
 /* The status text is in a box. It has a minimum height, so the page does not move when the text changes. */
@@ -71,17 +80,25 @@
   justify-self: center;
   width: min(100%, 32rem);
   min-height: 2.75rem;
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1.125rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
   text-align: center;
+  transition:
+    border-color var(--duration-fast) var(--ease-out-quad),
+    background-color var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad);
 }
 
 /* When the puzzle is solved, the box has the accent colour. */
 .status[data-solved="true"] {
   border-color: var(--accent-border);
   background-color: var(--accent-bg);
+  box-shadow: 0 0 14px var(--glow-accent);
   color: var(--text-h);
   font-weight: 600;
 }
@@ -97,12 +114,19 @@
   color: var(--text-h);
   font-weight: 600;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
+    background-color var(--duration-fast) var(--ease-out-quad),
+    border-color var(--duration-fast) var(--ease-out-quad),
+    transform var(--duration-fast) var(--ease-out-quad),
+    box-shadow var(--duration-fast) var(--ease-out-quad);
 }
 
 .button:hover:enabled {
   background-color: var(--surface-muted-hover);
+  transform: translateY(-1px);
+}
+
+.button:active:enabled {
+  transform: translateY(0);
 }
 
 .button:disabled {
@@ -115,11 +139,22 @@
 .boxed {
   border: 1px solid var(--border);
   background-color: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-xs);
 }
 
 .boxed:hover:enabled {
   border-color: var(--line);
   background-color: var(--surface-muted);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.boxed:active:enabled {
+  transform: translateY(0);
 }
 
 /* A button for an action that deletes something, for example "Clear my data". Use it with "button" and "boxed".
@@ -132,6 +167,11 @@
 .danger:hover:enabled {
   border-color: var(--danger);
   background-color: var(--danger-bg);
+  transform: translateY(-1px);
+}
+
+.danger:active:enabled {
+  transform: translateY(0);
 }
 
 /* The button that does the delete, for example "Yes" in "Restart the puzzle?". It is filled with red. */
@@ -144,4 +184,9 @@
 .dangerSolid:hover:enabled {
   border-color: var(--danger-hover);
   background-color: var(--danger-hover);
+  transform: translateY(-1px);
+}
+
+.dangerSolid:active:enabled {
+  transform: translateY(0);
 }
