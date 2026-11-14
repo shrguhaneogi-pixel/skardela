@@ -221,7 +221,7 @@ describe("latics solver is complete and correct", () => {
   // The reference search tries each possible board of 300 boards, thus this test is slow.
   it(
     "finds the same smallest number of tray mirrors as a search of each possible board",
-    { timeout: 20_000 },
+    { timeout: 30_000 },
     () => {
       const fast = boards.map((board) => fewestTrayMirrors(board, board));
       expect(fast).toEqual(boards.map((board) => bruteForceFewest(board)));

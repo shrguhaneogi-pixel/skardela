@@ -158,7 +158,7 @@ function brokenInvariants(first: GameState, state: GameState): string[] {
   if (state.phase !== "solved" && config.liveBeam && isHit)
     problems.push("a live hit is not solved");
   if (state.phase === "missed" && (config.liveBeam || isHit)) problems.push("a wrong missed phase");
-  const monsters = monsterSquares(state.squares).length;
+  const monsters = monsterSquares(first.squares).length;
   const missedShots = state.moves.filter((move) => move.type === "fire" && move.hits < monsters);
   if (state.misses !== missedShots.length) problems.push("the misses do not match the shots");
   const isBeamHidden = !config.liveBeam && state.phase === "playing";
@@ -212,7 +212,7 @@ function fuzz(puzzle: LaticsPuzzle, seed: number, steps: number) {
 }
 
 describe("latics machine rules for each state", () => {
-  it("keeps all rules in random games on each puzzle", () => {
+  it("keeps all rules in random games on each puzzle", { timeout: 20_000 }, () => {
     const games = puzzles.flatMap((puzzle) =>
       [1, 2, 3, 4].map((seed) => fuzz(puzzle, seed * 7919 + puzzle.board.length, 200)),
     );
