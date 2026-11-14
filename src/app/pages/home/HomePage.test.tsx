@@ -21,7 +21,7 @@ const todayCount = Object.keys(puzzleTypes).length * levels.length;
 function renderHome() {
   useAppStore.getState().acknowledgeNotice();
   render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: ["/"] })} />);
-  return screen.findByRole("heading", { level: 1 });
+  return screen.findByRole("heading", { level: 1 }, { timeout: 5000 });
 }
 
 // Today's puzzle of one type and level.

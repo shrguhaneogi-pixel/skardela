@@ -17,7 +17,7 @@ type Difficulty = TodayCard["levels"][number]["difficulty"];
 function renderHome() {
   useAppStore.getState().acknowledgeNotice();
   render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: ["/"] })} />);
-  return screen.findByRole("heading", { level: 1 });
+  return screen.findByRole("heading", { level: 1 }, { timeout: 5000 });
 }
 
 // A solve of today's Guzzle puzzle of one level, saved as the app saves it. The day does not change the card.

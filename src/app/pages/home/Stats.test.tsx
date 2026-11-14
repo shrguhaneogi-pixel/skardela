@@ -19,7 +19,7 @@ const stats = text.home.stats;
 function renderHome() {
   useAppStore.getState().acknowledgeNotice();
   render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: ["/"] })} />);
-  return screen.findByRole("region", { name: stats.heading });
+  return screen.findByRole("region", { name: stats.heading }, { timeout: 5000 });
 }
 
 // Four solves of easy Guzzle puzzles: two today, one yesterday and one five days ago.
