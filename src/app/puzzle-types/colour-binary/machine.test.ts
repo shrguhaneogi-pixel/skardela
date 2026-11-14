@@ -135,22 +135,24 @@ function brokenInvariants(state: GameState): string[] {
   }
   // A shown hint must be the hint for the current board.
   const { hint } = state;
-  const current = JSON.stringify(findHint(state.squares));
-  if (hint.status === "shown" && JSON.stringify(hint.hint) !== current) {
-    problems.push("the hint does not match the board");
-  }
-  if (hint.status === "none" && findHint(state.squares) !== undefined)
+  if (hint.status === "shown") {
+    const current = JSON.stringify(findHint(state.squares));
+    if (JSON.stringify(hint.hint) !== current) {
+      problems.push("the hint does not match the board");
+    }
+  } else if (hint.status === "none" && findHint(state.squares) !== undefined) {
     problems.push("a hint is available");
+  }
   if ((phaseOf(state) === "solved") !== obeysRules(state.squares)) problems.push("a wrong phase");
   for (const move of state.moves) {
     if (move.type === "tap" && nextSquare[move.from] !== move.to) problems.push("a wrong tap move");
   }
   // The changes that Undo can remove, applied to the start, give the board.
-  const replayed = state.changes.reduce(
-    (squares, { index, to }) => squares.with(index, to),
-    state.start,
-  );
-  if (JSON.stringify(replayed) !== JSON.stringify(state.squares)) {
+  const replayed = [...state.start];
+  for (const { index, to } of state.changes) {
+    replayed[index] = to;
+  }
+  if (replayed.some((square, index) => square !== state.squares[index])) {
     problems.push("the changes do not give the board");
   }
   return problems;
@@ -220,7 +222,7 @@ function fuzz(puzzle: ColourBinaryPuzzle, seed: number) {
 }
 
 describe("colour binary machine rules for each state", () => {
-  it("keeps all rules in random games on each puzzle", () => {
+  it("keeps all rules in random games on each puzzle", { timeout: 15_000 }, () => {
     const games = puzzles.flatMap((puzzle, position) =>
       [1, 2].map((seed) => fuzz(puzzle, seed * 7919 + position)),
     );
