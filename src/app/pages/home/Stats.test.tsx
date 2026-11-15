@@ -43,7 +43,7 @@ function kpi(label: string): string | null {
   return screen.getByText(label).previousElementSibling?.textContent ?? null;
 }
 
-describe("home page stats", () => {
+describe("home page stats numbers", () => {
   it("shows the streaks, the solved puzzles and the days played", async () => {
     solveOnDays();
     await renderHome();
@@ -52,13 +52,16 @@ describe("home page stats", () => {
     expect(kpi(stats.kpis.solved)).toBe("4");
     expect(kpi(stats.kpis.days)).toBe("3");
   });
+});
 
+describe("home page stats panels", () => {
   it("shows the solves of today in the calendar, and the personal bests in a table", async () => {
     const today = solveOnDays();
     await renderHome();
     const calendar = screen.getByRole("list", { name: stats.calendar.heading });
     const todayItem = within(calendar).getByText(stats.calendar.day(today, 2)).closest("li");
     expect(todayItem).toHaveAttribute("title", stats.calendar.day(today, 2));
+    expect(todayItem).toHaveAttribute("tabindex", "0");
     const table = screen.getByRole("table", { name: stats.bests.heading });
     // One heading row, one row for each puzzle type, and one column for each level.
     // The count comes from the registry, thus a new puzzle type does not need a change here.

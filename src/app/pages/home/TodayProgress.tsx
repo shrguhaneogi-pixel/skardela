@@ -18,11 +18,7 @@ export function TodayProgress({ segments, now }: { segments: readonly Segment[];
       className={styles.progress}
       data-complete={solved === segments.length && segments.length > 0}
     >
-      <ol
-        className={styles.segments}
-        aria-label={words.progressLabel}
-        style={{ gridTemplateColumns: `repeat(${segments.length}, 1fr)` }}
-      >
+      <ol className={styles.segments} aria-label={words.progressLabel}>
         {segments.map(({ id, typeName, level, isSolved }) => (
           <li key={id} className={styles.segment} data-solved={isSolved}>
             <span className="visually-hidden">{words.segment(typeName, level, isSolved)}</span>

@@ -84,5 +84,6 @@ describe("home page card results", () => {
     const card = heading.closest("li");
     expect(card).toHaveAttribute("data-type", "guzzle");
     expect(card).toHaveAttribute("data-completed", "true");
+    expect(card).toHaveTextContent(home.today.solvedNoTime);
   });
 });

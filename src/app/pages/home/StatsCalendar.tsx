@@ -41,6 +41,7 @@ export function StatsCalendar({
             data-today={isToday}
             data-future={isFuture}
             aria-hidden={isFuture}
+            tabIndex={isFuture ? undefined : 0}
             title={isFuture ? undefined : words.day(day, solves)}
           >
             {!isFuture && <span className="visually-hidden">{words.day(day, solves)}</span>}

@@ -150,6 +150,12 @@
   box-shadow: var(--shadow-btn-accent-active);
 }
 
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .secondary {
   border: 1px solid var(--border);
   background-color: var(--surface);
@@ -207,13 +213,15 @@
 }
 
 .segments {
-  display: grid;
+  display: flex;
   gap: 3px;
   padding: 0;
   list-style: none;
 }
 
 .segment {
+  flex: 1 1 0;
+  min-width: 0;
   height: 10px;
   border-radius: 5px;
   background-color: var(--surface-muted);
@@ -226,7 +234,7 @@
 
 /* Visually separate the three difficulty levels of each puzzle type. */
 .segment:nth-child(3n):not(:last-child) {
-  margin-right: 3px;
+  margin-right: 5px;
 }
 
 .segment[data-solved="true"] {
@@ -308,7 +316,8 @@
     transform var(--duration-fast) var(--ease-out-quad);
 }
 
-.card:hover {
+.card:hover,
+.card:focus-within {
   border-color: var(--line);
   box-shadow:
     inset 0 1px 0 var(--card-highlight),
@@ -316,27 +325,33 @@
   transform: translateY(-2px);
 }
 
-.card[data-type="colour-binary"]:hover {
+.card[data-type="colour-binary"]:hover,
+.card[data-type="colour-binary"]:focus-within {
   border-color: color-mix(in srgb, var(--blue) 35%, var(--border));
 }
 
-.card[data-type="guzzle"]:hover {
+.card[data-type="guzzle"]:hover,
+.card[data-type="guzzle"]:focus-within {
   border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
 }
 
-.card[data-type="latics"]:hover {
+.card[data-type="latics"]:hover,
+.card[data-type="latics"]:focus-within {
   border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
 }
 
-.card[data-type="numpuz"]:hover {
+.card[data-type="numpuz"]:hover,
+.card[data-type="numpuz"]:focus-within {
   border-color: color-mix(in srgb, var(--line) 50%, var(--border));
 }
 
-.card[data-type="orbital"]:hover {
+.card[data-type="orbital"]:hover,
+.card[data-type="orbital"]:focus-within {
   border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
 }
 
-.card[data-type="tilt"]:hover {
+.card[data-type="tilt"]:hover,
+.card[data-type="tilt"]:focus-within {
   border-color: color-mix(in srgb, var(--red) 35%, var(--border));
 }
 
@@ -345,11 +360,13 @@
   background-color: color-mix(in srgb, var(--success-bg) 25%, var(--surface));
 }
 
-.card[data-completed="true"]:hover {
+.card[data-completed="true"]:hover,
+.card[data-completed="true"]:focus-within {
   border-color: color-mix(in srgb, var(--success) 45%, var(--border));
 }
 
-.card:hover .cardHead > div {
+.card:hover .cardHead > div,
+.card:focus-within .cardHead > div {
   border-color: var(--line);
   transform: scale(1.04);
   box-shadow:
@@ -733,7 +750,7 @@
     filter var(--duration-fast) var(--ease-out-quad);
 }
 
-.day:hover {
+.days .day:hover {
   filter: brightness(1.12);
   box-shadow:
     inset 0 0 0 1.5px var(--accent),
@@ -741,7 +758,13 @@
   z-index: 1;
 }
 
-.day[data-future="true"]:hover {
+.days .day:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  z-index: 2;
+}
+
+.days .day[data-future="true"]:hover {
   filter: none;
   box-shadow: inset 0 0 0 1px var(--border);
 }
@@ -766,10 +789,16 @@
     0 0 6px var(--glow-accent);
 }
 
-.day[data-today="true"]:hover {
+.days .day[data-today="true"]:hover {
   box-shadow:
     inset 0 0 0 2px var(--text-h),
     0 0 8px var(--glow-accent);
+}
+
+.days .day[data-today="true"]:focus-visible {
+  outline: 2px solid var(--text-h);
+  outline-offset: 2px;
+  z-index: 2;
 }
 
 /* A day after today has no data yet. It shows only as an outline. */
@@ -877,6 +906,11 @@
   color: var(--accent-text);
 }
 
+.bestsToggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* The average time shows under the best time when the row is open. */
 .average {
   display: block;
@@ -918,6 +952,11 @@
 .noSolvesLink:hover {
   background-color: color-mix(in srgb, var(--text-h) 88%, var(--bg));
   transform: translateY(-1px);
+}
+
+.noSolvesLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Export, import and clear, in one row. The message and the note are under the buttons. */
@@ -1009,5 +1048,21 @@
   .bests td {
     width: 3.5rem;
     font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover,
+  .card:focus-within,
+  .card:hover .cardHead > div,
+  .card:focus-within .cardHead > div,
+  .level:hover,
+  .cta:hover,
+  .share:hover,
+  .primary:hover,
+  .secondary:hover,
+  .kpi:hover,
+  .noSolvesLink:hover {
+    transform: none;
   }
 }

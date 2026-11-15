@@ -198,3 +198,9 @@
 .orbitalProbe {
   fill: var(--text-h);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .icon:hover {
+    transform: none;
+  }
+}

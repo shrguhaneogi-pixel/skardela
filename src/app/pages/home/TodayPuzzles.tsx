@@ -28,8 +28,9 @@ function Card({ card, day }: { card: TodayCard; day: string }) {
           <div className={styles.cardHeaderRow}>
             <h3 className={styles.cardTitle}>{name}</h3>
             {isCompleted && (
-              <span className={styles.cardBadge} aria-hidden="true">
-                {words.solvedMark}
+              <span className={styles.cardBadge}>
+                <span className="visually-hidden">{words.solvedNoTime}</span>
+                <span aria-hidden="true">{words.solvedMark}</span>
               </span>
             )}
           </div>
