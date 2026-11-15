@@ -199,9 +199,16 @@
     var(--shadow-md);
 }
 
+.progress[data-complete="true"] {
+  border-color: var(--accent-border);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    0 0 16px var(--glow-accent);
+}
+
 .segments {
   display: grid;
-  gap: 4px;
+  gap: 3px;
   padding: 0;
   list-style: none;
 }
@@ -210,13 +217,21 @@
   height: 10px;
   border-radius: 5px;
   background-color: var(--surface-muted);
+  border: 1px solid var(--border-subtle);
   transition:
     background-color var(--duration-normal) var(--ease-out-quad),
+    border-color var(--duration-normal) var(--ease-out-quad),
     box-shadow var(--duration-normal) var(--ease-out-quad);
+}
+
+/* Visually separate the three difficulty levels of each puzzle type. */
+.segment:nth-child(3n):not(:last-child) {
+  margin-right: 3px;
 }
 
 .segment[data-solved="true"] {
   background-color: var(--brand);
+  border-color: color-mix(in srgb, var(--brand) 80%, #000000);
   box-shadow: 0 0 6px var(--glow-brand);
 }
 
@@ -301,6 +316,39 @@
   transform: translateY(-2px);
 }
 
+.card[data-type="colour-binary"]:hover {
+  border-color: color-mix(in srgb, var(--blue) 35%, var(--border));
+}
+
+.card[data-type="guzzle"]:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+}
+
+.card[data-type="latics"]:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+}
+
+.card[data-type="numpuz"]:hover {
+  border-color: color-mix(in srgb, var(--line) 50%, var(--border));
+}
+
+.card[data-type="orbital"]:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+}
+
+.card[data-type="tilt"]:hover {
+  border-color: color-mix(in srgb, var(--red) 35%, var(--border));
+}
+
+.card[data-completed="true"] {
+  border-color: var(--success-border);
+  background-color: color-mix(in srgb, var(--success-bg) 25%, var(--surface));
+}
+
+.card[data-completed="true"]:hover {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+}
+
 .card:hover .cardHead > div {
   border-color: var(--line);
   transform: scale(1.04);
@@ -319,6 +367,14 @@
   display: grid;
   gap: 0.25rem;
   min-width: 0;
+  width: 100%;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .cardTitle {
@@ -326,6 +382,22 @@
   font-weight: 750;
   letter-spacing: -0.02em;
   color: var(--text-h);
+}
+
+.cardBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+  background-color: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .summary {
@@ -372,6 +444,11 @@
   transform: translateY(0);
 }
 
+.level:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* The next level to play has a ring, as in the redesign. */
 .level[data-next="true"] {
   box-shadow:
@@ -381,11 +458,25 @@
   border-color: transparent;
 }
 
+.level[data-next="true"]:hover {
+  background-color: var(--surface-elevated);
+  box-shadow:
+    inset 0 0 0 2px var(--brand),
+    0 2px 10px var(--glow-accent);
+}
+
 /* A solved level has a soft green fill and edge, and a check mark. The next level keeps its ring. */
 .level[data-solved="true"] {
   box-shadow: inset 0 0 0 1px var(--success-border);
   background-color: var(--success-bg);
   border-color: transparent;
+}
+
+.level[data-solved="true"]:hover {
+  background-color: color-mix(in srgb, var(--success-bg) 150%, var(--surface));
+  box-shadow:
+    inset 0 0 0 1px var(--success-border),
+    var(--shadow-xs);
 }
 
 .levelName {
@@ -404,6 +495,8 @@
   color: var(--text-muted);
   font-family: var(--mono);
   font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1.35;
 }
 
 .level[data-solved="true"] .levelStatus {
@@ -464,6 +557,11 @@
   transform: translateY(0);
 }
 
+.share:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .cta {
   background-color: var(--accent);
   color: var(--on-accent);
@@ -490,10 +588,16 @@
   box-shadow: var(--shadow-btn-accent-active);
 }
 
+.cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .allSolved {
-  background-color: var(--surface-muted);
-  color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
+  background-color: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+  box-shadow: inset 0 1px 0 var(--card-highlight);
 }
 
 /* ---------- Your stats ---------- */
@@ -539,6 +643,15 @@
     var(--shadow-sm);
 }
 
+.kpi[data-main="true"] {
+  border-color: var(--accent-border);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-bg) 35%, var(--surface)),
+    var(--surface)
+  );
+}
+
 .kpiValue {
   color: var(--text-h);
   font-family: var(--mono);
@@ -553,9 +666,13 @@
 }
 
 .kpiLabel {
-  color: var(--text);
-  font-size: 0.8125rem;
-  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.35;
 }
 
 .statsGrid {
@@ -610,32 +727,49 @@
   aspect-ratio: 1.6;
   border-radius: 5px;
   background-color: var(--surface-muted);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
   transition:
-    transform var(--duration-fast) var(--ease-out-quad),
-    box-shadow var(--duration-fast) var(--ease-out-quad);
+    box-shadow var(--duration-fast) var(--ease-out-quad),
+    filter var(--duration-fast) var(--ease-out-quad);
 }
 
 .day:hover {
-  transform: scale(1.15);
+  filter: brightness(1.12);
+  box-shadow:
+    inset 0 0 0 1.5px var(--accent),
+    var(--shadow-xs);
   z-index: 1;
-  box-shadow: var(--shadow-xs);
+}
+
+.day[data-future="true"]:hover {
+  filter: none;
+  box-shadow: inset 0 0 0 1px var(--border);
 }
 
 /* The colour steps of the calendar: more solves give a stronger orange. */
 .day[data-step="1"] {
-  background-color: color-mix(in srgb, var(--brand) 40%, var(--surface));
+  background-color: color-mix(in srgb, var(--brand) 35%, var(--surface-muted));
 }
 
 .day[data-step="2"] {
-  background-color: color-mix(in srgb, var(--brand) 70%, var(--surface));
+  background-color: color-mix(in srgb, var(--brand) 70%, var(--surface-muted));
 }
 
 .day[data-step="3"] {
   background-color: var(--brand);
+  box-shadow: 0 0 4px var(--glow-brand);
 }
 
 .day[data-today="true"] {
-  box-shadow: 0 0 0 2px var(--text-h);
+  box-shadow:
+    inset 0 0 0 2px var(--brand),
+    0 0 6px var(--glow-accent);
+}
+
+.day[data-today="true"]:hover {
+  box-shadow:
+    inset 0 0 0 2px var(--text-h),
+    0 0 8px var(--glow-accent);
 }
 
 /* A day after today has no data yet. It shows only as an outline. */
@@ -834,6 +968,12 @@
 
   .cardHead {
     gap: 0.75rem;
+  }
+
+  .cardBadge {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.6875rem;
   }
 
   .level {

@@ -14,7 +14,10 @@ export function TodayProgress({ segments, now }: { segments: readonly Segment[];
   const solved = segments.filter((segment) => segment.isSolved).length;
   const time = hoursAndMinutes(msUntilMidnight(new Date(now)));
   return (
-    <div className={styles.progress}>
+    <div
+      className={styles.progress}
+      data-complete={solved === segments.length && segments.length > 0}
+    >
       <ol
         className={styles.segments}
         aria-label={words.progressLabel}

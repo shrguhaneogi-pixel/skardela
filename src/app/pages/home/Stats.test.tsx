@@ -57,7 +57,8 @@ describe("home page stats", () => {
     const today = solveOnDays();
     await renderHome();
     const calendar = screen.getByRole("list", { name: stats.calendar.heading });
-    expect(within(calendar).getByText(stats.calendar.day(today, 2))).toBeInTheDocument();
+    const todayItem = within(calendar).getByText(stats.calendar.day(today, 2)).closest("li");
+    expect(todayItem).toHaveAttribute("title", stats.calendar.day(today, 2));
     const table = screen.getByRole("table", { name: stats.bests.heading });
     // One heading row, one row for each puzzle type, and one column for each level.
     // The count comes from the registry, thus a new puzzle type does not need a change here.

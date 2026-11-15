@@ -19,12 +19,20 @@ function Card({ card, day }: { card: TodayCard; day: string }) {
   const { name, summary } = text[type];
   const next = levels.find(({ id }) => !solved.includes(id));
   const bests = levels.map(({ id }) => (solved.includes(id) ? bestResult(results, id) : undefined));
+  const isCompleted = next === undefined;
   return (
-    <li className={styles.card}>
+    <li className={styles.card} data-type={type} data-completed={isCompleted}>
       <div className={styles.cardHead}>
         <PuzzleIcon type={type} />
         <div className={styles.cardText}>
-          <h3 className={styles.cardTitle}>{name}</h3>
+          <div className={styles.cardHeaderRow}>
+            <h3 className={styles.cardTitle}>{name}</h3>
+            {isCompleted && (
+              <span className={styles.cardBadge} aria-hidden="true">
+                {words.solvedMark}
+              </span>
+            )}
+          </div>
           <p className={styles.summary}>{summary}</p>
         </div>
       </div>

@@ -38,7 +38,7 @@ export function Stats({ cards }: { cards: readonly TodayCard[] }) {
       </div>
       <ul className={styles.kpis}>
         {numbers.map(({ label, value, isMain }) => (
-          <li key={label} className={styles.kpi}>
+          <li key={label} className={styles.kpi} data-main={isMain}>
             <span className={styles.kpiValue} data-main={isMain}>
               {value}
             </span>

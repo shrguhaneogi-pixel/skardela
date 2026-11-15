@@ -25,6 +25,47 @@
     var(--shadow-sm);
 }
 
+/* Distinct subtle surface tint for each puzzle type. */
+.icon[data-type="colour-binary"] {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--red) 10%, var(--surface-muted)),
+    color-mix(in srgb, var(--blue) 10%, var(--surface-muted))
+  );
+}
+
+.icon[data-type="guzzle"] {
+  background-color: color-mix(in srgb, var(--brand) 10%, var(--surface-muted));
+}
+
+.icon[data-type="latics"] {
+  background: radial-gradient(
+    circle at 20% 70%,
+    color-mix(in srgb, var(--brand) 14%, var(--surface-muted)),
+    var(--surface-muted) 70%
+  );
+}
+
+.icon[data-type="numpuz"] {
+  background-color: color-mix(in srgb, var(--text-h) 6%, var(--surface-muted));
+}
+
+.icon[data-type="orbital"] {
+  background: radial-gradient(
+    circle at 75% 25%,
+    color-mix(in srgb, var(--brand) 14%, var(--surface-muted)),
+    var(--surface-muted) 70%
+  );
+}
+
+.icon[data-type="tilt"] {
+  background: radial-gradient(
+    circle at 25% 35%,
+    color-mix(in srgb, var(--red) 12%, var(--surface-muted)),
+    var(--surface-muted) 70%
+  );
+}
+
 .iconGrid {
   display: grid;
   gap: 2px;

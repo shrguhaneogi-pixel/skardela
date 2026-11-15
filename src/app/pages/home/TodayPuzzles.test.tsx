@@ -80,5 +80,9 @@ describe("home page card results", () => {
     solveToday(cards, 100, "hard");
     await renderHome();
     expect(screen.getByText(home.today.allSolved("3:22"))).toBeInTheDocument();
+    const heading = screen.getByRole("heading", { name: text.guzzle.name });
+    const card = heading.closest("li");
+    expect(card).toHaveAttribute("data-type", "guzzle");
+    expect(card).toHaveAttribute("data-completed", "true");
   });
 });

@@ -131,7 +131,7 @@ const icons: { [Type in PuzzleType]: () => ReactNode } = {
 export function PuzzleIcon({ type }: { type: PuzzleType }) {
   const Icon = icons[type];
   return (
-    <div className={styles.icon} aria-hidden="true">
+    <div className={styles.icon} data-type={type} aria-hidden="true">
       <Icon />
     </div>
   );
